@@ -1,0 +1,172 @@
+/**
+ *------
+ * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * incangold implementation : © Antonio Soler <morgald.es@gmail.com>
+ *
+ * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
+ * See http://en.boardgamearena.com/#!doc/Studio for more information.
+ * -----
+ *
+ * incangold.css
+ *
+ * incangold stylesheet
+ *
+ */
+
+/*
+    This is the CSS stylesheet of your game User Interface.
+    
+    Styles defined on this file will be applied to the HTML elements you define in your
+    HTML template (incangold_incangold.tpl), and to HTML elements you create dynamically
+    (in incangold.js).
+    
+    Usually, you are using CSS to:
+    
+    1°) define the overall layout of your game
+        (ex: place the board on the top left, place player's hand beside, place the deck on the right, ...).
+
+    2°) create your CSS-sprites:
+        All images of your games should be gathered into a small number of image files. Then, using
+        background-image and background-position CSS properties, you create HTML blocks that can 
+        display these images correctly (see example below).
+    
+    3°) ... anything else:
+        It is really easy to add and remove CSS classes dynamically from your Javascript with
+        dojo.addClass and dojo.removeClass. It is also easy to check if an element has a class
+        (dojo.hasClass) or to get all elements with a specific class (dojo.query). This is why,
+        very often, using CSS classes for the logic of your user interface allow you to do complex
+        thing easily.
+        
+        
+     Note: on the production platform, this file will be compressed and comments will be removed.
+           Consequently, don't hesitate to put as many comments as necessary.
+*/
+
+@import url(../../../css/csslayer.css); /* Note: you must not use any @import directive other than this one */
+
+/********* You can start writing your CSS below this line: **********/
+
+
+/*
+    Example of CSS sprites (a black token and a white token, 20x20px each, embedded in the same "tokens.png" 40x20px image):
+
+    .white_token {
+        background-image: url('img/tokens.png');
+        background-position: 0px 0px;
+    }
+    .black_token {
+        background-image: url('img/tokens.png');
+        background-position: -20px 0px;
+    }
+    .token {
+        width: 20px;
+        height: 20px;
+        background-repeat: none;
+    }
+*/
+
+h2 {
+    margin: 0px;
+}
+
+h2.fieldHeader {
+    text-align: center;
+}
+
+div {
+    border: 0px dashed red;
+}
+
+.privatePlayerCards {
+    margin: 5px;
+    clear: both;
+    padding-top: 20px;
+}
+
+#card_zone {
+  width: 75px;            
+  height: 159px;
+}
+
+.fields, .templePanel {
+    min-height: 125px !important;
+    width: 320px;
+    float: left;
+    margin: 5px;
+    padding: 10px;
+    padding-top: 5px;
+}
+
+.templePanel {
+    height: 280px !important;
+}
+
+#remainingText {
+    float: left;
+    font-weight: bold;
+}
+
+.hidden {
+    display: none;
+}
+
+#plagueToken {
+    float: left;
+    width:30px;
+    height: 30px;
+    background-image: url('img/gem.png');
+    margin-left: 10px;
+    margin-top: 1px;
+}
+
+#drawPile {
+    /*clear: both;*/
+}
+
+#drawPile, #flood, #info {
+    position: relative;
+    height: 135px;
+    width: 75px;
+    float: left;
+    margin-right: 20px;
+    margin-left: 40px;
+}
+
+#flood {
+    position: relative;
+    top: -15px;
+}
+
+#info {
+    width: 260px;
+    height: 190px;
+}
+
+.score {
+    font-weight: bold;
+}
+
+.playerField {
+    float: left;
+}
+
+.whiteblock {
+    position: relative;
+    min-height: 100px;
+    border-radius: 10px;
+}
+
+.card {
+    background-image: url('img/cards.jpg'); 
+}
+
+.gameArt {
+    width: 200px;
+    height: 139px;
+    background-image: url('img/incangold.jpg');
+    margin-bottom: 0px;
+}
+
+
+
+
