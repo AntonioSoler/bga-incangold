@@ -66,15 +66,14 @@
     public function explore()
     {
 		self::setAjaxMode();     
-		$this->game->pass();
+		$this->game->explore();
 		self::ajaxResponse();    
 	}
 
-    public function camp()
+    public function leave()
     {
 		self::setAjaxMode();     
-        $cards = self::getArg( "cards", AT_numberlist, true );    
-        $this->game->market(explode(',', $cards));
+		$this->game->leave();
 		self::ajaxResponse();    
 	}
 

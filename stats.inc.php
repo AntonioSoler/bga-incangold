@@ -52,8 +52,8 @@ $stats_type = array(
     // Statistics global to table
     "table" => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
+        "cards_drawn" => array("id"=> 10,
+                    "name" => totranslate("Number of cards drawn"),
                     "type" => "int" ),
 
 /*
@@ -73,8 +73,8 @@ $stats_type = array(
     // Statistics existing for each player
     "player" => array(
 
-        "turns_number" => array("id"=> 10,
-                    "name" => totranslate("Number of turns"),
+        "cards_seen" => array("id"=> 10,
+                    "name" => totranslate("Number of cards seen (while exploring) "),
                     "type" => "int" ),
         
         "artifacts_number" => array("id"=> 11,

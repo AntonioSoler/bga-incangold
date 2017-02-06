@@ -77,12 +77,6 @@ div {
     border: 0px dashed red;
 }
 
-.privatePlayerCards {
-    margin: 5px;
-    clear: both;
-    padding-top: 20px;
-}
-
 #card_zone {
   width: 75px;            
   height: 159px;
@@ -110,32 +104,6 @@ div {
     display: none;
 }
 
-#plagueToken {
-    float: left;
-    width:30px;
-    height: 30px;
-    background-image: url('img/gem.png');
-    margin-left: 10px;
-    margin-top: 1px;
-}
-
-#drawPile {
-    /*clear: both;*/
-}
-
-#drawPile, #flood, #info {
-    position: relative;
-    height: 135px;
-    width: 75px;
-    float: left;
-    margin-right: 20px;
-    margin-left: 40px;
-}
-
-#flood {
-    position: relative;
-    top: -15px;
-}
 
 #info {
     width: 260px;

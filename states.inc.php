@@ -61,77 +61,49 @@ $machinestates = array(
     ),
     
     2 => array(
-        "name" => "flood",
+        "name" => "reshuffle",
         "type" => "game",
-        "action" => "stFlood",
+        "action" => "streshuffle",
         "updateGameProgression" => true,
-        "transitions" => array( "plague" => 3, "harvest" => 5, "gameEnd" => 90 ) //game ends if cards are exhausted
+        "transitions" => array( "explore" => 3, "gameEnd" => 90 ) //game ends if iterations are 5
     ),
 
     3 => array(
-        "name" => "floodPlague",
+        "name" => "explore",  // a card is drawn and gems splitted if necessary
         "type" => "game",
-        "action" => "stPlague",
+        "action" => "stexplore",
         "updateGameProgression" => true,
-        "transitions" => array("" => 2) //go back to flood afterwards
+        "transitions" => array("cleanpockets" => 4, "vote" => 5) //after seeing the card if the 2nd hazard is drawn or the remaining players vote to stay or to contnue exploring
+    ),
+
+    4 => array(
+	    "name" => "cleanpockets", 
+        "description" => clienttranslate('2nd hazard of the same type was drawn and all explorers in the temple flee droping their pouches'),
+        "type" => "game",
+        "action" => "stcleanpockets",
+        "updateGameProgression" => true,
+        "transitions" => array("shufle" => 2)  // iterations++
     ),
 
     5 => array(
-        "name" => "harvest",
-        "type" => "game",
-        "action" => "stHarvest",
+        "name" => "vote",
+        "description" => clienttranslate('Players must vote to stay exploring or to leave to camp'),
+        "descriptionmyturn" => clienttranslate('${you} must vote to stay exlporing or to leave to camp'),
+        "type" => "multipleactiveplayer",
+        "possibleactions" => array( "explore", "leave" ),
         "updateGameProgression" => true,
-        "transitions" => array( "" => 10 )
+        "transitions" => array( "processLeavers" => 6 ) //iteration ends if no players are still exploring
     ),
-
-    10 => array(
-        "name" => "playerTrade",
-        "description" => clienttranslate('${actplayer} must trade or pass'),
-        "descriptionmyturn" => clienttranslate('${you} must trade or pass'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "market", "offering", "pass", "zombiePass" ),
+	
+	4 => array(
+	    "name" => "processLeavers", 
+        "description" => clienttranslate('processing player actions acording their votes'),
+        "type" => "game",
+        "action" => "stcleanpockets",
         "updateGameProgression" => true,
-        "transitions" => array( "plague" => 13, "market" => 10, "offering" => 2, "pass" => 15, "zombiePass" => 15, "gameEnd" => 90 ) //game ends if cards are exhausted
+        "transitions" => array( "explore" => 3,"shufle" => 2) 
     ),
-
-    13 => array(
-        "name" => "marketCardPlague",
-        "type" => "game",
-        "action" => "stPlague",
-        "transitions" => array("" => 10)
-    ),
-
-    15 => array(
-        "name" => "playerPlantOrSpeculate",
-        "description" => clienttranslate('${actplayer} must plant or speculate'),
-        "descriptionmyturn" => clienttranslate('${you} must plant or speculate'),
-        "type" => "activeplayer",
-        "possibleactions" => array( "plant", "speculate", "pass", "zombiePass" ),
-        "transitions" => array( "plant" => 20, "speculate" => 20, "pass" => 20, "zombiePass" => 20 )
-    ),
-
-    20 => array(
-        "name" => "drawCards",
-        "type" => "game",
-        "action" => "stDrawCards",
-        "transitions" => array("plague" => 22, "nextPlayer" => 25, "gameEnd" => 90 ) //game ends if cards are exhausted
-    ),
-
-    22 => array(
-        "name" => "drawCardPlague",
-        "type" => "game",
-        "action" => "stPlague",
-        "transitions" => array("" => 25)
-    ),
-
-    25 => array(
-        "name" => "nextPlayer",
-        "type" => "game",
-        "action" => "stNextPlayer",
-        "updateGameProgression" => true,
-        "transitions" => array( "" => 2 )
-    ),
-
+    
     90 => array(
         "name" => "gameEndScoring",
         "type" => "game",

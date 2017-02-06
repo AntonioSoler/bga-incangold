@@ -33,12 +33,9 @@ class incangold extends Table
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
         parent::__construct();self::initGameStateLabels( array( 
-                "floodType" => 10,
-                "floodCardId" => 11,
-                "iterations" => 12,
-                "gameOverTrigger" => 13,
-                "deckSize" => 14,
-                "plagueTrigger" => 15,
+                "iterations" => 10,
+                "gameOverTrigger" => 11,
+                "deckSize" => 12,
             //    "my_second_global_variable" => 11,
             //      ...
             //    "my_first_game_variant" => 100,
@@ -92,68 +89,87 @@ class incangold extends Table
         
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
-        //self::initStat( 'table', 'table_teststat1', 0 );    // Init a table statistics
-        //self::initStat( 'player', 'player_teststat1', 0 );  // Init a player statistics (for all players)
-
+        
+		self::initStat( 'table', 'cards_drawn', 0 );    // Init a table statistics
+        
+		self::initStat( 'player', 'cards_seen', 0 );  // Init a player statistics (for all players)
+		self::initStat( 'player', 'actifacts_number', 0 );  // Init a player statistics (for all players)
+		self::initStat( 'player', 'gems_number', 0 );  // Init a player statistics (for all players)
+		
+		
         // setup the initial game situation here
 
         self::setGameStateInitialValue( 'iterations', 0 ); //times deck has been exhausted
 
 
-        //create the card deck here. There are 92 cards
-        //(16 of each of the 5 types) = 80
-        //10 speculation cards = 90
-        //1xplague, 1xflood = 92
+        //create the card deck here. There are 35 cards
+        // (3 of each of the 5 types of hazard) = 15
+        // 15 gems cards = 15
+        // 5 artifacts one of each type = 5
         $cards = array();
-        $plagueType = 0;
+        $thisvalue = 0;
         foreach( $this->card_types as $cardType)
         {
-            if ($cardType['isHazard'] == 1)
+			if ($cardType['type_id']  == 1)
             {
-                $plagueType = $cardType["type_id"];
-                $num = 1;
+                $cardValues = array(1,2,3,4,5,5,7,7,9,11,11,13,14,15); 
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 1, 'nbr' => 1);
+                array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 2, 'nbr' => 1);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 3, 'nbr' => 1);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 4, 'nbr' => 1);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 5, 'nbr' => 2);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 7, 'nbr' => 2);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 9, 'nbr' => 1);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 11, 'nbr' => 2);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 13, 'nbr' => 1);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 14, 'nbr' => 1);
+				array_push($cards, $card);
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 15, 'nbr' => 1);
+				array_push($cards, $card);
             }
-            else if ($cardType['isScore'] == 1)
+            if ($cardType['isArtifact'] == 1)
+            {	
+				
+                $card = array( 'type' => $cardType["type_id"], 'type_arg' => 5, 'nbr' => 1);
+                array_push($cards, $card);
+				
+			
+            }
+			if ($cardType['isHazard'] == 1)   // 3 of each hazard
             {
-                $num = 1;
+                $card = array( 'type' => $cardType["type_id"], 'type_arg' => 0, 'nbr' => 3);
+                array_push($cards, $card);
+			
             }
-            else
-            {
-                $num = 16;
-            }
-            $card = array( 'type' => $cardType["type_id"], 'type_arg' => 0, 'nbr' => $num);
-            array_push($cards, $card);
+            
         }
         
         $this->cards->createCards( $cards, 'deck' );
-        self::setGameStateInitialValue( 'deckSize', $this->cards->countCardsInLocation("deck"));
+		
+		
+		self::setGameStateInitialValue( 'deckSize', $this->cards->countCardsInLocation("deck"));
 
-        //shuffle and deal each player 5 cards
+        //shuffle 
         $this->cards->shuffle( 'deck' );
 
         //init stats for all players
-        self::initStat('player', 'papyrus_number', 0);
-        self::initStat('player', 'wheat_number', 0);
-        self::initStat('player', 'lettuce_number', 0);
-        self::initStat('player', 'castor_number', 0);
-        self::initStat('player', 'flax_number', 0);
+        self::initStat('player', 'gems_number', 0);
+        self::initStat('player', 'artifacts_number', 0);
+		self::initStat('player', 'cards_seen', 0);
 
         $players = self::loadPlayersBasicInfos();
 
-        //to avoid any player drawing the plague card in their initial hand, move it to discard before drawing, then reshuffle it in afterwards
-        $plagueCards = $this->cards->getCardsOfType($plagueType);
-        $this->cards->moveCards($this->getCardIds($plagueCards), "discard");
-
-        foreach( $players as $player_id => $player )
-        {
-            $this->cards->pickCards( 5, 'deck', $player_id );
-        }  
-
-        $this->cards->moveCards($this->getCardIds($plagueCards), "deck");
-        $this->cards->shuffle('deck');
-
         // Activate first player (which is in general a good idea :) )
-        $this->activeNextPlayer();
+       // $this->activeNextPlayer();
 
         /************ End of the game initialization *****/
     }
@@ -176,50 +192,22 @@ class incangold extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_score score FROM player ";
+        $sql = "SELECT player_id id, player_field field FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
   
-        // Gather all information about current game situation (visible by player $current_player_id).
-        $result['hand'] = $this->cards->getCardsInLocation( 'hand', $current_player_id );
-        $result['storage'] = $this->cards->getCardsInLocation( 'storage', $current_player_id );
 
-        //flood is visible
         //show number of cards in deck too.
         $result['cardsRemaining'] = $this->cards->countCardsInLocation('deck');
-        $result['shufflesRemaining'] = count($players) - $this->getGameStateValue('iterations')-1;
-        $result['floodHarvestTypes'] = $this->card_types[self::getGameStateValue( 'floodType')]['harvestTypes'];
-        $result['floodType'] = self::getGameStateValue( 'floodType');
-        $result['floodCardId'] = self::getGameStateValue( 'floodCardId');
-        $result['cardTypeCount'] = count($this->card_types);
-        
-        //is the plague card still in the deck
-        $cards = $this->cards->getCardsOfType( 16);
-        $plague = reset($cards);
-        $result['isHazardInDeck'] = $plague["location"] == "deck";
+        $result['shufflesRemaining'] = 4 - $this->getGameStateValue('iterations');
                 
         //fields of all players are visible
         $result['fields'] = array();        
-        foreach( $players as $player_id => $player )
-        {
-            $result['fields'][$player_id] = $this->cards->getCardsInLocation( 'field', $player_id );
-        }      
+        
+		
+        $result['table'] = $this->cards->getCardsInLocation( 'table' );
+              
 
-        //tell the client which card type IDs are speculation cards, so it can validate player choices.
-        $result['speculationTypes'] = array();
-        foreach($this->card_types as $cardType)
-        {
-            if ($cardType['isScore'] == 1)
-            {
-                $result['speculationTypes'][] = $cardType['type_id'];
-            }
-        }
-
-        $result['harvestTypes'] = array();
-        foreach($this->card_types as $cardType)
-        {
-            $result['harvestTypes'][$cardType['type_id']] = $cardType['harvestTypes'];
-        }
-  
+        
         return $result;
     }
 
@@ -236,26 +224,11 @@ class incangold extends Table
     function getGameProgression()
     {
         //Compute and return the game progression
-        //r = cards remaining in deck
-        //r* = max possible remaining cards from start of game (approximate at 92 more cards per iteration)
-        //c* = max possible remaining cards from current position
-        //i = completed iterations
-        //p = progress (0-100)
-        //n = number of players
-        //p=0 at i=0 & r = 92-5n ==> p=0 at r* = 92(n-1)+92-5n
-        //p=100 at r*=0
-        //p=100 at i=(n-1) r = 0
 
-        //p = 100*(r*-c*)/r*
-        $deckSize = self::getGameStateValue( 'deckSize');
+
         $iterations = self::getGameStateValue("iterations");
-        $playerCount = count(self::loadPlayersBasicInfos());
-        $initialRemaining = ($deckSize-5*$playerCount)*$playerCount;
-        //we use an approximation here... that only cards in deck & discard/flood will be in the next reshuffle.
-        //This is not 100% true (discard, plague etc
-        $currentRemaining = ($this->cards->countCardsInLocation('deck')+$this->cards->countCardsInLocation('discard')+$this->cards->countCardsInLocation('flood'))*($playerCount-1-$iterations) + $this->cards->countCardsInLocation('deck');
-
-        return 100*($initialRemaining-$currentRemaining)/$initialRemaining;
+        
+        return ($iterations*20);
     }
 
 
@@ -267,190 +240,7 @@ class incangold extends Table
         In this space, you can put any utility methods useful for your game logic
     */
 
-    function getCardIds($cards)
-    {
-        $cardIds = array();
-        foreach($cards as $card)
-        {
-            $cardIds[] = $card['id'];
-        }
-        return $cardIds;
-    }
-
-    function isScoreCard($card)
-    {
-        $cardType = $this->card_types[$card['type']];
-        return $cardType['isScore'] == 1;
-    }
-
-    function validateCardCount($card_ids, $count)
-    {
-        if (count($card_ids) != $count) {
-            throw new feException("2 cards are required");
-        }
-    }
-
-    function validatePlayerHasCards($card_ids, $allowStorage)
-    {
-        $cards = $this->cards->getCards( $card_ids );
-
-        $active_player = self::getActivePlayerId();
-        
-        foreach( $cards as $card )
-        {
-            $isInHand = $card['location'] == 'hand' && $card['location_arg'] == $active_player;
-            $isInStorage = $card['location'] == 'storage' && $card['location_arg'] == $active_player;
-            if ($allowStorage)
-            {
-                if (!$isInHand && !$isInStorage)
-                {
-                    throw new feException("These cards are not in your hand or storage");
-                }
-            }
-            else //don't allow storage, hand only
-            {
-                if (!$isInHand)
-                {
-                    throw new feException("These cards are not in your hand");
-                }
-            }                    
-        }
-    }
-
-    function discardCards($card_ids)
-    {
-        $this->cards->moveCards( $card_ids, "discard");
-
-        $active_player = self::getActivePlayerId();
-
-        //notify this player so the cards can be removed from screen
-        self::notifyPlayer( $active_player, "removeCards", "", array( "cards" => $card_ids ) );
-    }
-
-    function drawCardsWithGameOverCheck($numCards, $source, $destination, $dest_type, $isPlayerDraw)
-    {
-        $players = self::loadPlayersBasicInfos();
-
-        $returnCards = array();
-
-        while ($numCards > 0 && $this->cards->countCardInLocation('deck') > 0)
-        {
-            //draw as many cards as you can.
-            $numToDraw = min($numCards, $this->cards->countCardInLocation('deck'));
-            $newCards = $this->cards->pickCardsForLocation($numToDraw, $source, $destination, $dest_type, true);
-                                    
-            //announce the drawn cards.
-            if ($isPlayerDraw)
-            {
-                self::notifyAllPlayers( "drewCards", clienttranslate( '${player_name} drew ${num} card(s)' ), array(
-                    'player_name' => $players[$dest_type]['player_name'],
-                    'num' => count($newCards),
-                    'cardsRemaining' => $this->cards->countCardsInLocation('deck'),
-                    'shufflesRemaining' => count(self::loadPlayersBasicInfos()) - $this->getGameStateValue('iterations') - 1
-                ) );
-
-                //notify this player so the cards can be added to their hand
-                self::notifyPlayer( $players[$dest_type]['player_id'], "drawCards", "", array( "cards" => $newCards ) );
-            }
-            //update return card list and card to draw count.
-            $numCards -= count($newCards);
-            $returnCards = array_merge($returnCards, $newCards);
-
-            //were any the plague card?
-            foreach($newCards as $card)
-            {
-                if ($this->card_types[$card['type']]['isHazard'] == 1)
-                {
-                    self::setGameStateValue("plagueTrigger", 1);
-                    
-                    if ($isPlayerDraw)
-                    {
-                        self::notifyAllPlayers( "plagueDrawn", clienttranslate( '${player_name} has drawn The Plague Of Locusts' ), array(
-                            'plagueCardId' => $card['id'],
-                            'plagueType' => $card['type'],
-                            'draw_type' => 'player',
-                            'player_id' => $players[$dest_type]['player_id'],
-                            'player_name' => $players[$dest_type]['player_name'],
-                            'cardsRemaining' => $this->cards->countCardsInLocation('deck'),
-                            'shufflesRemaining' => count(self::loadPlayersBasicInfos()) - $this->getGameStateValue('iterations') - 1
-                        ) );
-                    }
-                    else
-                    {      
-                        self::notifyAllPlayers( "plagueDrawn", clienttranslate( 'The Plague Of Locusts has been revealed' ), array(
-                            'plagueCardId' => $card['id'],
-                            'plagueType' => $card['type'],
-                            'draw_type' => 'deck',
-                            'cardsRemaining' => $this->cards->countCardsInLocation('deck'),
-                            'shufflesRemaining' => count(self::loadPlayersBasicInfos()) - $this->getGameStateValue('iterations') - 1
-                        ) );
-                    }
-
-                    $this->cards->moveCard( $card['id'], "discard");
-
-                    $numCards++; //you need to draw 1 more
-                }
-            }
-
-            if ($this->cards->countCardsInLocation('deck') == 0)
-            {
-                if (self::getGameStateValue("iterations") == count($players)-1)
-                {
-                    //game over!
-                    self::notifyAllPlayers( "reshuffle", clienttranslate( 'The deck has been exhausted. The game ends' ), array(
-                        'cardsRemaining' => 0,
-                        'shufflesRemaining' => 0
-                    ) );
-
-                    self::setGameStateValue("gameOverTrigger", 1);
-                    return;
-                }
-                else
-                {
-                    $this->cards->moveAllCardsInLocation( 'discard', 'deck');
-                    $this->cards->moveAllCardsInLocation('flood', 'deck');
-                    $this->cards->shuffle('deck');
-                    self::setGameStateValue("iterations", self::getGameStateValue("iterations")+1);
     
-                    self::notifyAllPlayers( "reshuffle", clienttranslate( 'The deck has been exhausted. Discard pile and flood stack have been reshuffled to form a new deck' ), array(
-                        'cardsRemaining' => $this->cards->countCardsInLocation('deck'),
-                        'shufflesRemaining' => count(self::loadPlayersBasicInfos()) - $this->getGameStateValue('iterations') - 1
-                    ) );
-                }
-            }
-        }
-
-        return $returnCards;
-    }
-
-    function drawCards($playerID, $numCards)
-    {
-        self::debug("drawCards".$numCards);
-        self::debug("cards left in deck : ".$this->cards->countCardInLocation('deck'));
-
-        $this->drawCardsWithGameOverCheck($numCards, 'deck', 'hand', $playerID, true);
-    }
-
-    function getFieldCount($player_id, $field_type)
-    {
-        return count($this->getCardsInLocationByType('field', $player_id, $field_type));
-    }
-
-    function getCardsInLocationByType($location, $location_arg, $type)
-    {
-        $matches = array();
-
-        $cards = $this->cards->getCardsInLocation($location, $location_arg);
-        foreach($cards as $card)
-        {
-            if ($card['type'] == $type)
-            {
-                array_push($matches, $card);
-            }
-        }
-        return $matches;
-    }
-
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -487,21 +277,24 @@ class incangold extends Table
     
     */
 
-    function pass()
+    function explore()
     {
         self::checkAction( "pass" );
+		self::notifyAllPlayers( "explores", clienttranslate( '${player_name} voted to continue exploring' ), array(
+            'player_name' => self::getActivePlayerName(),
+        ) );
 
-        $this->gamestate->nextState( 'pass' );
+        // $this->gamestate->nextState( 'pass' );
     }
 
-    function market($card_ids)
+    function leave()
     {
         self::checkAction( "market" );
 
         $this->validateCardCount($card_ids, 2);
         $this->validatePlayerHasCards($card_ids, true);
 
-        self::notifyAllPlayers( "marketUsed", clienttranslate( '${player_name} used the market' ), array(
+        self::notifyAllPlayers( "leaves", clienttranslate( '${player_name} used the market' ), array(
             'player_name' => self::getActivePlayerName(),
         ) );
 
