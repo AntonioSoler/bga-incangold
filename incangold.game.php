@@ -194,15 +194,15 @@ class incangold extends Table
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_field field FROM player ";
         $result['players'] = self::getCollectionFromDb( $sql );
-  
-
+		
+		$sql = "SELECT player_tent FROM player WHERE player_id='$current_player_id'";
+        $result['tent'] = getgetUniqueValueFromDB( $sql );
+        
         //show number of cards in deck too.
         $result['cardsRemaining'] = $this->cards->countCardsInLocation('deck');
         $result['shufflesRemaining'] = 4 - $this->getGameStateValue('iterations');
                 
-        //fields of all players are visible
-        $result['fields'] = array();        
-        
+        //fields of all players are visible 
 		
         $result['table'] = $this->cards->getCardsInLocation( 'table' );
               
@@ -224,11 +224,12 @@ class incangold extends Table
     function getGameProgression()
     {
         //Compute and return the game progression
-
+        // there are 5 iterations so each one is a 20% of the game + aproximately 1% for each card drawn in this iteration.
 
         $iterations = self::getGameStateValue("iterations");
-        
-        return ($iterations*20);
+        $cardsDrawn = $this->cards->getCardsInLocation( 'table' );
+		
+        return (($iterations*20)+$cardsDrawn);
     }
 
 
@@ -239,8 +240,35 @@ class incangold extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
-
+       
+    function getCardIds($cards)
+    {
+        $cardIds = array();
+        foreach($cards as $card)
+        {
+            $cardIds[] = $card['id'];
+        }
+        return $cardIds;
+    }	   
     
+	function getExploringPlayers()
+    {
+        $playersIds = array();
+		
+		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
+        $playersIds = self::getCollectionFromDb( $sql );
+		
+        return $playersIds;
+    }
+	
+	function changeExploringPlayer($playerId,$exploringValue)
+    {
+        		
+		$sql = "UPDATE player SET player_exploring='$exploringValue' WHERE player_id='$playerId'";
+        self::DbQuery( $sql ); 
+		
+        return;
+    }
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
@@ -279,278 +307,28 @@ class incangold extends Table
 
     function explore()
     {
-        self::checkAction( "pass" );
-		self::notifyAllPlayers( "explores", clienttranslate( '${player_name} voted to continue exploring' ), array(
+        self::checkAction( "explore" );
+		self::notifyPlayer( "explores", clienttranslate( '${player_name} voted to continue exploring' ), array(
             'player_name' => self::getActivePlayerName(),
         ) );
+		$player_id = self::getActivePlayerId()
 
         // $this->gamestate->nextState( 'pass' );
     }
 
     function leave()
     {
-        self::checkAction( "market" );
+        self::checkAction( "leave" );
 
-        $this->validateCardCount($card_ids, 2);
-        $this->validatePlayerHasCards($card_ids, true);
-
-        self::notifyAllPlayers( "leaves", clienttranslate( '${player_name} used the market' ), array(
+                self::notifyPlayer( "leaves", clienttranslate( '${player_name} voted to leave to the camp' ), array(
             'player_name' => self::getActivePlayerName(),
         ) );
+		$player_id = self::getActivePlayerId()
 
-        //move the cards
-        $this->discardCards($card_ids);
-
-        //draw a card
-        $this->drawCards(self::getActivePlayerId(), 1);
-        if (self::getGameStateValue("gameOverTrigger") == 1)
-        {
-            $this->gamestate->nextState( 'gameEnd' );
-            return;
-        }
-        else if (self::getGameStateValue("plagueTrigger") == 1)
-        {
-            $this->gamestate->nextState( 'plague' );
-            return;
-        }
-
-        $this->gamestate->nextState( 'market' );
     }
 
-    function offering($card_ids)
-    {
-        self::checkAction( "offering" );
-
-        $this->validateCardCount($card_ids, 2);
-        $this->validatePlayerHasCards($card_ids, true);
-        
-        self::notifyAllPlayers( "offeringMade", clienttranslate( '${player_name} made an offering to Hapi' ), array(
-            'player_name' => self::getActivePlayerName(),
-        ) );
-
-        //move the cards
-        $this->discardCards($card_ids);
-        
-        $this->gamestate->nextState( 'offering' );
-    }
-
-    function plant($card_ids)
-    {
-        self::checkAction( "plant" );
-
-        $this->validatePlayerHasCards($card_ids, false);
-
-        /*When planting a new field, players may:
-        1) Plant at least two cards of all the same crop type.
-        2) Plant exactly two cards of differing crops (one of which may be planted into an existing field).
-        3) Plant any number of crops to any number of fields that already exist in front of you.
-        */
-        //any new fields of a type MUST have more cards in than an opponent, and will cause the opponents crop to be discarded
-
-        $players = self::loadPlayersBasicInfos();
-
-        //first, make an array of different types of cards played, and how many of each
-        $cards = $this->cards->getCards( $card_ids );
-        $types = array();
-        foreach($cards as $card)
-        {
-            if (array_key_exists($card['type'], $types))
-            {
-                $types[$card['type']]++;
-            }
-            else
-            {
-                $types[$card['type']] = 1;
-            }
-        }
-
-        //which play type is it?
-        //if all the cards types played exist in fields owned by this player, it is option 3
-        //else if only one type has been played and it contains 2+ cards, it is option 1        
-        //else if exactly two different cards have been played, then it is option 2
-        $allExistingFields = true;
-        
-        foreach($types as $key => $numPlayed)
-        {
-            if ($this->getFieldCount(self::getCurrentPlayerId(), $key) == 0)
-            {
-                $allExistingFields = false;
-            }
-        }
-
-        //validation part 1 - invalid cards: flooded/spec
-        $floodType = self::getGameStateValue('floodType');
-        foreach($cards as $card)
-        {
-            if ($this->isScoreCard($card))
-            {
-                throw new feException("Cannot plant a speculation card");
-            }
-            if ($card['type'] == $floodType || in_array($card['type'], $this->card_types[$floodType]['harvestTypes']))
-            {
-                throw new feException("Cannot plant a crop type that is flooded");
-            }
-        }
-
-        //Validation part 2 - number and types of cards played:
-        
-
-        if ($allExistingFields)
-        {
-            self::debug("Option 3 - adding to existing fields");
-        }
-        else //planting new fields. Either 2+ the same type, or exactly two cards of different types.
-        {
-            if (count($card_ids) < 2)
-            {
-                throw new feException("When creating new fields, two or more cards must be played");
-            }
-
-            if (count($types) > 2)
-            {
-                throw new feException("When creating new fields, you must supply exactly two cards of different types, or cards of one type only");
-            }
-
-            if (count($types) == 2 && count($card_ids) != 2)
-            {
-                throw new feException("When creating new fields, you must supply exactly two cards of different types, or cards of one type only");
-            }  
-        }
-
-        //validate part 3 - any new fields must be bigger than opposing fields of the same type
-        foreach($types as $key => $numPlayed)
-        {
-            foreach($players as $player)
-            {   
-                if ($player['player_id'] != self::getActivePlayerId() && $this->getFieldCount($player['player_id'], $key) >= $numPlayed)
-                {
-                    throw new feException($player['player_name']." has a field of equal or greater size already");
-                }
-            }
-        }
-
-        //validation passed!
-        
-        //notify players of additions to existing fields
-        foreach($types as $key => $numPlayed)
-        {
-            $cardsToAdd = array();
-            foreach($cards as $card)
-            {
-                if ($card['type'] == $key)
-                {
-                    array_push($cardsToAdd, $card);
-                }
-            }
-            if ($this->getFieldCount(self::getActivePlayerId(), $key) > 0)
-            {
-                self::notifyAllPlayers( "addToField", clienttranslate( '${player_name} adds ${numPlayed} ${resourceName} to their existing field' ), array(
-                    'resourceName' => $this->card_types[$key]["name"],
-                    'numPlayed' => $numPlayed,
-                    'cards' => $cardsToAdd,
-                    'playerId' => self::getActivePlayerId(),
-                    'player_name' => $players[self::getActivePlayerId()]['player_name']
-                    ) );
-            }
-        }
-
-        //nofify players of new fields (and removed fields)
-        //notify destroyed fields
-        foreach($types as $key => $numPlayed)
-        {
-            $cardsToAdd = array();
-            foreach($cards as $card)
-            {
-                if ($card['type'] == $key)
-                {
-                    array_push($cardsToAdd, $card);
-                }
-            }
-
-            if ($this->getFieldCount(self::getActivePlayerId(), $key) == 0)
-            {
-                self::notifyAllPlayers( "addToField", clienttranslate( '${player_name} plays ${numPlayed} ${resourceName} in a new field' ), array(
-                    'resourceName' => $this->card_types[$key]["name"],
-                     'numPlayed' => $numPlayed,
-                     'cards' => $cardsToAdd,
-                     'playerId' => self::getActivePlayerId(),
-                     'player_name' => $players[self::getActivePlayerId()]['player_name']
-                    ) );
-
-                //did you kill anyone else's field?
-                foreach($players as $player)
-                {
-                    if ($this->getFieldCount($player['player_id'], $key) > 0)
-                    {
-                        //which cards?
-                        $cards = $this->getCardsInLocationByType('field', $player['player_id'], $key);
-
-                        self::notifyAllPlayers( "destroyField", clienttranslate( '${player_name}\'s ${resourceName} field is destroyed'), array(
-                            'resourceName' => $this->card_types[$key]["name"],
-                            'cards' => $cards,
-                            'playerId' => $player['player_id'],
-                            'player_name' => $players[$player['player_id']]['player_name']
-                        ) ); 
-
-                        $cardIdsToDiscard = $this->getCardIds($cards);
-
-                        $this->cards->moveCards( $cardIdsToDiscard, "discard");                    
-                    }
-                }
-            }
-        }
-
-        //update moved cards
-        $this->cards->moveCards( $card_ids, "field", self::getActivePlayerId());
-        
-        $this->gamestate->nextState( 'plant' );
-    }
-
-    function speculate($card_ids)
-    {
-        self::checkAction( "speculate" );
-
-        //validation - invalid cards: non-spec
-        $cards = $this->cards->getCards( $card_ids );
-        if (count($cards) > 2)
-        {
-            throw new feException("You may play only one or two speculation cards");
-        }
-
-        //validation part 2 - invalid or flooded
-        $floodType = self::getGameStateValue('floodType');
-        foreach($cards as $card)
-        {
-            if (!$this->isScoreCard($card))
-            {
-                throw new feException("Only speculation cards can be used to Speculate");
-            }
-            foreach($this->card_types[$floodType]["harvestTypes"] as $harvestType)
-            {
-                if (in_array($harvestType, $this->card_types[$card['type']]["harvestTypes"]))
-                {
-                    throw new feException("Cannot speculate on a crop type that is flooded");
-                }
-            }
-        }
-
-        
-        $this->cards->moveCards( $card_ids, "field", self::getActivePlayerId());
-
-        foreach($cards as $card)
-        {
-            self::notifyAllPlayers( "addToField", clienttranslate( '${player_name} speculates on ${name}' ), array(
-                'name' => $this->card_types[$card['type']]["name"],
-                'numPlayed' => 1,
-                'cards' => array($card),
-                'playerId' => self::getActivePlayerId(),
-                'player_name' => self::getActivePlayerName()
-            ) );
-        }
-
-        $this->gamestate->nextState( 'speculate' );
-    }
     
+
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
 ////////////

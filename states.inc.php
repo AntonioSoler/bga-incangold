@@ -73,7 +73,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stexplore",
         "updateGameProgression" => true,
-        "transitions" => array("cleanpockets" => 4, "vote" => 5) //after seeing the card if the 2nd hazard is drawn or the remaining players vote to stay or to contnue exploring
+        "transitions" => array("cleanpockets" => 4, "vote" => 5) //4 after seeing the card if the 2nd hazard is drawn or 5 the remaining players vote to stay or to continue exploring
     ),
 
     4 => array(
@@ -82,7 +82,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stcleanpockets",
         "updateGameProgression" => true,
-        "transitions" => array("shufle" => 2)  // iterations++
+        "transitions" => array("reshuffle" => 2)  // iterations++
     ),
 
     5 => array(
@@ -99,7 +99,7 @@ $machinestates = array(
 	    "name" => "processLeavers", 
         "description" => clienttranslate('processing player actions acording their votes'),
         "type" => "game",
-        "action" => "stcleanpockets",
+        "action" => "stprocessLeavers",
         "updateGameProgression" => true,
         "transitions" => array( "explore" => 3,"shufle" => 2) 
     ),
