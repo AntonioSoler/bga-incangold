@@ -31,13 +31,10 @@
             <img class="gameArt" id="gameArt">
             <h3 id="iterationsText"></h3>
             <div>
-                <div id="remainingText"></div><div id="plagueToken"></div>
+                <div id="remainingText"></div>
             </div>
         </div>
-        <div id="drawPile">            
-        </div>
-        <div id="flood">
-        </div>
+        
     </div>
 
    <!-- BEGIN opponent -->
@@ -50,18 +47,6 @@
     <!-- END opponent -->
 </div>
 
-<div class="privatePlayerCards">
-    <h2 id="txtHand"></h2>
-    <div class="whiteblock">
-        <div id="playerHand">
-        </div>
-    </div>
-    <h2 id="txtStorage"></h2>
-    <div class="whiteblock">
-        <div id="playerStorage">
-        </div>
-    </div>
-</div>
 
 <script type="text/javascript">
 
