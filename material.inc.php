@@ -38,17 +38,27 @@
  //
  
  $this->card_types = array(
-	1 => array( 'name' => $this->resources["gems"    ], 'type_id' => 1, , 'isArtifact' => 0, 'isHazard' => 0),
-	2 => array( 'name' => $this->resources["tablet"  ], 'type_id' => 2, , 'isArtifact' => 1, 'isHazard' => 0),
-	3 => array( 'name' => $this->resources["idol"    ], 'type_id' => 3, , 'isArtifact' => 1, 'isHazard' => 0),
-	4 => array( 'name' => $this->resources["statue"  ], 'type_id' => 4, , 'isArtifact' => 1, 'isHazard' => 0),
-	5 => array( 'name' => $this->resources["vase"    ], 'type_id' => 5, , 'isArtifact' => 1, 'isHazard' => 0),
-	6 => array( 'name' => $this->resources["necklace"], 'type_id' => 6, , 'isArtifact' => 1, 'isHazard' => 0),
-	7 => array( 'name' => $this->resources["mummy"   ], 'type_id' => 7, , 'isArtifact' => 0, 'isHazard' => 1),
-	8 => array( 'name' => $this->resources["rocks"   ], 'type_id' => 8, , 'isArtifact' => 0, 'isHazard' => 1),
-	9 => array( 'name' => $this->resources["snake"   ], 'type_id' => 9, , 'isArtifact' => 0, 'isHazard' => 1),
-	10 => array( 'name' => $this->resources["spiders" ], 'type_id' => 10, , 'isArtifact' => 0, 'isHazard' => 1),
-	11 => array( 'name' => $this->resources["fire"    ], 'type_id' => 11, , 'isArtifact' => 0, 'isHazard' => 1)//,
+	1  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  1, 'isArtifact' => 0, 'isHazard' => 0),
+	2  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  2, 'isArtifact' => 0, 'isHazard' => 0),
+	3  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  3, 'isArtifact' => 0, 'isHazard' => 0),
+	4  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  4, 'isArtifact' => 0, 'isHazard' => 0),
+	5  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  5, 'isArtifact' => 0, 'isHazard' => 0),
+	6  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  6, 'isArtifact' => 0, 'isHazard' => 0),
+	7  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  7, 'isArtifact' => 0, 'isHazard' => 0),
+	8  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  8, 'isArtifact' => 0, 'isHazard' => 0),
+	9  => array( 'name' => $this->resources["gems"    ], 'type_id' =>  9, 'isArtifact' => 0, 'isHazard' => 0),
+	10 => array( 'name' => $this->resources["gems"    ], 'type_id' => 10, 'isArtifact' => 0, 'isHazard' => 0),
+	11 => array( 'name' => $this->resources["gems"    ], 'type_id' => 11, 'isArtifact' => 0, 'isHazard' => 0),
+	12 => array( 'name' => $this->resources["tablet"  ], 'type_id' => 12, 'isArtifact' => 1, 'isHazard' => 0),
+	13 => array( 'name' => $this->resources["idol"    ], 'type_id' => 13, 'isArtifact' => 1, 'isHazard' => 0),
+	14 => array( 'name' => $this->resources["statue"  ], 'type_id' => 14, 'isArtifact' => 1, 'isHazard' => 0),
+	15 => array( 'name' => $this->resources["vase"    ], 'type_id' => 15, 'isArtifact' => 1, 'isHazard' => 0),
+	16 => array( 'name' => $this->resources["necklace"], 'type_id' => 16, 'isArtifact' => 1, 'isHazard' => 0),
+	17 => array( 'name' => $this->resources["mummy"   ], 'type_id' => 17, 'isArtifact' => 0, 'isHazard' => 1),
+	18 => array( 'name' => $this->resources["rocks"   ], 'type_id' => 18, 'isArtifact' => 0, 'isHazard' => 1),
+	19 => array( 'name' => $this->resources["snake"   ], 'type_id' => 19, 'isArtifact' => 0, 'isHazard' => 1),
+	20 => array( 'name' => $this->resources["spiders" ], 'type_id' => 20, 'isArtifact' => 0, 'isHazard' => 1),
+	21 => array( 'name' => $this->resources["fire"    ], 'type_id' => 21, 'isArtifact' => 0, 'isHazard' => 1)//,
 );
 
 

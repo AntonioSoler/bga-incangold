@@ -63,17 +63,17 @@
     
     */
 
-    public function explore()
+    public function voteExplore()
     {
 		self::setAjaxMode();     
-		$this->game->explore();
+		$this->game->voteExplore();
 		self::ajaxResponse();    
 	}
 
-    public function leave()
+    public function voteLeave()
     {
 		self::setAjaxMode();     
-		$this->game->leave();
+		$this->game->voteLeave();
 		self::ajaxResponse();    
 	}
 

@@ -65,25 +65,44 @@
     }
 */
 
-h2 {
-    margin: 0px;
-}
-
 h2.fieldHeader {
     text-align: center;
 }
 
-div {
-    border: 0px dashed red;
-}
+#templetable{width:400px;
+	height:388px;
+	float:left;
+	border-collapse: collapse;
+	border:1}
 
-#card_zone {
-  width: 75px;            
-  height: 159px;
-}
-
-.fields, .templePanel {
-    min-height: 125px !important;
+#templecard1{
+    background-image: url('img/temple-off.png');
+    background-repeat: no-repeat;    
+    background-position: left bottom
+	}
+#templecard2{
+    background-image: url('img/temple-off.png');
+    background-repeat: no-repeat;    
+    background-position: right bottom
+	}
+#templecard3{
+    background-image: url('img/temple-off.png');
+    background-repeat: no-repeat;    
+    background-position: left center
+	}
+#templecard4{
+    background-image: url('img/temple-off.png');
+    background-repeat: no-repeat;
+    background-position: right center
+	}
+#templecard5{
+    background-image: url('img/temple-off.png');
+    background-repeat: no-repeat;
+    background-position: right top
+	}
+	
+.fields {
+    min-height: 200px !important;
     width: 320px;
     float: left;
     margin: 5px;
@@ -91,31 +110,13 @@ div {
     padding-top: 5px;
 }
 
-.templePanel {
-    height: 280px !important;
-}
-
-#remainingText {
-    float: left;
-    font-weight: bold;
-}
-
 .hidden {
     display: none;
 }
 
-
 #info {
     width: 260px;
     height: 190px;
-}
-
-.score {
-    font-weight: bold;
-}
-
-.playerField {
-    float: left;
 }
 
 .whiteblock {
@@ -135,6 +136,41 @@ div {
     margin-bottom: 0px;
 }
 
+.gem {
+    width: 30px;
+    height: 30px;
+    background-image: url('img/gem.png');
+	background-repeat: no-repeat;
+	margin: 6px;
+	float: right
+	}
 
+.tent {
+    width: 150px;
+    height: 121px;
+	margin: 10px
+	float: right;
+    background-image: url('img/tent.png');
+	background-repeat: no-repeat
+	}	
+	
+.votecard {
+    width: 115px;
+    height: 180px;
+	float: left;
+    background-image: url('img/vote-cards.jpg');
+	background-repeat: no-repeat
+	}
+#table_wrap{
+    width: 100%;
+	}
 
+.stockitem {
+    margin: 10px  
+}	
 
+.table {
+    padding: 10px;
+    width: 100%;
+    height: 270px; 
+}

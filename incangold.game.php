@@ -19,7 +19,6 @@
 
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
-
 class incangold extends Table
 {
 	function incangold( )
@@ -92,9 +91,9 @@ class incangold extends Table
         
 		self::initStat( 'table', 'cards_drawn', 0 );    // Init a table statistics
         
-		self::initStat( 'player', 'cards_seen', 0 );  // Init a player statistics (for all players)
-		self::initStat( 'player', 'actifacts_number', 0 );  // Init a player statistics (for all players)
-		self::initStat( 'player', 'gems_number', 0 );  // Init a player statistics (for all players)
+		self::initStat( 'player', 'cards_seen' , 0 );  // Init a player statistics (for all players)
+		self::initStat( 'player', 'artifacts_number' , 0 );  // Init a player statistics (for all players)
+		self::initStat( 'player', 'gems_number' , 0 );  // Init a player statistics (for all players)
 		
 		
         // setup the initial game situation here
@@ -102,69 +101,40 @@ class incangold extends Table
         self::setGameStateInitialValue( 'iterations', 0 ); //times deck has been exhausted
 
 
-        //create the card deck here. There are 35 cards
+        //create the card deck here. There are 34 cards
         // (3 of each of the 5 types of hazard) = 15
-        // 15 gems cards = 15
+        // 14 gems cards = 14
         // 5 artifacts one of each type = 5
         $cards = array();
-        $thisvalue = 0;
+
         foreach( $this->card_types as $cardType)
         {
-			if ($cardType['type_id']  == 1)
+			if ($cardType['type_id']  <= 11)
             {
-                $cardValues = array(1,2,3,4,5,5,7,7,9,11,11,13,14,15); 
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 1, 'nbr' => 1);
-                array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 2, 'nbr' => 1);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 3, 'nbr' => 1);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 4, 'nbr' => 1);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 5, 'nbr' => 2);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 7, 'nbr' => 2);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 9, 'nbr' => 1);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 11, 'nbr' => 2);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 13, 'nbr' => 1);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 14, 'nbr' => 1);
-				array_push($cards, $card);
-				$card = array( 'type' => $cardType["type_id"], 'type_arg' => 15, 'nbr' => 1);
+                $cardValues = array( 1, 2, 3, 4, 5, 7, 9,11,13,14,15); 
+				$cardNumbers = array(1, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1); 
+                $type_id = $cardType["type_id"]-1 ;
+				$card = array( 'type' => $cardType["type_id"], 'type_arg' => $cardValues[$type_id] , 'nbr' => $cardNumbers[$type_id]);
 				array_push($cards, $card);
             }
             if ($cardType['isArtifact'] == 1)
             {	
-				
-                $card = array( 'type' => $cardType["type_id"], 'type_arg' => 5, 'nbr' => 1);
+                $card = array( 'type' => $cardType["type_id"], 'type_arg' => 0, 'nbr' => 1);
                 array_push($cards, $card);
-				
-			
             }
 			if ($cardType['isHazard'] == 1)   // 3 of each hazard
             {
                 $card = array( 'type' => $cardType["type_id"], 'type_arg' => 0, 'nbr' => 3);
                 array_push($cards, $card);
-			
             }
-            
         }
         
         $this->cards->createCards( $cards, 'deck' );
-		
 		
 		self::setGameStateInitialValue( 'deckSize', $this->cards->countCardsInLocation("deck"));
 
         //shuffle 
         $this->cards->shuffle( 'deck' );
-
-        //init stats for all players
-        self::initStat('player', 'gems_number', 0);
-        self::initStat('player', 'artifacts_number', 0);
-		self::initStat('player', 'cards_seen', 0);
 
         $players = self::loadPlayersBasicInfos();
 
@@ -196,7 +166,7 @@ class incangold extends Table
         $result['players'] = self::getCollectionFromDb( $sql );
 		
 		$sql = "SELECT player_tent FROM player WHERE player_id='$current_player_id'";
-        $result['tent'] = getgetUniqueValueFromDB( $sql );
+        $result['tent'] = self::getUniqueValueFromDB( $sql );
         
         //show number of cards in deck too.
         $result['cardsRemaining'] = $this->cards->countCardsInLocation('deck');
@@ -227,11 +197,10 @@ class incangold extends Table
         // there are 5 iterations so each one is a 20% of the game + aproximately 1% for each card drawn in this iteration.
 
         $iterations = self::getGameStateValue("iterations");
-        $cardsDrawn = $this->cards->getCardsInLocation( 'table' );
-		
-        return (($iterations*20)+$cardsDrawn);
+        $cardsDrawn = $this->cards->countCardsInLocation( 'table' );
+		$result = ( $iterations * 20 ) + $cardsDrawn ;
+        return ($result);
     }
-
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Utility functions
@@ -240,36 +209,33 @@ class incangold extends Table
     /*
         In this space, you can put any utility methods useful for your game logic
     */
-       
-    function getCardIds($cards)
-    {
-        $cardIds = array();
-        foreach($cards as $card)
-        {
-            $cardIds[] = $card['id'];
-        }
-        return $cardIds;
-    }	   
-    
+
 	function getExploringPlayers()
     {
         $playersIds = array();
-		
 		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
         $playersIds = self::getCollectionFromDb( $sql );
-		
         return $playersIds;
     }
 	
-	function changeExploringPlayer($playerId,$exploringValue)
+	function setExploringPlayer ( $playerId , $exploringValue )
     {
-        		
 		$sql = "UPDATE player SET player_exploring='$exploringValue' WHERE player_id='$playerId'";
         self::DbQuery( $sql ); 
-		
-        return;
     }
-
+	
+	function setGemsPlayer ( $playerId , $location ,$value )  // 'tent' or 'field'
+    {
+		$sql = "UPDATE player SET player_'$location'='$value' WHERE player_id='$playerId'";
+        self::DbQuery( $sql ); 
+    }
+	
+	function getGemsPlayer ( $playerId , $location )  //returns the number of gems in a location
+	{
+		$sql = $sql = "SELECT player_'$location'='$value' WHERE player_id='$playerId'"
+	}
+	
+	
 //////////////////////////////////////////////////////////////////////////////
 //////////// Player actions
 //////////// 
@@ -303,31 +269,17 @@ class incangold extends Table
           
     }
     
-    */
+*/    
 
-    function explore()
+    function voteExplore()
     {
-        self::checkAction( "explore" );
-		self::notifyPlayer( "explores", clienttranslate( '${player_name} voted to continue exploring' ), array(
-            'player_name' => self::getActivePlayerName(),
-        ) );
-		$player_id = self::getActivePlayerId()
-
-        // $this->gamestate->nextState( 'pass' );
+   
     }
 
-    function leave()
+    function voteLeave()
     {
-        self::checkAction( "leave" );
-
-                self::notifyPlayer( "leaves", clienttranslate( '${player_name} voted to leave to the camp' ), array(
-            'player_name' => self::getActivePlayerName(),
-        ) );
-		$player_id = self::getActivePlayerId()
 
     }
-
-    
 
 //////////////////////////////////////////////////////////////////////////////
 //////////// Game state arguments
@@ -378,274 +330,64 @@ class incangold extends Table
     }    
     */
 
-    function stFlood()
-    {
-        //draw the next card from the deck. Display as the flood card
-        //could trigger end of game
-        self::debug("stFlood");
-        self::debug("cards left in deck : ".$this->cards->countCardInLocation('deck'));
-
-        $newCards = $this->drawCardsWithGameOverCheck(1, 'deck', 'flood', 0, false);
-        if (self::getGameStateValue("gameOverTrigger") == 1)
-        {
-            $this->gamestate->nextState('gameEnd');
-            return;
-        }
-        else if (self::getGameStateValue("plagueTrigger") == 1)
-        {
-            $this->gamestate->nextState( 'plague' );
-            return;
-        }
-        
-        //$newCard = $this->cards->pickCardForLocation( 'deck', 'floodCards');
-        //throw new feException(var_dump($newCard));
-        foreach($newCards as $newCard) //only one
-        {         
-            $floodType = $newCard['type'];
-            $floodCardId = $newCard['id'];
-        }
-
-        self::setGameStateValue( 'floodType', $floodType);
-        self::setGameStateValue( 'floodCardId', $floodCardId);
-        self::debug("set flood type : ".$floodType);
-        self::debug("set flood card id : ".$floodCardId);
-        
-        $players = self::loadPlayersBasicInfos();
-        self::notifyAllPlayers( "flood", clienttranslate( '${resourcename} is flooded' ), array(
-            'resourcename' => $this->card_types[$floodType]["name"],
-            'floodHarvestTypes' => $this->card_types[$floodType]['harvestTypes'],
-            'floodType' => $floodType,
-            'floodCardId' => $floodCardId,
-            'cardsRemaining' => $this->cards->countCardsInLocation('deck'),
-            'shufflesRemaining' => count($players) - $this->getGameStateValue('iterations') - 1
-        ) );
-
-        //get a list of speculation types which were successful
-        //iterate through types/players giving out bonus
-        //get remaining speculation cards for all players and discard
-
-        $successfulTypes = array();
-        self::debug("spec check");
-        foreach($this->card_types[$floodType]["harvestTypes"] as $harvestType)
-        {
-            self::debug("harvest type ".$harvestType);
-            foreach($this->card_types as $cardType)
-            {
-                if (in_array($harvestType, $cardType["harvestTypes"]) && $cardType["isScore"] == 1)
-                {
-                    self::debug("match");
-                    $successfulTypes[] = $cardType["type_id"];
-                }
-            }
-        }
-        self::debug("spec check done");
-
-        foreach ($players as $player)
-        {
-            $numToDraw = 0;
-
-            foreach ($successfulTypes as $type)
-            {
-                $cards = $this->getCardsInLocationByType( 'field', $player['player_id'], $type);
-                foreach($cards as $card)
-                {
-                    self::notifyAllPlayers( "speculateSuccess", clienttranslate( '${player_name} correctly speculates on ${resourcename}' ), array(
-                        'resourcename' => $this->card_types[$floodType]["name"],
-                        'player_name' => $player['player_name'],
-                        'playerId' => $player['player_id'],
-                        'card' => $card,
-                    ) );
-                    
-                    $this->cards->moveCard( $card['id'], "discard");
-                    
-                    $numToDraw += 3;
-                }
-            }
-
-            if ($numToDraw > 0)
-            {
-                $this->drawCards($player['player_id'], $numToDraw);
-                if (self::getGameStateValue("gameOverTrigger") == 1)
-                {
-                    $this->gamestate->nextState( 'gameEnd' );
-                    return;
-                }
-                if (self::getGameStateValue("plagueTrigger") == 1)
-                {
-                    $this->gamestate->nextState( 'plague' );
-                    return;
-                }
-            }
-        }
-
-        //discard any incorrect speculation cards
-        foreach ($players as $player)
-        {
-            $toDiscard = array();
-            $cardsToDiscard = array();
-
-            foreach ($this->card_types as $cardType)
-            {
-                if ($cardType['isScore'] == 1)
-                {
-                    $cards = $this->getCardsInLocationByType( 'field', $player['player_id'], $cardType['type_id']);
-                    foreach($cards as $card)
-                    {
-                        array_push($toDiscard, $card['id']);
-                        array_push($cardsToDiscard, $card);
-                    }
-                }
-            }
-
-            if (count($toDiscard) > 0)
-            {
-                $this->cards->moveCards( $toDiscard, "discard");
-
-                self::notifyAllPlayers( "speculateFail", clienttranslate( '${player_name} discards failed speculation cards' ), array(
-                    'player_name' => $player['player_name'],
-                    'playerId' => $player['player_id'],
-                    'cards' => $cardsToDiscard,
-                ) );
-            }
-        }
-
-        //next state
-        $this->gamestate->nextState('harvest');
-    }
-
-    function stHarvest()
-    {
-        $floodType = self::getGameStateValue( 'floodType');
-        $harvestTypes = $this->card_types[$floodType]["harvestTypes"];
-
-        //add card to storage based on current flood card
-        $anyHarvested = false;
-        $players = self::loadPlayersBasicInfos();
-        foreach($harvestTypes as $harvestType)
-        {
-            $harvested = false;
-            foreach($players as $player)
-            {
-                if ($this->getFieldCount($player['player_id'], $harvestType) > 0) //each flooded type can be harvested only one.
-                {
-                    //harvest! find the card
-                    $cards = $this->getCardsInLocationByType( 'field', $player['player_id'], $harvestType);
-                    foreach($cards as $card)
-                    {
-                        if (!$harvested)
-                        {
-                            self::notifyAllPlayers( "harvest", clienttranslate( '${player_name} harvests ${resourcename}' ), array(
-                                'resourcename' => $this->card_types[$harvestType]["name"],
-                                'player_name' => $player['player_name'],
-                                'playerId' => $player['player_id'],
-                                'card' => $card
-                            ) );
-        
-                            $harvested = true;
-                            $anyHarvested = true;
-                            $this->cards->moveCard( $card['id'], "storage", $player['player_id']);    
-                        }
-                    }               
-                }
-            }
-        }
-
-        if (!$anyHarvested)
-        {
-            self::notifyAllPlayers( "harvest", clienttranslate( 'Nobody harvests ${resourcename}' ), array(
-                'resourcename' => $this->card_types[$floodType]["name"],
-            ) );
-        }
-        
-        //next state
-        $this->gamestate->nextState('');
-    }
-
-    function stPlague()
-    {
-        self::setGameStateValue("plagueTrigger", 0);
-        
-        //a bit like a harvest gone wrong.
-
-        $max = 0;
-        $players = self::loadPlayersBasicInfos();
-        foreach($players as $player)
-        {
-            foreach($this->card_types as $cardType)
-            {
-                if ($cardType['isScore'] == 0 && $cardType['isHazard'] == 0)
-                {
-                    $count = $this->getFieldCount($player['player_id'], $cardType['type_id']);
-                    $max = max($max, $count);
-                }
-            }
-        }
-
-        if ($max > 0)
-        {
-            foreach($players as $player)
-            {
-                foreach($this->card_types as $cardType)
-                {
-                    $count = $this->getFieldCount($player['player_id'], $cardType['type_id']);
-                    if ($cardType['isScore'] == 0 && $cardType['isHazard'] == 0 && $count == $max)
-                    {
-                        $cards = $this->getCardsInLocationByType('field', $player['player_id'], $cardType['type_id']);
-
-                        self::notifyAllPlayers( "destroyField", clienttranslate( 'The Plague of Locusts wipes out the ${resource_name} field of ${player_name}' ), array(
-                            'resource_name' => $cardType["name"],
-                            'playerId' => $player['player_id'],
-                            'player_name' => $player['player_name'],
-                            'cards' => $cards,
-                        ) );
-
-                        $cardIdsToDiscard = $this->getCardIds($cards);
-
-                        $this->cards->moveCards( $cardIdsToDiscard, "discard");                    
-
-                    }
-                }
-            }
-        }
-        else
-        {
-            self::notifyAllPlayers( "plagueFail", clienttranslate( 'The Plague of Locusts has no effect' ), array() );
-        }
-
-        self::notifyAllPlayers( "plagueEnd", "", array() );
-
-        $this->gamestate->nextState('');
-    }
-
-    function stDrawCards()
-    {
-        //add two cards to the player's hand.
-        $this->drawCards(self::getActivePlayerId(), 2);
-        if (self::getGameStateValue("gameOverTrigger") == 1)
-        {
-            $this->gamestate->nextState( 'gameEnd' );
-            return;
-        }
-        else if (self::getGameStateValue("plagueTrigger") == 1)
-        {
-            $this->gamestate->nextState( 'plague' );
-            return;
-        }
-
-        //next state
-        $this->gamestate->nextState('nextPlayer');
-    }
-
-    function stNextPlayer()
-    {
-        //set the next active player
-        $this->activeNextPlayer();
-
-        self::giveExtraTime(self::getCurrentPlayerId());
-
-        //next state
-        $this->gamestate->nextState('');
-    }
+    function streshuffle()
+	{
+	$this->cards->moveAllCardsInLocation( 'table', 'deck' );  //collect all cards to the deck and reshuffle
+	$this->cards->shuffle( 'deck' );
+	
+	$players = self::loadPlayersBasicInfos();
+	foreach( $players as $player_id => $player )
+	{
+		setExploringPlayer($player_id , 1);   // All players are now exploring
+	}
+	$iterations = self::getGameStateValue("iterations");
+	$iterations++ ;
+	self::setGameStateInitialValue( 'iterations', $iterations )
+	if ( $iterations > 5 ) 
+		{
+			$this->gamestate->nextState( 'gameEndScoring' );
+		}
+	else
+		{
+			$this->gamestate->nextState( 'explore' );
+		}
+	}
+	
+	function stexplore()
+	{
+		
+	$players = self::loadPlayersBasicInfos();
+	for ($i = 1; $i <= 20; $i++) 
+		{
+			
+		$TopCard = $this->cards->getCardOnTop( 'deck' ) ;
+			if ( $TopCard['type'] <= 11 )
+				{
+				$gems = $TopCard['type_arg'] % sizeof( $players );
+				}
+			else
+				{
+				$gems=0;	
+				}
+		$this->cards->pickCardForLocation( 'deck', 'table', $gems );
+		}
+	$this->gamestate->nextState( 'vote' );	
+	}
+	
+	function stcleanpockets()
+	{
+		
+	}
+	
+	function stvote()
+	{
+		
+	}
+	
+	function stprocessLeavers()
+	{
+		
+	}
 
     function displayScores()
     {
@@ -661,12 +403,13 @@ class incangold extends Table
         
         //left hand col
         $table[0][] = array( 'str' => ' ', 'args' => array(), 'type' => 'header');
-        $table[1][] = $this->resources["papyrus"];
-        $table[2][] = $this->resources["wheat"];
-        $table[3][] = $this->resources["lettuce"];
-        $table[4][] = $this->resources["castor"];
-        $table[5][] = $this->resources["flax"];
-        $table[6][] = array( 'str' => '<span class=\'score\'>Score</span>', 'args' => array(), 'type' => '');
+        $table[1][] = $this->resources["gems"    ];
+        $table[2][] = $this->resources["tablet"  ];
+        $table[3][] = $this->resources["idol"    ];
+        $table[4][] = $this->resources["statue"  ];
+        $table[5][] = $this->resources["vase"    ];
+        $table[6][] = $this->resources["necklace"];
+		$table[7][] = array( 'str' => '<span class=\'score\'>Score</span>', 'args' => array(), 'type' => '');
 
         foreach( $players as $player_id => $player )
         {

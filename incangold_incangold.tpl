@@ -27,24 +27,49 @@
 
 <div id="playArea">
     <div class="templePanel">
-        <div id="info">
-            <img class="gameArt" id="gameArt">
-            <h3 id="iterationsText"></h3>
-            <div>
-                <div id="remainingText"></div>
-            </div>
-        </div>
-        
+        <div id="temple">
+		<table id="templetable"  >
+			<tbody>
+				<tr>
+					<td id="templecard5" colspan="2" > </td>					
+				</tr>
+				<tr>
+					<td id="templecard3"> </td>
+					<td id="templecard4"> </td>
+				</tr>
+				<tr>
+					<td id="templecard1"> </td>
+					<td id="templecard2"> </td>
+				</tr> </tbody>
+		</table>
+		</div>
     </div>
-
-   <!-- BEGIN opponent -->
-   <div id="playerFields_{PLAYER_ID}" class="whiteblock fields">
-      <h2 class="fieldHeader">{PLAYER_NAME}</h2>
-		<!-- BEGIN field -->
-		<div id="playerFields_{PLAYER_ID}_{FIELD_ID}" class="playerField"></div>
-		<!-- END field -->		
+    &nbsp;
+   <!-- BEGIN camp -->
+   <div id="playerCamp_{PLAYER_ID}" class="whiteblock fields">
+       <table id="tablecamp_{PLAYER_ID}" width="100%" >
+			<tbody>
+				<tr>
+					<td rowspan="3" > <div id="votecard_{PLAYER_ID}" class="votecard"></div> </td>
+					<td ><h2 class="Header" style="color:#{PLAYER_COLOR};"  >{PLAYER_NAME}</h2></td>
+				</tr>
+				<tr>
+					<td > <div id="tent_{PLAYER_ID}" class="tent"></div> </td>
+				</tr>
+				<tr>
+					<td> <div id="gem_icon_{PLAYER_ID}" class="gem"></div></td>
+				</tr> 
+			</tbody>
+		</table> 
 	</div>
-    <!-- END opponent -->
+    <!-- END camp -->
+    <br class="clear">
+	
+	<div id="table_wrap" >
+	<h2>{TABLE}</h2> 
+	<div id="table" class="whiteblock table"></div>
+	</div>
+	
 </div>
 
 
@@ -54,9 +79,12 @@
 
 /*
 // Example:
-var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${id}"></div>';
+var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${id}" style="position:absolute; top: ${x}px; left: ${y}px;" ></div>';
+
 
 */
+
+var jstpl_gem='<div class="gem" id="gem_${id} style="margin-top: ${x}px; margin-left: ${y}px;"></div>';
 
 var jstpl_cardontable = '<div class="card" id="card_${card_id}" style="position:absolute; height: ${height}px; width: ${width}px; background-position:-${x}px -${y}px;z-index:${z};"></div>';
 

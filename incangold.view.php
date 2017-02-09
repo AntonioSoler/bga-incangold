@@ -75,24 +75,15 @@
         }
         
         */
+		
+		$this->tpl['TABLE'] = self::_("Table");
+		$this->page->begin_block( "incangold_incangold", "camp" );
+     	foreach( $players as $player )	{
+           
 
-        $this->page->begin_block( "incangold_incangold", "field" );
-        $this->page->begin_block( "incangold_incangold", "opponent" );
-		foreach( $players as $player )	{
-            // Important: nested block must be reset here, otherwise the second player miniboard will
-            //  have 8 card_place, the third will have 12 card_place, and so one...
-            $this->page->reset_subblocks( 'field' );
-
-            for( $i=1; $i<=16; $i++ )
-            {
-                $this->page->insert_block( "field", array(
-                    'PLAYER_ID' => $player['player_id'],
-                    'FIELD_ID' => $i
-                ));
-            }
-
-            $this->page->insert_block( "opponent", array( "PLAYER_ID" => $player['player_id'],
-			                                            "PLAYER_NAME" => $player['player_name']
+            $this->page->insert_block( "camp", array( "PLAYER_ID" => $player['player_id'],
+			                                            "PLAYER_NAME" => $player['player_name'],
+														"PLAYER_COLOR" => $player['player_color']
                                                       ));
 		}
 
