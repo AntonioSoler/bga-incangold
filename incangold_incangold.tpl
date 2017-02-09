@@ -84,9 +84,9 @@ var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${id}" styl
 
 */
 
-var jstpl_gem='<div class="gem" id="gem_${id} style="margin-top: ${x}px; margin-left: ${y}px;"></div>';
+var jstpl_gem='<div class="gem" id="gem_${id}" ></div>';
 
-var jstpl_cardontable = '<div class="card" id="card_${card_id}" style="position:absolute; height: ${height}px; width: ${width}px; background-position:-${x}px -${y}px;z-index:${z};"></div>';
+var jstpl_cardontable = '<div class="votecard" id="card_${card_id}" style="position:absolute; height: ${height}px; width: ${width}px; background-position:-${x}px -${y}px;z-index:${z};"></div>';
 
 </script>  
 

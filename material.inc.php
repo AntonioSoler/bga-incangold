@@ -29,9 +29,9 @@
     "vase"     => clienttranslate('vase'),
     "necklace" => clienttranslate('necklace'),
     "mummy"    => clienttranslate('mummy'),
-	"rocks"    => clienttranslate('rocks'),
 	"snake"    => clienttranslate('snake'),
 	"spiders"  => clienttranslate('spiders'),
+	"rocks"    => clienttranslate('rocks'),
 	"fire"     => clienttranslate('fire')
 );
 
@@ -55,9 +55,9 @@
 	15 => array( 'name' => $this->resources["vase"    ], 'type_id' => 15, 'isArtifact' => 1, 'isHazard' => 0),
 	16 => array( 'name' => $this->resources["necklace"], 'type_id' => 16, 'isArtifact' => 1, 'isHazard' => 0),
 	17 => array( 'name' => $this->resources["mummy"   ], 'type_id' => 17, 'isArtifact' => 0, 'isHazard' => 1),
-	18 => array( 'name' => $this->resources["rocks"   ], 'type_id' => 18, 'isArtifact' => 0, 'isHazard' => 1),
-	19 => array( 'name' => $this->resources["snake"   ], 'type_id' => 19, 'isArtifact' => 0, 'isHazard' => 1),
-	20 => array( 'name' => $this->resources["spiders" ], 'type_id' => 20, 'isArtifact' => 0, 'isHazard' => 1),
+	18 => array( 'name' => $this->resources["snake"   ], 'type_id' => 18, 'isArtifact' => 0, 'isHazard' => 1),
+	19 => array( 'name' => $this->resources["spiders" ], 'type_id' => 19, 'isArtifact' => 0, 'isHazard' => 1),
+	20 => array( 'name' => $this->resources["rocks"   ], 'type_id' => 20, 'isArtifact' => 0, 'isHazard' => 1),
 	21 => array( 'name' => $this->resources["fire"    ], 'type_id' => 21, 'isArtifact' => 0, 'isHazard' => 1)//,
 );
 

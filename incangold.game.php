@@ -170,14 +170,12 @@ class incangold extends Table
         
         //show number of cards in deck too.
         $result['cardsRemaining'] = $this->cards->countCardsInLocation('deck');
-        $result['shufflesRemaining'] = 4 - $this->getGameStateValue('iterations');
+        $result['iterations'] = $this->getGameStateValue('iterations');
                 
         //fields of all players are visible 
 		
         $result['table'] = $this->cards->getCardsInLocation( 'table' );
               
-
-        
         return $result;
     }
 
@@ -198,7 +196,7 @@ class incangold extends Table
 
         $iterations = self::getGameStateValue("iterations");
         $cardsDrawn = $this->cards->countCardsInLocation( 'table' );
-		$result = ( $iterations * 20 ) + $cardsDrawn ;
+		$result = ( ($iterations -1) * 20 ) + $cardsDrawn ;
         return ($result);
     }
 
@@ -214,7 +212,8 @@ class incangold extends Table
     {
         $playersIds = array();
 		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
-        $playersIds = self::getCollectionFromDb( $sql );
+        $playersIds = self::getObjectListFromDB( $sql );
+		self::debug ("******* getExploringPlayers   ".$playersIds);
         return $playersIds;
     }
 	
@@ -232,7 +231,9 @@ class incangold extends Table
 	
 	function getGemsPlayer ( $playerId , $location )  //returns the number of gems in a location
 	{
-		$sql = $sql = "SELECT player_'$location'='$value' WHERE player_id='$playerId'"
+		$sql = $sql = "SELECT player_'$location' FROM player WHERE player_id='$playerId'";
+		$value=self::getUniqueValueFromDB( $sql );
+		return $value;
 	}
 	
 	
@@ -338,11 +339,11 @@ class incangold extends Table
 	$players = self::loadPlayersBasicInfos();
 	foreach( $players as $player_id => $player )
 	{
-		setExploringPlayer($player_id , 1);   // All players are now exploring
+		$this->setExploringPlayer($player_id , 1);   // All players are now exploring
 	}
 	$iterations = self::getGameStateValue("iterations");
 	$iterations++ ;
-	self::setGameStateInitialValue( 'iterations', $iterations )
+	self::setGameStateInitialValue( 'iterations', $iterations );
 	if ( $iterations > 5 ) 
 		{
 			$this->gamestate->nextState( 'gameEndScoring' );
@@ -352,41 +353,64 @@ class incangold extends Table
 			$this->gamestate->nextState( 'explore' );
 		}
 	}
-	
+/////////////////////////////////	
 	function stexplore()
-	{
-		
-	$players = self::loadPlayersBasicInfos();
-	for ($i = 1; $i <= 20; $i++) 
+	{		
+	$exploringPlayers = $this->getExploringPlayers();
+	for ($i = 1; $i <= 10; $i++) 
 		{
 			
 		$TopCard = $this->cards->getCardOnTop( 'deck' ) ;
 			if ( $TopCard['type'] <= 11 )
 				{
-				$gems = $TopCard['type_arg'] % sizeof( $players );
+				$gems = $TopCard['type_arg'] % sizeof( $exploringPlayers );
 				}
 			else
 				{
 				$gems=0;	
 				}
-		$this->cards->pickCardForLocation( 'deck', 'table', $gems );
+		$PlayedCard = $this->cards->pickCardForLocation( 'deck', 'table', $gems );
+		} 
+	$thisTypeid = $PlayedCard['type']; 	
+	$cardPlayed	= $this->card_types[$thisTypeid]['name'];
+	if  ( $PlayedCard['type_arg'] > 0) 
+	{
+		$cardPlayed = $cardPlayed +" "+ $PlayedCard['type_arg'] ;
+	}
+		
+	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn and it is ${card_played_name}' ), array(
+                'card_played' => $TopCard,
+				'card_played_name' => $cardPlayed    
+            ) );
+	
+	// self::debug("*********** exploringPlayers : ".$exploringPlayers );
+
+	$gems = floor( $PlayedCard['type_arg'] / sizeof( $exploringPlayers ));
+	if ( $gems > 0 ) 
+		{ 
+			self::notifyAllPlayers( "explorersObtainGems", clienttranslate( 'All the explorers in the temple obtain ${gems}' ), array(
+                'gems' => $gems   
+            ) );
 		}
 	$this->gamestate->nextState( 'vote' );	
 	}
-	
+/////////////////////////////////	
 	function stcleanpockets()
 	{
 		
 	}
-	
+//////////////////////////////////	
 	function stvote()
 	{
+		$this->gamestate->setAllPlayersMultiactive();
+		//$exploringPlayers = $this->getExploringPlayers();
+		//$this->gamestate->setPlayersMultiactive( $exploringPlayers , 'processLeavers' );
 		
 	}
 	
 	function stprocessLeavers()
 	{
-		
+			$this->gamestate->nextState( 'explore' );
 	}
 
     function displayScores()

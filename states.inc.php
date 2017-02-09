@@ -65,7 +65,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "streshuffle",
         "updateGameProgression" => true,
-        "transitions" => array( "explore" => 3, "gameEnd" => 90 ) //game ends if iterations are 5
+        "transitions" => array( "explore" => 3, "gameEndScoring" => 90 ) //game ends if iterations are 5
     ),
 
     3 => array(
@@ -90,12 +90,13 @@ $machinestates = array(
         "description" => clienttranslate('Players must vote to stay exploring or to leave to camp'),
         "descriptionmyturn" => clienttranslate('${you} must vote to stay exlporing or to leave to camp'),
         "type" => "multipleactiveplayer",
-        "possibleactions" => array( "explore", "leave" ),
+		"action" => "stvote",
+        "possibleactions" => array( "voteExplore", "voteLeave" ),
         "updateGameProgression" => true,
-        "transitions" => array( "processLeavers" => 6 ) //iteration ends if no players are still exploring
+        "transitions" => array( "processLeavers" => 6   ) //iteration ends if no players are still exploring
     ),
 	
-	4 => array(
+	6 => array(
 	    "name" => "processLeavers", 
         "description" => clienttranslate('processing player actions acording their votes'),
         "type" => "game",

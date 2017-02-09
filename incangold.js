@@ -76,15 +76,18 @@ function (dojo, declare) {
 			for( var i in this.gamedatas.table )
             {
                 var card = this.gamedatas.table[i];
-                this.table.addToStockWithId( card.type , card.id ,  'temple'  );
+                this.table.addToStockWithId( card.type , card.id ,  'templecard'+gamedatas.iterations  );
 				
 				 for ( var g=card.location_arg ; g>0 ; g-- )
 				{
-					this.placeGem( i+"_"+g, "table_item_"+i   ) ;
-					
+					this.placeGem( i+"_"+g, "table_item_"+i   ) ;					
 				}
             }
- 
+			for ( var i=1;i<=gamedatas.iterations;i++ )
+			{
+					document.getElementById("templecard"+i).className = "on";
+			}
+            
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -185,14 +188,11 @@ function (dojo, declare) {
         */
         /* fsno and fstype controls the css style to load, boardloc controls on which predefine div should the tile slides to. */
 
-        placeGem: function ( gem_id, destination) {
-			var x = Math.floor((Math.random() * 100) + 10);
-			var y = Math.floor((Math.random() * 100) + 10);
-            dojo.place(
+        placeGem: function ( gem_id, destination) 
+		{
+		dojo.place(
                 this.format_block('jstpl_gem', {
-					x: x,
-					y: y,
-                    id: gem_id
+                    id: gem_id ,
                 }), destination);
         },
 		
