@@ -212,7 +212,8 @@ class incangold extends Table
     {
         $playersIds = array();
 		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
-        $playersIds = self::getObjectListFromDB( $sql );
+        //$playersIds = self::getObjectListFromDB( $sql );
+		$playersIds = self::getCollectionFromDB( $sql );
 		self::debug ("******* getExploringPlayers   ".$playersIds);
         return $playersIds;
     }
@@ -402,12 +403,18 @@ class incangold extends Table
 //////////////////////////////////	
 	function stvote()
 	{
-		$this->gamestate->setAllPlayersMultiactive();
-		//$exploringPlayers = $this->getExploringPlayers();
-		//$this->gamestate->setPlayersMultiactive( $exploringPlayers , 'processLeavers' );
-		
-	}
-	
+		    $activePlayersId = array();
+			$getExploringPlayers = $this->getExploringPlayers() ;
+            /* $players = $this->loadPlayersBasicInfos();*/
+			
+            foreach($getExploringPlayers as $playerId => $player) 
+			{
+						$activePlayersId[] = $playerId;
+            }
+            $this->gamestate->setPlayersMultiactive($activePlayersId, 'processleavers');
+        
+    }
+
 	function stprocessLeavers()
 	{
 			$this->gamestate->nextState( 'explore' );
