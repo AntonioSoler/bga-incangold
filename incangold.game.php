@@ -158,7 +158,8 @@ class incangold extends Table
         $result = array( 'players' => array() );
     
         $current_player_id = self::getCurrentPlayerId();    // !! We must only return informations visible by this player !!
-        $players = self::loadPlayersBasicInfos();
+        $result['current_player_id'] = $current_player_id;
+		$players = self::loadPlayersBasicInfos();
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
@@ -213,26 +214,35 @@ class incangold extends Table
         $playersIds = array();
 		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
         //$playersIds = self::getObjectListFromDB( $sql );
-		$playersIds = self::getCollectionFromDB( $sql );
+		$playersIds = self::getCollectionFromDB( $sql );	
+		self::debug ("******* getExploringPlayers   ".$playersIds);
+        return $playersIds;
+    }
+	function getExploringPlayersList()
+    {
+        $playersIds = array();
+		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
+        $playersIds = self::getObjectListFromDB( $sql );
+		//$playersIds = self::getCollectionFromDB( $sql );	
 		self::debug ("******* getExploringPlayers   ".$playersIds);
         return $playersIds;
     }
 	
 	function setExploringPlayer ( $playerId , $exploringValue )
     {
-		$sql = "UPDATE player SET player_exploring='$exploringValue' WHERE player_id='$playerId'";
+		$sql = "UPDATE player SET player_exploring=$exploringValue WHERE player_id=$playerId";
         self::DbQuery( $sql ); 
     }
 	
 	function setGemsPlayer ( $playerId , $location ,$value )  // 'tent' or 'field'
     {
-		$sql = "UPDATE player SET player_'$location'='$value' WHERE player_id='$playerId'";
+		$sql = "UPDATE player SET player_$location=$value WHERE player_id=$playerId";
         self::DbQuery( $sql ); 
     }
 	
 	function getGemsPlayer ( $playerId , $location )  //returns the number of gems in a location
 	{
-		$sql = $sql = "SELECT player_'$location' FROM player WHERE player_id='$playerId'";
+		$sql = $sql = "SELECT player_$location FROM player WHERE player_id=$playerId";
 		$value=self::getUniqueValueFromDB( $sql );
 		return $value;
 	}
@@ -275,7 +285,8 @@ class incangold extends Table
 
     function voteExplore()
     {
-   
+	$current_player_id = self::getCurrentPlayerId(); 	
+	$this->gamestate->setPlayerNonMultiactive( $current_player_id, '' );
     }
 
     function voteLeave()
@@ -358,40 +369,47 @@ class incangold extends Table
 	function stexplore()
 	{		
 	$exploringPlayers = $this->getExploringPlayers();
-	for ($i = 1; $i <= 10; $i++) 
+	for ($i = 1; $i <= 1; $i++) 
 		{
 			
-		$TopCard = $this->cards->getCardOnTop( 'deck' ) ;
-			if ( $TopCard['type'] <= 11 )
+		$TopCard = $this->cards->getCardOnTop( 'deck' ) ; //look at the top card of the deck
+			if ( $TopCard['type'] <= 11 )  // is it a gems card?
 				{
-				$gems = $TopCard['type_arg'] % sizeof( $exploringPlayers );
+				$gems = $TopCard['type_arg'] % sizeof( $exploringPlayers );  //calculate the remaining gems on the card
 				}
 			else
 				{
 				$gems=0;	
 				}
-		$PlayedCard = $this->cards->pickCardForLocation( 'deck', 'table', $gems );
+		$PlayedCard = $this->cards->pickCardForLocation( 'deck', 'table', $gems ); //  Draw a card
+		$gemsSplit = floor( $PlayedCard['type_arg'] / sizeof( $exploringPlayers )); //and gems to split on the players
+		foreach($exploringPlayers as $player_id => $player )    // Add gems to the fields
+			{  
+				$thisid = $player['id'] ;
+				$temp = $this->getGemsPlayer( $thisid  , 'field' )  ;
+				$this->setGemsPlayer( $thisid , 'field' , $temp + $gemsSplit ) ;
+			}
 		} 
 	$thisTypeid = $PlayedCard['type']; 	
-	$cardPlayed	= $this->card_types[$thisTypeid]['name'];
+	$cardPlayedName	= $this->card_types[$thisTypeid]['name'];
 	if  ( $PlayedCard['type_arg'] > 0) 
 	{
-		$cardPlayed = $cardPlayed +" "+ $PlayedCard['type_arg'] ;
+		$cardPlayedName = $cardPlayedName ." ". $PlayedCard['type_arg'] ;
 	}
-		
+	$cardsontable = $this->cards->countCardInLocation( 'table' );
 	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn and it is ${card_played_name}' ), array(
-                'card_played' => $TopCard,
-				'card_played_name' => $cardPlayed    
+                'card_played' => $PlayedCard,
+				'card_played_name' => $cardPlayedName
             ) );
 	
-	// self::debug("*********** exploringPlayers : ".$exploringPlayers );
-
-	$gems = floor( $PlayedCard['type_arg'] / sizeof( $exploringPlayers ));
-	if ( $gems > 0 ) 
+	if ( $gemsSplit > 0 ) 
 		{ 
-			self::notifyAllPlayers( "explorersObtainGems", clienttranslate( 'All the explorers in the temple obtain ${gems}' ), array(
-                'gems' => $gems   
+			self::notifyAllPlayers( "ObtainGems", clienttranslate( 'All the explorers in the temple obtain ${gems}' ), array(
+                'gems' => $gemsSplit,
+                'card_played' => $PlayedCard,
+                'players' => $exploringPlayers
             ) );
+			
 		}
 	$this->gamestate->nextState( 'vote' );	
 	}

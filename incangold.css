@@ -146,7 +146,10 @@ h2.fieldHeader {
     background-image: url('img/gem.png');
 	background-repeat: no-repeat;
 	margin: 6px;
-	float: right
+	float: right;
+	font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+    text-align: center
 	}
 
 .tent {
@@ -154,8 +157,13 @@ h2.fieldHeader {
     height: 121px;
 	margin: 10px
 	float: right;
+	line-height: 60px; /* <-- this is what you must define */
+    vertical-align: middle;
     background-image: url('img/tent.png');
-	background-repeat: no-repeat
+	background-repeat: no-repeat;
+	font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+    text-align: center
 	}	
 	
 .votecard {

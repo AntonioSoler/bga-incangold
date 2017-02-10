@@ -53,13 +53,17 @@ function (dojo, declare) {
             console.log( "Starting game setup" );
             
             // Setting up player boards
-            for( var player_id in gamedatas.players )
+            for( var player in this.gamedatas.players )
             {
-                var player = gamedatas.players[player_id];
-                         
+                
+                document.getElementById("gem_icon_"+this.gamedatas.players[player].id).innerHTML=this.gamedatas.players[player].field;
+				 
                 // TODO: Setting up players boards if needed
             }
-            
+            document.getElementById("tent_"+this.gamedatas.current_player_id).innerHTML=this.gamedatas.tent;
+			
+  
+			
             // TODO: Set up your game interface here, according to "gamedatas"
             this.table = new ebg.stock();
             this.table.create( this, $('table'), this.cardwidth, this.cardheight );
@@ -76,11 +80,11 @@ function (dojo, declare) {
 			for( var i in this.gamedatas.table )
             {
                 var card = this.gamedatas.table[i];
-                this.table.addToStockWithId( card.type , card.id ,  'templecard'+gamedatas.iterations  );
+                this.table.addToStockWithId( card.type , "tablecard_"+card.id ,  'templecard'+this.gamedatas.iterations  );
 				
 				 for ( var g=card.location_arg ; g>0 ; g-- )
 				{
-					this.placeGem( i+"_"+g, "table_item_"+i   ) ;					
+					this.placeGem( card.id+"_"+g, "table_item_tablecard_"+card.id   ) ;					
 				}
             }
 			for ( var i=1;i<=gamedatas.iterations;i++ )
@@ -88,6 +92,15 @@ function (dojo, declare) {
 					document.getElementById("templecard"+i).className = "on";
 			}
             
+			addTooltipToClass( "templePanel", _( "This idicates the number of expeditions remaining" ), "" );
+			
+			addTooltipToClass( "tent", _( "Here is where you safely store your gems after each expedition, once in your tent the gems cannot be lost " ), "" );
+			
+			addTooltipToClass( "gems", _( "gems are divided among the players exploring the temple " ), "" );
+			
+			addTooltipToClass( "votecard", _( "each round players can vote to leave or to stay exploring, the leavers can pick the gems rest of the gems left on the cards " ), "" );
+			
+			
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
 
@@ -161,6 +174,10 @@ function (dojo, declare) {
             {            
                 switch( stateName )
                 {
+			    case 'vote':
+                    this.addActionButton( 'explore_button', _('Explore the temple'), 'voteExplore' );
+					this.addActionButton( 'leave_button', _('Leave to camp'), 'voteLeave' ); 
+                    break;
 /*               
                  Example:
  
@@ -194,6 +211,20 @@ function (dojo, declare) {
                 this.format_block('jstpl_gem', {
                     id: gem_id ,
                 }), destination);
+        },
+		
+		moveGem: function ( source, destination ,amount) 
+		{
+			var animspeed=300;
+			for (var i = 1 ; i<= amount ; i++)
+			{
+				this.slideTemporaryObject( '<div class="gem"></div>', 'page-content', source, destination, 2000 , animspeed );
+			}
+			for (var i = 1 ; i<= amount ; i++)
+			{
+				document.getElementById(destination).innerHTML++;
+				animspeed += 300;
+			}
         },
 		
         ///////////////////////////////////////////////////
@@ -244,7 +275,55 @@ function (dojo, declare) {
         
         */
 
+		voteExplore: function( evt )
+        {
+            console.log( 'voteExplore' );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+
+            // Check that this action is possible (see "possibleactions" in states.inc.php)
+            if( ! this.checkAction( 'voteExplore' ) )
+            {   return; }
+
+            this.ajaxcall( "/incangold/incangold/voteExplore.html", {  }, 
+                         this, function( result ) {
+                            
+                            // What to do after the server call if it succeeded
+                            // (most of the time: nothing)
+                            
+                         }, function( is_error) {
+
+                            // What to do after the server call in anyway (success or failure)
+                            // (most of the time: nothing)
+
+                         } );        
+        },
         
+		voteLeave: function( evt )
+        {
+            console.log( 'voteLeave' );
+            
+            // Preventing default browser reaction
+            dojo.stopEvent( evt );
+
+            // Check that this action is possible (see "possibleactions" in states.inc.php)
+            if( ! this.checkAction( 'voteLeave' ) )
+            {   return; }
+
+            this.ajaxcall( "/incangold/incangold/voteLeave.html", {  }, 
+                         this, function( result ) {
+                            
+                            // What to do after the server call if it succeeded
+                            // (most of the time: nothing)
+                            
+                         }, function( is_error) {
+
+                            // What to do after the server call in anyway (success or failure)
+                            // (most of the time: nothing)
+
+                         } );        
+        },
         ///////////////////////////////////////////////////
         //// Reaction to cometD notifications
 
@@ -264,13 +343,15 @@ function (dojo, declare) {
             // TODO: here, associate your game notifications with local methods
             
             // Example 1: standard notification handling
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
+            //dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
             
             // Example 2: standard notification handling + tell the user interface to wait
             //            during 3 seconds after calling the method in order to let the players
             //            see what is happening in the game.
-            // dojo.subscribe( 'cardPlayed', this, "notif_cardPlayed" );
-            // this.notifqueue.setSynchronous( 'cardPlayed', 3000 );
+            dojo.subscribe( 'playCard', this, "notif_cardPlayed" );
+			this.notifqueue.setSynchronous( 'playCard', 2000 );
+			dojo.subscribe( 'ObtainGems', this, "notif_ObtainGems" );
+            this.notifqueue.setSynchronous( 'ObtainGems', 2000 );
             // 
         },  
         
@@ -278,17 +359,33 @@ function (dojo, declare) {
         
         /*
         Example:
-        
+        */
         notif_cardPlayed: function( notif )
         {
             console.log( 'notif_cardPlayed' );
             console.log( notif );
-            
-            // Note: notif.args contains the arguments specified during you "notifyAllPlayers" / "notifyPlayer" PHP call
-            
-            // TODO: play the card in the user interface.
-        },    
+			var card = notif.args.card_played;
+            this.table.addToStockWithId( card.type , "tablecard_"+card.id ,  'templecard'+this.gamedatas.iterations  );
+				
+				 for ( var g=card.location_arg ; g>0 ; g-- )
+				{
+					this.placeGem( card.id+"_"+g, "table_item_tablecard_"+card.id   ) ;					
+				}		
+        },
+		
+        notif_ObtainGems: function( notif )
+        {
+            console.log( 'notif_explorersObtainGems' );
+            console.log( notif );
+			var card = notif.args.card_played;
+			for (i in notif.args.players)
+			{
+			
+				 this.moveGem ( "table_item_tablecard_"+card.id , "gem_icon_"+this.gamedatas.players[i].id , notif.args.gems )	
+			
+			}
+		    
+        },
         
-        */
    });             
 });
