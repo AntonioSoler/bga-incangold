@@ -465,15 +465,20 @@ class incangold extends Table
 			{
 				$thisid = $player['id'] ;						
 				$this->setExploringPlayer( $thisid  , 0);
+				$gems = $this->getGemsPlayer ( $thisid , 'field');
+				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent');
+				$this->setGemsPlayer ( $thisid , 'tent', $gems);
+				$this->setGemsPlayer ( $thisid , 'field', 0);
+				// TODO - split and move Gems in cards
 			}
 			
 			
 			// TODO - Notify Others
-			// TODO - Move Gems to tent and clean field
+			
 			
 			if ( sizeof($leavingPlayers) == sizeof( $players ))
 				{
-				self::notifyAllPlayers( "reshuffle", clienttranslate( 'All explorers returned to the camp, the deck is reshufled, this is the expedition number ${iterations}' ), array( 'iterations' => $iterations ) );	
+				self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to the camp, the deck is reshufled, this is the expedition number ${iterations} </b>' ), array( 'iterations' => $iterations ) );	
 				$this->gamestate->nextState( 'reshuffle' );	
 				}
 			else

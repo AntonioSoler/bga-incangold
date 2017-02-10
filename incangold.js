@@ -366,6 +366,8 @@ function (dojo, declare) {
             this.notifqueue.setSynchronous( 'ObtainGems', 2000 );
 			dojo.subscribe('tableWindow', this, "notif_finalScore");
             this.notifqueue.setSynchronous('tableWindow', 3000);
+			dojo.subscribe('reshuffle', this, "notif_reshuffle");
+            this.notifqueue.setSynchronous('reshuffle', 3000);
             // 
         },  
         
@@ -389,7 +391,7 @@ function (dojo, declare) {
 		
         notif_ObtainGems: function( notif )
         {
-            console.log( 'notif_explorersObtainGems' );
+            console.log( 'notif_ObtainGems' );
             console.log( notif );
 			var card = notif.args.card_played;
 			for (i in notif.args.players)
@@ -398,6 +400,20 @@ function (dojo, declare) {
 			}
 		    
         },
+		notif_reshuffle: function( notif )
+        {
+            console.log( 'notif_reshuffle' );
+            console.log( notif );
+			
+			for (i in this.gamedatas.players)
+			{			
+				 dojo.byId( "gem_icon_"+this.gamedatas.players[i].id ).innerHTML=0;
+			}
+		    this.table.removeAll();
+			dojo.addClass( "templecard"+notif.args.iterations ,"on")
+			
+        },
+		
 		notif_finalScore: function (notif) 
 		{
             console.log('**** Notification : finalScore');
