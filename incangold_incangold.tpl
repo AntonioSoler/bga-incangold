@@ -28,7 +28,7 @@
 <div id="playArea">
     <div class="templePanel">
         <div id="temple">
-		<table id="templetable"  >
+		<table id="templetable" class="templeclass"  >
 			<tbody>
 				<tr>
 					<td id="templecard5" colspan="2" > </td>					

@@ -43,6 +43,6 @@ CREATE TABLE IF NOT EXISTS `cards` (
 
 ALTER TABLE `player` ADD `player_field` INT UNSIGNED NOT NULL DEFAULT '0';
 ALTER TABLE `player` ADD `player_tent` INT UNSIGNED NOT NULL DEFAULT '0';
-
 ALTER TABLE `player` ADD `player_exploring` INT UNSIGNED NOT NULL DEFAULT '0';
+ALTER TABLE `player` ADD `player_leaving` INT UNSIGNED NOT NULL DEFAULT '0';
 

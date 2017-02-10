@@ -164,16 +164,17 @@ class incangold extends Table
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
         $sql = "SELECT player_id id, player_field field FROM player ";
-        $result['players'] = self::getCollectionFromDb( $sql );
+        $result['players'] = self::getCollectionFromDb( $sql ); //fields of all players are visible 
 		
 		$sql = "SELECT player_tent FROM player WHERE player_id='$current_player_id'";
-        $result['tent'] = self::getUniqueValueFromDB( $sql );
+        $result['tent'] = self::getUniqueValueFromDB( $sql );  //only you can see your tent
         
         //show number of cards in deck too.
         $result['cardsRemaining'] = $this->cards->countCardsInLocation('deck');
         $result['iterations'] = $this->getGameStateValue('iterations');
                 
-        //fields of all players are visible 
+        $result['exploringPlayers'] = $this->getExploringPlayers();
+		
 		
         $result['table'] = $this->cards->getCardsInLocation( 'table' );
               
@@ -234,7 +235,23 @@ class incangold extends Table
         self::DbQuery( $sql ); 
     }
 	
-	function setGemsPlayer ( $playerId , $location ,$value )  // 'tent' or 'field'
+	function getLeavingPlayers()
+    {
+        $playersIds = array();
+		$sql = "SELECT player_id id FROM player WHERE player_leaving=1";
+        //$playersIds = self::getObjectListFromDB( $sql );
+		$playersIds = self::getCollectionFromDB( $sql );	
+		self::debug ("******* getExploringPlayers   ".$playersIds);
+        return $playersIds;
+    }
+	
+	function setLeavingPlayer ( $playerId , $leavingValue )
+    {
+		$sql = "UPDATE player SET player_leaving=$leavingValue WHERE player_id=$playerId";
+        self::DbQuery( $sql ); 
+    }
+	
+	function setGemsPlayer ( $playerId , $location ,$value )  // location can be 'tent' or 'field'
     {
 		$sql = "UPDATE player SET player_$location=$value WHERE player_id=$playerId";
         self::DbQuery( $sql ); 
@@ -291,7 +308,9 @@ class incangold extends Table
 
     function voteLeave()
     {
-
+	$current_player_id = self::getCurrentPlayerId(); 
+	$this->setLeavingPlayer ( $current_player_id  , 1 );
+	$this->gamestate->setPlayerNonMultiactive( $current_player_id, '' );	
     }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -353,6 +372,9 @@ class incangold extends Table
 	{
 		$this->setExploringPlayer($player_id , 1);   // All players are now exploring
 	}
+	$sql = "UPDATE player SET player_leaving=0 WHERE 1";  // Reset players votes
+    self::DbQuery( $sql ); 
+		
 	$iterations = self::getGameStateValue("iterations");
 	$iterations++ ;
 	self::setGameStateInitialValue( 'iterations', $iterations );
@@ -396,7 +418,7 @@ class incangold extends Table
 	{
 		$cardPlayedName = $cardPlayedName ." ". $PlayedCard['type_arg'] ;
 	}
-	$cardsontable = $this->cards->countCardInLocation( 'table' );
+	$cardsontable = $this->cards->countCardsInLocation( 'table' );
 	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn and it is ${card_played_name}' ), array(
                 'card_played' => $PlayedCard,
 				'card_played_name' => $cardPlayedName
@@ -435,7 +457,30 @@ class incangold extends Table
 
 	function stprocessLeavers()
 	{
-			$this->gamestate->nextState( 'explore' );
+		    $players = self::loadPlayersBasicInfos();
+			$iterations = $this->getGameStateValue('iterations');
+			$leavingPlayers = $this->getLeavingPlayers() ;
+			
+			foreach($leavingPlayers as $playerId => $player )
+			{
+				$thisid = $player['id'] ;						
+				$this->setExploringPlayer( $thisid  , 0);
+			}
+			
+			
+			// TODO - Notify Others
+			// TODO - Move Gems to tent and clean field
+			
+			if ( sizeof($leavingPlayers) == sizeof( $players ))
+				{
+				self::notifyAllPlayers( "reshuffle", clienttranslate( 'All explorers returned to the camp, the deck is reshufled, this is the expedition number ${iterations}' ), array( 'iterations' => $iterations ) );	
+				$this->gamestate->nextState( 'reshuffle' );	
+				}
+			else
+			{
+				$this->gamestate->nextState( 'explore' );
+			}
+			
 	}
 
     function displayScores()
@@ -443,22 +488,13 @@ class incangold extends Table
         $players = self::loadPlayersBasicInfos();
 
         $table[] = array();
-        $table[] = array();
-        $table[] = array();
-        $table[] = array();
-        $table[] = array();
-        $table[] = array();
-        $table[] = array();
         
         //left hand col
         $table[0][] = array( 'str' => ' ', 'args' => array(), 'type' => 'header');
         $table[1][] = $this->resources["gems"    ];
-        $table[2][] = $this->resources["tablet"  ];
-        $table[3][] = $this->resources["idol"    ];
-        $table[4][] = $this->resources["statue"  ];
-        $table[5][] = $this->resources["vase"    ];
-        $table[6][] = $this->resources["necklace"];
-		$table[7][] = array( 'str' => '<span class=\'score\'>Score</span>', 'args' => array(), 'type' => '');
+        $table[2][] = $this->resources["artifacts"  ];
+        
+		$table[3][] = array( 'str' => '<span class=\'score\'>Score</span>', 'args' => array(), 'type' => '');
 
         foreach( $players as $player_id => $player )
         {
@@ -466,14 +502,22 @@ class incangold extends Table
                                  'args' => array( 'player_name' => $player['player_name'] ),
                                  'type' => 'header'
                                );
-            $table[1][] = count($this->getCardsInLocationByType('storage', $player['player_id'], 1));
-            $table[2][] = count($this->getCardsInLocationByType('storage', $player['player_id'], 2));
-            $table[3][] = count($this->getCardsInLocationByType('storage', $player['player_id'], 3));
-            $table[4][] = count($this->getCardsInLocationByType('storage', $player['player_id'], 4));
-            $table[5][] = count($this->getCardsInLocationByType('storage', $player['player_id'], 5));
-            $score = self::getObjectFromDB( "SELECT player_score FROM player WHERE player_id='".$player_id."'" );
-            $table[6][] = array( 'str' => '<span class=\'score\'>${player_score}</span>',
-                                 'args' => array( 'player_score' => $score['player_score'] ),
+            $table[1][] = $this->getGemsPlayer( $player_id, 'tent' );
+            $table[2][] = $this->cards->countCardsInLocation( $player['player_id']);
+
+            $score = $this->getGemsPlayer( $player_id, 'tent' ) ;
+			$score = $score + 5 * ($this->cards->countCardsInLocation( $player_id ));
+			
+			
+			$sql = "UPDATE player SET player_score = ".$score." WHERE player_id=".$player['player_id'];
+            self::DbQuery( $sql );
+			
+			$sql = "UPDATE player SET player_score_aux = ".$this->cards->countCardsInLocation( $player['player_id'])." WHERE player_id=".$player['player_id'];
+            self::DbQuery( $sql );
+			
+			
+            $table[3][] = array( 'str' => '<span class=\'score\'>${player_score}</span>',
+                                 'args' => array( 'player_score' => $score ),
                                  'type' => ''
                                );
         }
@@ -494,61 +538,8 @@ class incangold extends Table
         //In the case of a tie, check next smallest pile and so on. Set auxillery score for this
 
         //stats first
-        $players = self::loadPlayersBasicInfos();
 
-        //$maxAuxScore = 0;
 
-        $playerTempScores = array();
-
-        foreach($players as $player)
-        {
-            $papyrusCount = count($this->getCardsInLocationByType('storage', $player['player_id'], 1));
-            $wheatCount = count($this->getCardsInLocationByType('storage', $player['player_id'], 2));
-            $lettuceCount = count($this->getCardsInLocationByType('storage', $player['player_id'], 3));
-            $castorCount = count($this->getCardsInLocationByType('storage', $player['player_id'], 4));
-            $flaxCount = count($this->getCardsInLocationByType('storage', $player['player_id'], 5));
-
-            self::setStat($papyrusCount, 'papyrus_number', $player['player_id']);
-            self::setStat($wheatCount, 'wheat_number', $player['player_id']);
-            self::setStat($lettuceCount, 'lettuce_number', $player['player_id']);
-            self::setStat($castorCount, 'castor_number', $player['player_id']);
-            self::setStat($flaxCount, 'flax_number', $player['player_id']);
-            
-            $scores = array();
-            $scores[] = $papyrusCount;
-            $scores[] = $wheatCount;
-            $scores[] = $lettuceCount;
-            $scores[] = $castorCount;
-            $scores[] = $flaxCount;
-                        
-            sort($scores);
-
-            $sql = "UPDATE player SET player_score = ".$scores[0]." WHERE player_id=".$player['player_id'];
-            self::DbQuery( $sql );            
-
-            //aux is int(1), max value is 4294967295
-            $aux_score = $scores[4]+$scores[3]*20+$scores[2]*20*20+$scores[1]*20*20*20+$scores[0]*20*20*20*20;
-
-            array_push($playerTempScores, $aux_score);
-        }
-
-        $i = 0;
-        foreach($players as $player)
-        {
-            //set aux score to the count of the number of players with lower scores
-            $beaten = 0;
-            foreach($playerTempScores as $score)
-            {
-                if ($playerTempScores[$i] > $score)
-                {
-                    $beaten++;
-                }
-            }
-
-            $sql = "UPDATE player SET player_score_aux = ".$beaten." WHERE player_id=".$player['player_id'];
-            self::DbQuery( $sql );
-            $i++;
-        }
 
         $this->displayScores();
     

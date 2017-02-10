@@ -32,7 +32,10 @@
 	"snake"    => clienttranslate('snake'),
 	"spiders"  => clienttranslate('spiders'),
 	"rocks"    => clienttranslate('rocks'),
-	"fire"     => clienttranslate('fire')
+	"fire"     => clienttranslate('fire'),
+	"artifacts"    => clienttranslate('artifacts'),
+	"score_window_title" => clienttranslate('FINAL SCORE'),
+	"win_condition" => clienttranslate('The player with more gems in his tent wins, artifacts score 5 gems')
 );
 
  //

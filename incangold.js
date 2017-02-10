@@ -55,14 +55,15 @@ function (dojo, declare) {
             // Setting up player boards
             for( var player in this.gamedatas.players )
             {
-                
-                document.getElementById("gem_icon_"+this.gamedatas.players[player].id).innerHTML=this.gamedatas.players[player].field;
-				 
-                // TODO: Setting up players boards if needed
+                dojo.byId("gem_icon_"+this.gamedatas.players[player].id).innerHTML=this.gamedatas.players[player].field;
+               
             }
-            document.getElementById("tent_"+this.gamedatas.current_player_id).innerHTML=this.gamedatas.tent;
+            dojo.byId("tent_"+this.gamedatas.current_player_id).innerHTML=this.gamedatas.tent;
 			
-  
+            for (i in this.gamedatas.exploringPlayers)
+			{			
+				 dojo.addClass( "votecard_"+i , "votecardExplore" );
+			}
 			
             // TODO: Set up your game interface here, according to "gamedatas"
             this.table = new ebg.stock();
@@ -89,16 +90,20 @@ function (dojo, declare) {
             }
 			for ( var i=1;i<=gamedatas.iterations;i++ )
 			{
-					document.getElementById("templecard"+i).className = "on";
+					dojo.addClass( "templecard"+i ,"on");
 			}
             
-			addTooltipToClass( "templePanel", _( "This idicates the number of expeditions remaining" ), "" );
+			this.addTooltipToClass( "templeclass", _( "This idicates the number of expeditions remaining" ), "" );
 			
-			addTooltipToClass( "tent", _( "Here is where you safely store your gems after each expedition, once in your tent the gems cannot be lost " ), "" );
+			this.addTooltipToClass( "tent", _( "Here is where you safely store your gems after each expedition, once in your tent the gems cannot be lost " ), "" );
 			
-			addTooltipToClass( "gems", _( "gems are divided among the players exploring the temple " ), "" );
+			this.addTooltipToClass( "gems", _( "gems are divided among the players exploring the temple " ), "" );
 			
-			addTooltipToClass( "votecard", _( "each round players can vote to leave or to stay exploring, the leavers can pick the gems rest of the gems left on the cards " ), "" );
+			this.addTooltipToClass( "votecard", _( "each round players can vote to leave or to stay exploring, the leavers can pick the gems rest of the gems left on the cards " ), "" );
+			
+			this.addTooltipToClass( "votecardLeave", _( "This player has voted to leave to the camp and has store his gems in the tent" ), "" );
+			
+			this.addTooltipToClass( "votecardExplore", _( "This player has voted to stay exploring" ), "" );
 			
 			
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -131,6 +136,12 @@ function (dojo, declare) {
                 break;
            */
            
+		    case 'vote':
+            
+                // Show some HTML block at this game state
+                dojo.query('.votecardExplore').removeClass('votecardExplore') ;
+                
+                break;
            
             case 'dummmy':
                 break;
@@ -219,11 +230,12 @@ function (dojo, declare) {
 			for (var i = 1 ; i<= amount ; i++)
 			{
 				this.slideTemporaryObject( '<div class="gem"></div>', 'page-content', source, destination, 2000 , animspeed );
+				animspeed += 300;
 			}
 			for (var i = 1 ; i<= amount ; i++)
 			{
 				document.getElementById(destination).innerHTML++;
-				animspeed += 300;
+				
 			}
         },
 		
@@ -352,6 +364,8 @@ function (dojo, declare) {
 			this.notifqueue.setSynchronous( 'playCard', 2000 );
 			dojo.subscribe( 'ObtainGems', this, "notif_ObtainGems" );
             this.notifqueue.setSynchronous( 'ObtainGems', 2000 );
+			dojo.subscribe('tableWindow', this, "notif_finalScore");
+            this.notifqueue.setSynchronous('tableWindow', 3000);
             // 
         },  
         
@@ -379,12 +393,18 @@ function (dojo, declare) {
             console.log( notif );
 			var card = notif.args.card_played;
 			for (i in notif.args.players)
-			{
-			
-				 this.moveGem ( "table_item_tablecard_"+card.id , "gem_icon_"+this.gamedatas.players[i].id , notif.args.gems )	
-			
+			{			
+				 this.moveGem ( "table_item_tablecard_"+card.id , "gem_icon_"+this.gamedatas.players[i].id , notif.args.gems )
 			}
 		    
+        },
+		notif_finalScore: function (notif) 
+		{
+            console.log('**** Notification : finalScore');
+            console.log(notif);
+
+            // Update score
+            //this.scoreCtrl[notif.args.player_id].incValue(notif.args.score_delta);
         },
         
    });             

@@ -171,8 +171,18 @@ h2.fieldHeader {
     height: 180px;
 	float: left;
     background-image: url('img/vote-cards.jpg');
+	background-position: left top
 	background-repeat: no-repeat
 	}
+	
+.votecardExplore {
+	background-position: center top !important;
+	}
+
+.votecardLeave {
+	background-position: right top !important;
+	}	
+
 #table_wrap{
     width: 100%;
 	}
