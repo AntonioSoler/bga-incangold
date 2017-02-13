@@ -35,7 +35,7 @@
 	"fire"     => clienttranslate('fire'),
 	"artifacts"    => clienttranslate('artifacts'),
 	"score_window_title" => clienttranslate('FINAL SCORE'),
-	"win_condition" => clienttranslate('The player with more gems in his tent wins, artifacts score 5 gems')
+	"win_condition" => clienttranslate('The player with the most gems in their tent wins - Artifacts are worth 5 gems')
 );
 
  //

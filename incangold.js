@@ -55,9 +55,21 @@ function (dojo, declare) {
             // Setting up player boards
             for( var player in this.gamedatas.players )
             {
-                dojo.byId("gem_icon_"+this.gamedatas.players[player].id).innerHTML=this.gamedatas.players[player].field;
-               
+                dojo.byId("gem_counter_"+this.gamedatas.players[player].id).innerHTML=this.gamedatas.players[player].field;
+				for ( var i=0 ; i < this.gamedatas.players[player].artifacts ;i++)
+					{
+						dojo.place( "<div class='artifacticon'></div>" , "field_" + this.gamedatas.players[player].id, "last" );
+						this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 3rd and 4th add 5 extra gems" ), "" );
+					} 
             }
+			
+			for ( var i=0 ; i < this.gamedatas.templeartifacts ;i++)
+					{
+						dojo.place( "<div class='artifacticon'></div>" , "templePanel", "last" );
+						this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 3rd and 4th add 5 extra gems" ), "" );
+					} 
+			
+			
             dojo.byId("tent_"+this.gamedatas.current_player_id).innerHTML=this.gamedatas.tent;
 			
             for (i in this.gamedatas.exploringPlayers)
@@ -66,26 +78,30 @@ function (dojo, declare) {
 			}
 			
             // TODO: Set up your game interface here, according to "gamedatas"
-            this.table = new ebg.stock();
-            this.table.create( this, $('table'), this.cardwidth, this.cardheight );
-            this.table.image_items_per_row = 7;
-			this.table.setSelectionMode( 0 );
+            this.tablecards = new ebg.stock();
+            this.tablecards.create( this, $('tablecards'), this.cardwidth, this.cardheight );
+            this.tablecards.image_items_per_row = 7;
+			this.tablecards.setSelectionMode( 0 );
             
             // Create cards types:
-            for( var i=1;i<=21;i++ )
+            for(  i=1;i<=21;i++ )
             {
              
-            this.table.addItemType( i, 1, g_gamethemeurl+'img/cards.jpg', i-1 );
+            this.tablecards.addItemType( i, 1, g_gamethemeurl+'img/cards.jpg', i-1 );
               
             }
 			for( var i in this.gamedatas.table )
             {
                 var card = this.gamedatas.table[i];
-                this.table.addToStockWithId( card.type , "tablecard_"+card.id ,  'templecard'+this.gamedatas.iterations  );
-				
+                this.tablecards.addToStockWithId( card.type , "tablecard_"+card.id , 'templecard'+this.gamedatas.iterations );
+				if ( card.type >=12 && card.type <=16 ) 
+				    {
+						dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
+						dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
+					}
 				 for ( var g=card.location_arg ; g>0 ; g-- )
 				{
-					this.placeGem( card.id+"_"+g, "table_item_tablecard_"+card.id   ) ;					
+					this.placeGem( card.id+"_"+g, "tablecards_item_tablecard_"+card.id   ) ;					
 				}
             }
 			for ( var i=1;i<=gamedatas.iterations;i++ )
@@ -93,17 +109,17 @@ function (dojo, declare) {
 					dojo.addClass( "templecard"+i ,"on");
 			}
             
-			this.addTooltipToClass( "templeclass", _( "This idicates the number of expeditions remaining" ), "" );
+			this.addTooltipToClass( "templeclass", _( "The number of expeditions remaining" ), "" );
 			
-			this.addTooltipToClass( "tent", _( "Here is where you safely store your gems after each expedition, once in your tent the gems cannot be lost " ), "" );
+			this.addTooltipToClass( "tent", _( "Gems are stored here after each expedition.<br> Once in your tent, the gems are safe.<br> ONLY YOU KNOW HOW MANY GEMS YOU HAVE HERE" ), "" );
 			
-			this.addTooltipToClass( "gems", _( "gems are divided among the players exploring the temple " ), "" );
+			this.addTooltipToClass( "gem_counter", _( "Gems are divided among the players exploring the temple " ), "" );
 			
-			this.addTooltipToClass( "votecard", _( "each round players can vote to leave or to stay exploring, the leavers can pick the gems rest of the gems left on the cards " ), "" );
+			this.addTooltipToClass( "cardback", _( "Each round players vote to return to camp or to keep exploring. Players who leave can pick up the gems left on the cards " ), "" );
 			
-			this.addTooltipToClass( "votecardLeave", _( "This player has voted to leave to the camp and has store his gems in the tent" ), "" );
+			this.addTooltipToClass( "votecardLeave", _( "This player has voted to return to camp and has stored his gems in the tent" ), "" );
 			
-			this.addTooltipToClass( "votecardExplore", _( "This player has voted to stay exploring" ), "" );
+			this.addTooltipToClass( "votecardExplore", _( "This player has voted to continue exploring" ), "" );
 			
 			
             // Setup game notifications to handle (see "setupNotifications" method below)
@@ -136,7 +152,8 @@ function (dojo, declare) {
                 break;
            */
            
-		    case 'vote':
+		    case 'reshuffle':
+
             
                 // Show some HTML block at this game state
                 dojo.query('.votecardExplore').removeClass('votecardExplore') ;
@@ -187,7 +204,7 @@ function (dojo, declare) {
                 {
 			    case 'vote':
                     this.addActionButton( 'explore_button', _('Explore the temple'), 'voteExplore' );
-					this.addActionButton( 'leave_button', _('Leave to camp'), 'voteLeave' ); 
+					this.addActionButton( 'leave_button', _('Return to camp'), 'voteLeave' ); 
                     break;
 /*               
                  Example:
@@ -224,20 +241,53 @@ function (dojo, declare) {
                 }), destination);
         },
 		
+		placeVotecard: function ( player_id, action) 
+		{	
+			
+            dojo.place( this.format_block ( 'jstpl_votecard', {
+                player_id: player_id,
+                action: action
+            } ) , 'cardholder_'+player_id,"only" );
+            
+            this.placeOnObject( 'votecard_'+player_id, 'overall_player_board_'+player_id );
+            this.slideToObject( 'votecard_'+player_id, 'cardholder_'+player_id ).play();
+        },
+		
 		moveGem: function ( source, destination ,amount) 
 		{
 			var animspeed=300;
 			for (var i = 1 ; i<= amount ; i++)
 			{
-				this.slideTemporaryObject( '<div class="gem"></div>', 'page-content', source, destination, 2000 , animspeed );
+				this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source, destination, 1000 , animspeed );
 				animspeed += 300;
 			}
 			for (var i = 1 ; i<= amount ; i++)
 			{
-				document.getElementById(destination).innerHTML++;
+				this.incCounterDelayed( $(destination).innerHTML++ , 4000);
 				
 			}
         },
+		
+		sleep:function (ms) 
+		{
+        return new Promise(resolve => setTimeout(resolve, ms));
+		},
+		
+		incCounterDelayed: async function (id , time )
+		{
+		await this.sleep(time);
+		id++
+		},
+		
+		moveCard: function ( id , destination , isartifact ) 
+		{
+			dojo.addClass( "tablecards_item_tablecard_"+id ,"animatedcard") ;
+			this.tablecards.removeFromStockById( "tablecard_"+id , destination  );	
+			if ( isartifact == 1 ) 
+				{
+					dojo.place( "<div class='artifacticon'></div>" , destination  , "last");
+				}
+		},
 		
         ///////////////////////////////////////////////////
         //// Player's action
@@ -365,9 +415,18 @@ function (dojo, declare) {
 			dojo.subscribe( 'ObtainGems', this, "notif_ObtainGems" );
             this.notifqueue.setSynchronous( 'ObtainGems', 2000 );
 			dojo.subscribe('tableWindow', this, "notif_finalScore");
-            this.notifqueue.setSynchronous('tableWindow', 3000);
+            this.notifqueue.setSynchronous('tableWindow', 8000);
 			dojo.subscribe('reshuffle', this, "notif_reshuffle");
-            this.notifqueue.setSynchronous('reshuffle', 3000);
+            this.notifqueue.setSynchronous('reshuffle', 4000);
+			dojo.subscribe('playerleaving', this, "notif_playerleaving");
+            this.notifqueue.setSynchronous('playerleaving', 3000);
+			dojo.subscribe('artifactspicked', this, "notif_artifactspicked");
+            this.notifqueue.setSynchronous('artifactspicked', 3000);
+			dojo.subscribe('playerexploring', this, "notif_playerexploring");
+            this.notifqueue.setSynchronous('playerexploring', 1000);
+			dojo.subscribe('stcleanpockets', this, "notif_stcleanpockets");
+            this.notifqueue.setSynchronous('stcleanpockets', 4000);
+			
             // 
         },  
         
@@ -381,12 +440,100 @@ function (dojo, declare) {
             console.log( 'notif_cardPlayed' );
             console.log( notif );
 			var card = notif.args.card_played;
-            this.table.addToStockWithId( card.type , "tablecard_"+card.id ,  'templecard'+this.gamedatas.iterations  );
-				
-				 for ( var g=card.location_arg ; g>0 ; g-- )
+            this.tablecards.addToStockWithId( card.type , "tablecard_"+card.id ,  'templecard'+this.gamedatas.iterations  );
+			if ( card.type >=12 && card.type <=16 ) 
+				   {
+						dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
+						dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
+					}
+			for ( var g=card.location_arg ; g>0 ; g-- )
 				{
-					this.placeGem( card.id+"_"+g, "table_item_tablecard_"+card.id   ) ;					
+					this.placeGem( card.id+"_"+g, "tablecards_item_tablecard_"+card.id   ) ;					
 				}		
+        },
+		
+		notif_playerleaving: function( notif )
+        {
+            console.log( 'notif_playerleaving' );
+			notif.args=this.notifqueue.playerNameFilterGame(notif.args);
+            console.log( notif );
+			this.placeVotecard ( notif.args.thisid , "Leave" );
+			this.addTooltipToClass( "votecardLeave", _( "This player has voted to return to camp and has stored his gems in the tent" ), "" );
+            var animspeed=300;
+			gems = dojo.byId("gem_counter_"+notif.args.thisid).innerHTML
+			if ( gems >=1 )
+			{
+				for ( var g=1 ; g<=gems  ; g++ )
+					{
+					
+					this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_counter_"+notif.args.thisid , "tent_"+notif.args.thisid, 500 , animspeed );
+					animspeed += 300;
+					}
+				if (this.gamedatas.current_player_id == notif.args.thisid) 
+					{
+					dojo.byId("tent_"+notif.args.thisid).innerHTML= eval( gems +"+"+ dojo.byId("tent_"+notif.args.thisid).innerHTML);
+					}
+			}
+			dojo.byId("gem_counter_"+notif.args.thisid).innerHTML = 0 ;
+				
+        },
+		
+		notif_playerexploring: function( notif )
+        {
+            console.log( 'notif_playerexploring' );
+			notif.args=this.notifqueue.playerNameFilterGame(notif.args);
+            console.log( notif );
+			this.placeVotecard ( notif.args.thisid , "Explore" );			
+			
+			this.addTooltipToClass( "votecardExplore", _( "This player has voted to continue exploring" ), "" );
+        },
+		
+		notif_artifactspicked: function( notif )
+        {
+            console.log( 'notif_artifactspicked' );
+			notif.args=this.notifqueue.playerNameFilterGame(notif.args);
+            console.log( notif );
+			
+			for ( card_id in notif.args.cards )				
+			{    
+				
+		        /*dojo.animateProperty({
+				  node:dojo.byId("tablecards_item_tablecard_"+notif.args.cards[card_id].id),
+				  duration: 1000,
+				  properties: {
+					  //WebkitTransform: {start: 'scale(1)', end: 'scale(0.2)'},
+                      //MozTransform: {start: 'scale(1)', end: 'scale(0.2)'}, 
+                      //OTransform: {start: 'scale(1)', end: 'scale(0.2)'}, 
+					  transform: {start: 'scale(1)', end: 'scale(0.2)'}
+				  }
+				}).play();*/
+            this.moveCard ( notif.args.cards[card_id].id ,'field_'+notif.args.thisid , 1 );	
+				
+			}
+        },
+		
+		notif_stcleanpockets: function( notif )
+        {
+            console.log( 'notif_stcleanpockets' );
+            console.log( notif );
+			var card = notif.args.card_played;
+            
+			this.moveCard ( card.id ,'templePanel', 0);
+			artifacts=dojo.query(".isartifact");
+			
+			for (i=0 ; i<=artifacts.length ; i++)
+			
+				{  	try	{
+					thiscard=artifacts[i].id;
+					dojo.addClass( thiscard ,"animatedcard") ; 
+					this.slideToObjectAndDestroy( thiscard , 'templePanel',1000 ) ;
+					}
+				catch(err){};
+					dojo.place( "<div class='artifacticon'></div>" , 'templePanel' , "last");
+					
+				}
+			;
+			
         },
 		
         notif_ObtainGems: function( notif )
@@ -396,7 +543,7 @@ function (dojo, declare) {
 			var card = notif.args.card_played;
 			for (i in notif.args.players)
 			{			
-				 this.moveGem ( "table_item_tablecard_"+card.id , "gem_icon_"+this.gamedatas.players[i].id , notif.args.gems )
+				 this.moveGem ( "tablecards_item_tablecard_"+card.id , "gem_counter_"+this.gamedatas.players[i].id , notif.args.gems )
 			}
 		    
         },
@@ -405,11 +552,14 @@ function (dojo, declare) {
             console.log( 'notif_reshuffle' );
             console.log( notif );
 			
-			for (i in this.gamedatas.players)
+			for (i in this.gamedatas.players )
 			{			
-				 dojo.byId( "gem_icon_"+this.gamedatas.players[i].id ).innerHTML=0;
+				dojo.byId( "gem_counter_"+this.gamedatas.players[i].id ).innerHTML=0;
+				this.placeVotecard ( this.gamedatas.players[i].id , "Back" )  
 			}
-		    this.table.removeAll();
+		    this.tablecards.removeAll();
+			
+			this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 400, 0);  
 			dojo.addClass( "templecard"+notif.args.iterations ,"on")
 			
         },

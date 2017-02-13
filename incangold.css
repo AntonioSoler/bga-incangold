@@ -65,55 +65,66 @@
     }
 */
 
-h2.fieldHeader {
-    text-align: center;
-}
+#playArea{
+	width:100%	
+	}
+	
+.templediv{
+	width:400px;
+	height:388px;	
 
-#templetable{width:400px;
+	}
+
+.templeclass{width:400px;
 	height:388px;
-	float:left;
 	border-collapse: collapse;
-	border:1}
+	float:top
+	}
 
-#templecard1{
-    background-image: url('img/temple-off.png');
-    background-repeat: no-repeat;    
+#templecell{
+    vertical-align: top;
+	}
+
+.templecard{
+	width:200px;
+	height:129px;
+	background-image: url('img/temple-off.png');
+    background-repeat: no-repeat;
+}	
+		
+.t1{        
     background-position: left bottom
 	}
-#templecard2{
-    background-image: url('img/temple-off.png');
-    background-repeat: no-repeat;    
+.t2{
     background-position: right bottom
 	}
-#templecard3{
-    background-image: url('img/temple-off.png');
-    background-repeat: no-repeat;    
+.t3{
     background-position: left center
 	}
-#templecard4{
-    background-image: url('img/temple-off.png');
-    background-repeat: no-repeat;
-    background-position: right center
+.t4{
+	background-position: right center
 	}
-#templecard5{
-    background-image: url('img/temple-off.png');
-    background-repeat: no-repeat;
+.t5{
     background-position: right top
 	}
 
 .on{
     background-image: url('img/temple-on.png')!important;
 	}
+
 	
 .fields {
     min-height: 200px !important;
-    width: 300px;
+    width: 275px;
     float: left;
     margin: 5px;
     padding: 10px;
     padding-top: 5px;
 }
-
+.tablecamp {
+    width: 100%;
+    height: 200px; 
+}
 .hidden {
     display: none;
 }
@@ -143,6 +154,7 @@ h2.fieldHeader {
 .gem {
     width: 30px;
     height: 30px;
+	display: inline-block;
     background-image: url('img/gem.png');
 	background-repeat: no-repeat;
 	margin: 6px;
@@ -155,44 +167,104 @@ h2.fieldHeader {
 .tent {
     width: 150px;
     height: 121px;
-	margin: 10px
-	float: right;
-	line-height: 60px; /* <-- this is what you must define */
     vertical-align: middle;
     background-image: url('img/tent.png');
 	background-repeat: no-repeat;
+	text-align:center; 
+    vertical-align:middle;
 	font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
-    color: rgba(1,1,1,1);
-    text-align: center
+    color: rgba(1,1,1,1)
 	}	
 	
-.votecard {
+.cardback {
     width: 115px;
     height: 180px;
-	float: left;
+	position:absolute;
     background-image: url('img/vote-cards.jpg');
+	background-repeat: no-repeat;
 	background-position: left top
-	background-repeat: no-repeat
+	
 	}
 	
 .votecardExplore {
+	width: 115px;
+    height: 180px;
+	position:absolute;
+    background-image: url('img/vote-cards.jpg');
+	background-repeat: no-repeat;
 	background-position: center top !important;
 	}
 
 .votecardLeave {
+	width: 115px;
+    height: 180px;
+	position:absolute;
+    background-image: url('img/vote-cards.jpg');
+	background-repeat: no-repeat;
 	background-position: right top !important;
 	}	
 
-#table_wrap{
-    width: 100%;
+.votecardBack {
+    width: 115px;
+    height: 180px;
+	position:absolute;
+    background-image: url('img/vote-cards.jpg');
+	background-repeat: no-repeat;
+	background-position: left top	
 	}
+	
+.cardholder {
+	width: 115px;
+	height: 180px;
+    }
+	
+.artifacticon {
+	padding:1px;
+	float:left;
+    background-image: url('img/artifact.jpg');
+	background-repeat: no-repeat;
+	width: 22px;
+	height: 35px;
+    }
 
 .stockitem {
-    margin: 10px  
-}	
-
-.table {
-    padding: 10px;
-    width: 100%;
-    height: 270px; 
+    
+    display: inline-block;
 }
+
+.animatedcard{	
+	animation-name: shrink;
+    animation-duration: 0.5s;
+    transform: scale(1);
+	-webkit-animation: shrink 0.5s;
+}
+
+/* Standard syntax */
+@keyframes shrink {
+	from{transform: scale(1)}
+	to {transform: scale(0.2) }
+}
+@-webkit-keyframes shrink {
+	from{transform: scale(1)}
+	to {transform: scale(0.2) }
+}
+
+
+.spining{	
+	animation: spin 0.4s infinite;
+	-webkit-animation: spin 0.4s infinite;
+	transform: rotate(1deg);
+}
+
+/* Standard syntax */
+@keyframes spin {
+	from{transform: rotate(1deg)}	
+	to {transform: rotate(359deg) }
+}
+
+@-webkit-keyframes spin {
+	
+	from{transform: rotate(1deg)}	
+	to {transform: rotate(359deg) }
+	}
+

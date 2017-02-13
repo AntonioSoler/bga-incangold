@@ -35,6 +35,8 @@ class incangold extends Table
                 "iterations" => 10,
                 "gameOverTrigger" => 11,
                 "deckSize" => 12,
+				"artifactspicked" => 13,
+				
             //    "my_second_global_variable" => 11,
             //      ...
             //    "my_first_game_variant" => 100,
@@ -77,9 +79,11 @@ class incangold extends Table
             $color = array_shift( $default_colors );
             $values[] = "('".$player_id."','$color','".$player['player_canal']."','".addslashes( $player['player_name'] )."','".addslashes( $player['player_avatar'] )."')";
         }
-        $sql .= implode( $values, ',' );
-        self::DbQuery( $sql );
-        self::reloadPlayersBasicInfos();
+	
+    	$sql .= implode( $values, ',' );
+		self::DbQuery( $sql );
+		self::reattributeColorsBasedOnPreferences( $players, array(  /* LIST HERE THE AVAILABLE COLORS OF YOUR GAME INSTEAD OF THESE ONES */"ff0000", "008000", "0000ff", "ffa500", "773300" , "ffffff" ) );
+		self::reloadPlayersBasicInfos();
 
         /************ Start the game initialization *****/
 
@@ -132,7 +136,8 @@ class incangold extends Table
         $this->cards->createCards( $cards, 'deck' );
 		
 		self::setGameStateInitialValue( 'deckSize', $this->cards->countCardsInLocation("deck"));
-
+        self::setGameStateInitialValue( 'artifactspicked', 0 );
+		
         //shuffle 
         $this->cards->shuffle( 'deck' );
 
@@ -163,7 +168,8 @@ class incangold extends Table
     
         // Get information about players
         // Note: you can retrieve some extra field you added for "player" table in "dbmodel.sql" if you need it.
-        $sql = "SELECT player_id id, player_field field FROM player ";
+        $sql = "SELECT player_id id, player_field field , Count(card_id) artifacts FROM player LEFT OUTER JOIN cards On player_id=card_location GROUP BY player_id";
+		
         $result['players'] = self::getCollectionFromDb( $sql ); //fields of all players are visible 
 		
 		$sql = "SELECT player_tent FROM player WHERE player_id='$current_player_id'";
@@ -172,11 +178,10 @@ class incangold extends Table
         //show number of cards in deck too.
         $result['cardsRemaining'] = $this->cards->countCardsInLocation('deck');
         $result['iterations'] = $this->getGameStateValue('iterations');
-                
         $result['exploringPlayers'] = $this->getExploringPlayers();
-		
-		
-        $result['table'] = $this->cards->getCardsInLocation( 'table' );
+		$sql = "SELECT COUNT(*) FROM cards WHERE card_location ='temple' AND card_type in (12,13,14,15,16)"; 
+		$result['templeartifacts'] = self::getUniqueValueFromDB( $sql );
+		$result['table'] = $this->cards->getCardsInLocation( 'table' );
               
         return $result;
     }
@@ -213,7 +218,7 @@ class incangold extends Table
 	function getExploringPlayers()
     {
         $playersIds = array();
-		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
+		$sql = "SELECT player_id id, player_name playerName , player_color playerColor FROM player WHERE player_exploring=1";
         //$playersIds = self::getObjectListFromDB( $sql );
 		$playersIds = self::getCollectionFromDB( $sql );	
 		self::debug ("******* getExploringPlayers   ".$playersIds);
@@ -238,7 +243,7 @@ class incangold extends Table
 	function getLeavingPlayers()
     {
         $playersIds = array();
-		$sql = "SELECT player_id id FROM player WHERE player_leaving=1";
+		$sql = "SELECT player_id id, player_name playerName , player_color playerColor FROM player WHERE player_leaving=1";
         //$playersIds = self::getObjectListFromDB( $sql );
 		$playersIds = self::getCollectionFromDB( $sql );	
 		self::debug ("******* getExploringPlayers   ".$playersIds);
@@ -251,7 +256,7 @@ class incangold extends Table
         self::DbQuery( $sql ); 
     }
 	
-	function setGemsPlayer ( $playerId , $location ,$value )  // location can be 'tent' or 'field'
+	function setGemsPlayer ( $playerId , $location , $value )  // location can be 'tent' or 'field'
     {
 		$sql = "UPDATE player SET player_$location=$value WHERE player_id=$playerId";
         self::DbQuery( $sql ); 
@@ -362,8 +367,12 @@ class incangold extends Table
     }    
     */
 
+	////////////////////////////////////////////////////////////////////////////
+
     function streshuffle()
 	{
+	$iterations = 1 + $this->getGameStateValue('iterations');	
+	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled, this is the expedition number ${iterations} </b>' ), array( 'iterations' => $iterations ) );	
 	$this->cards->moveAllCardsInLocation( 'table', 'deck' );  //collect all cards to the deck and reshuffle
 	$this->cards->shuffle( 'deck' );
 	
@@ -376,18 +385,19 @@ class incangold extends Table
     self::DbQuery( $sql ); 
 		
 	$iterations = self::getGameStateValue("iterations");
-	$iterations++ ;
-	self::setGameStateInitialValue( 'iterations', $iterations );
-	if ( $iterations > 5 ) 
+	
+	if ( $iterations == 5 ) 
 		{
 			$this->gamestate->nextState( 'gameEndScoring' );
 		}
 	else
 		{
+			$iterations++ ;
+			self::setGameStateInitialValue( 'iterations', $iterations );
 			$this->gamestate->nextState( 'explore' );
 		}
 	}
-/////////////////////////////////	
+////////////////////////////////////////////////////////////////////////////
 	function stexplore()
 	{		
 	$exploringPlayers = $this->getExploringPlayers();
@@ -395,7 +405,7 @@ class incangold extends Table
 		{
 			
 		$TopCard = $this->cards->getCardOnTop( 'deck' ) ; //look at the top card of the deck
-			if ( $TopCard['type'] <= 11 )  // is it a gems card?
+			if ( $TopCard['type_arg'] > 0 )  // is it a gems card?
 				{
 				$gems = $TopCard['type_arg'] % sizeof( $exploringPlayers );  //calculate the remaining gems on the card
 				}
@@ -424,23 +434,46 @@ class incangold extends Table
 				'card_played_name' => $cardPlayedName
             ) );
 	
-	if ( $gemsSplit > 0 ) 
-		{ 
-			self::notifyAllPlayers( "ObtainGems", clienttranslate( 'All the explorers in the temple obtain ${gems}' ), array(
-                'gems' => $gemsSplit,
+	
+	$HazardsDrawn = self::getCollectionFromDB("SELECT COUNT(*) c FROM cards WHERE card_location ='table' AND card_type > 12 GROUP BY card_type HAVING c > 1 ");
+	if (sizeof( $HazardsDrawn )>=1)
+		{
+			self::notifyAllPlayers( "stcleanpockets", clienttranslate( 'This is the second ${card_played_name} drawn. Players in the temple lost their gems. One card of this kind is removed from the deck and any artifact left too' ), array(
                 'card_played' => $PlayedCard,
-                'players' => $exploringPlayers
-            ) );
-			
+				'card_played_name' => $cardPlayedName
+            ) ); 
+		$this->cards->moveCard( $PlayedCard['id'], 'temple'  );   // Remove 1 hazard to the temple
+		
+		$this->gamestate->nextState( 'cleanpockets' );	
 		}
-	$this->gamestate->nextState( 'vote' );	
+	else
+		{ 
+		if ( $gemsSplit > 0 ) 
+			{ 
+				self::notifyAllPlayers( "ObtainGems", clienttranslate( 'The loot is divided. All explorers in the temple obtain ${gems}' ), array(
+					'gems' => $gemsSplit,
+					'card_played' => $PlayedCard,
+					'players' => $exploringPlayers
+				) );				
+			}
+		$this->gamestate->nextState( 'vote' );	
+		}
 	}
-/////////////////////////////////	
+////////////////////////////////////////////////////////////////////////////
 	function stcleanpockets()
 	{
+		$sql = "UPDATE player SET player_field= 0 ";  // All players loose their gems
+        self::DbQuery( $sql );
+		$sql = "SELECT card_id AS id FROM cards WHERE card_location ='table' AND card_type in ( 12,13,14,15,16)";  
+		$cards = self::getCollectionFromDB($sql);
+		$artifactsOnTable = sizeof($cards);
+		self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );		// the 4th and 5th artifacts have bonus	
+		$sql = "UPDATE cards SET card_location ='temple' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
+		self::DbQuery( $sql );	            //Remove the artifacts left behind
 		
+	    $this->gamestate->nextState( 'reshuffle' );	
 	}
-//////////////////////////////////	
+////////////////////////////////////////////////////////////////////////////
 	function stvote()
 	{
 		    $activePlayersId = array();
@@ -450,35 +483,83 @@ class incangold extends Table
             foreach($getExploringPlayers as $playerId => $player) 
 			{
 						$activePlayersId[] = $playerId;
+						self::giveExtraTime( $playerId );
             }
             $this->gamestate->setPlayersMultiactive($activePlayersId, 'processleavers');
         
     }
-
+////////////////////////////////////////////////////////////////////////////
 	function stprocessLeavers()
 	{
 		    $players = self::loadPlayersBasicInfos();
-			$iterations = $this->getGameStateValue('iterations');
+			
 			$leavingPlayers = $this->getLeavingPlayers() ;
+			$leavingPlayersNum = sizeof($leavingPlayers) ;
+			
+			self::notifyAllPlayers ( "votingend", clienttranslate( 'Voting has ended and ${leavingPlayersNum} players decided to return to camp' ) , 
+				    array( 	'leavingPlayersNum' => $leavingPlayersNum 
+					) );
 			
 			foreach($leavingPlayers as $playerId => $player )
 			{
-				$thisid = $player['id'] ;						
+				$thisid = $player['id'] ;
+				$thisPlayerName = $player['playerName'];
+				
 				$this->setExploringPlayer( $thisid  , 0);
 				$gems = $this->getGemsPlayer ( $thisid , 'field');
+				
 				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent');
-				$this->setGemsPlayer ( $thisid , 'tent', $gems);
-				$this->setGemsPlayer ( $thisid , 'field', 0);
+				
+				$this->setGemsPlayer ( $thisid , 'tent', $gems );
+				$this->setGemsPlayer ( $thisid , 'field', 0 );
+				
+				self::notifyAllPlayers ( "playerleaving", clienttranslate( '${thisPlayerName} returned to camp and grabs the gems left on the floor' ) , 
+				    array( 'thisid' => $thisid ,
+					      'thisPlayerName' => $thisPlayerName 
+					) );	
+				
+				if ( $leavingPlayersNum < 2  )    // pick artifacts
+					{
+					$sql = "SELECT card_id AS id FROM cards WHERE card_location ='table' AND card_type in ( 12,13,14,15,16)";
+					$cards = self::getCollectionFromDB($sql);
+					$artifactsOnTable = sizeof($cards);
+					if ( $artifactsOnTable >0)
+						{
+							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );			
+							$sql = "UPDATE cards SET card_location ='".$thisid."' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
+							self::DbQuery( $sql );
+							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${thisPlayerName} is the only player returning to camp this turn and has picked some artifacts' ) , 
+								array( 'thisid' => $thisid ,
+									  'thisPlayerName' => $thisPlayerName ,
+									  'cards' => $cards 
+								) );	
+						}
+					
+					} ;
+				
 				// TODO - split and move Gems in cards
-			}
+				$this->setLeavingPlayer( $thisid  , 0);
+		 	}
+			
+			   
 			
 			
-			// TODO - Notify Others
+			
+			$exploringPlayers = $this->getExploringPlayers();
+			foreach($exploringPlayers as $playerId => $player )
+			{
+				$thisid = $player['id'] ;
+				$thisPlayerName = $player['playerName'];				
+				self::notifyAllPlayers ( "playerexploring", clienttranslate( '${thisPlayerName} decided to continue exploring ' ) , 
+				    array( 'thisid' => $thisid ,
+					      'thisPlayerName' => $thisPlayerName 
+					) );		
+		 	}
 			
 			
-			if ( sizeof($leavingPlayers) == sizeof( $players ))
+			if ( sizeof( $exploringPlayers ) == 0 )
 				{
-				self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to the camp, the deck is reshufled, this is the expedition number ${iterations} </b>' ), array( 'iterations' => $iterations ) );	
+					
 				$this->gamestate->nextState( 'reshuffle' );	
 				}
 			else
@@ -487,6 +568,8 @@ class incangold extends Table
 			}
 			
 	}
+
+////////////////////////////////////////////////////////////////////////////
 
     function displayScores()
     {
@@ -532,19 +615,19 @@ class incangold extends Table
             "title" => $this->resources["score_window_title"],
             "table" => $table,
             "header" => '<div>'.$this->resources["win_condition"].'</div>',
+			"closing" => clienttranslate( "OK" )
             //"closelabel" => clienttranslate( "Closing button label" )
         ) ); 
     }
 
+////////////////////////////////////////////////////////////////////////////
+
     function stGameEndScoring()
     {
-        //stats for each player, we want to reveal how many of each crop they have in storage
-        //then set their final score to whichever is lowest.
-        //In the case of a tie, check next smallest pile and so on. Set auxillery score for this
+        //stats for each player, we want to reveal how many gems they have in tent
+        //In the case of a tie, check amounts of artifacts. Set auxillery score for this
 
         //stats first
-
-
 
         $this->displayScores();
     
@@ -567,28 +650,7 @@ class incangold extends Table
     {
     	$statename = $state['name'];
     	
-        if ($state['type'] == "activeplayer") {
-            switch ($statename) {
-                default:
-                    $this->gamestate->nextState( "zombiePass" );
-                	break;
-            }
-
-            return;
-        }
-
-        if ($state['type'] == "multipleactiveplayer") {
-            // Make sure player is in a non blocking status for role turn
-            $sql = "
-                UPDATE  player
-                SET     player_is_multiactive = 0
-                WHERE   player_id = $active_player
-            ";
-            self::DbQuery( $sql );
-
-            $this->gamestate->updateMultiactiveOrNextState( '' );
-            return;
-        }
+        $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
 
         throw new feException( "Zombie mode not supported at this game state: ".$statename );
     }

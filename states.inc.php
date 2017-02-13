@@ -71,14 +71,15 @@ $machinestates = array(
     3 => array(
         "name" => "explore",  // a card is drawn and gems splitted if necessary
         "type" => "game",
-        "action" => "stexplore",
+        "description" => clienttranslate('Some players are exploring the temple'),
+		"action" => "stexplore",
         "updateGameProgression" => true,
         "transitions" => array("cleanpockets" => 4, "vote" => 5) //4 after seeing the card if the 2nd hazard is drawn or 5 the remaining players vote to stay or to continue exploring
     ),
 
     4 => array(
 	    "name" => "cleanpockets", 
-        "description" => clienttranslate('2nd hazard of the same type was drawn and all explorers in the temple flee droping their pouches'),
+        "description" => clienttranslate('2nd hazard of the same type was drawn and all explorers in the temple flee, droping their pouches'),
         "type" => "game",
         "action" => "stcleanpockets",
         "updateGameProgression" => true,
@@ -87,8 +88,8 @@ $machinestates = array(
 
     5 => array(
         "name" => "vote",
-        "description" => clienttranslate('Players must vote to stay exploring or to leave to camp'),
-        "descriptionmyturn" => clienttranslate('${you} must vote to stay exploring or to leave to camp'),
+        "description" => clienttranslate('Players must vote to stay exploring or to return to camp'),
+        "descriptionmyturn" => clienttranslate('${you} must vote to stay exploring or to return to camp'),
         "type" => "multipleactiveplayer",
 		"action" => "stvote",
         "possibleactions" => array( "voteExplore", "voteLeave" ),
@@ -98,7 +99,7 @@ $machinestates = array(
 	
 	6 => array(
 	    "name" => "processLeavers", 
-        "description" => clienttranslate('processing player actions acording their votes'),
+        "description" => clienttranslate('processing player actions acording to their votes'),
         "type" => "game",
         "action" => "stprocessLeavers",
         "updateGameProgression" => true,

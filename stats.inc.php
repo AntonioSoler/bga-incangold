@@ -78,11 +78,11 @@ $stats_type = array(
                     "type" => "int" ),
         
         "artifacts_number" => array("id"=> 12,
-                    "name" => totranslate("artifacts in storage"),
+                    "name" => totranslate("Artifacts in storage"),
                     "type" => "int" ),
         
         "gems_number" => array("id"=> 13,
-                    "name" => totranslate("gems in storage"),
+                    "name" => totranslate("Gems in storage"),
                     "type" => "int" ),
 
 /*
