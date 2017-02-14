@@ -277,6 +277,21 @@ function (dojo, declare) {
 				}
 		},
 		
+		slideToObjectAndDestroyAndIncCounter: function( mobile_obj , to, duration, delay ) 
+		{
+			var obj = dojo.byId(mobile_obj );
+			dojo.style(obj, "position", "absolute");
+			dojo.style(obj, "left", "0px");
+			dojo.style(obj, "top", "0px");
+			var anim = this.slideToObject(obj, to, duration, delay );
+			
+			this.param.push(to);
+            
+			dojo.connect(anim, "onEnd", this, 'incAndDestroy' );
+			anim.play();
+			return anim;
+			},
+		
 		slideTemporaryObjectAndIncCounter: function( mobile_obj_html , mobile_obj_parent, from, to, duration, delay ) 
 		{
 			var obj = dojo.place(mobile_obj_html, mobile_obj_parent );
@@ -430,7 +445,7 @@ function (dojo, declare) {
 			dojo.subscribe('playerleaving', this, "notif_playerleaving");
             this.notifqueue.setSynchronous('playerleaving', 3000);
 			dojo.subscribe('artifactspicked', this, "notif_artifactspicked");
-            this.notifqueue.setSynchronous('artifactspicked', 3000);
+            this.notifqueue.setSynchronous('artifactspicked', 2000);
 			dojo.subscribe('playerexploring', this, "notif_playerexploring");
             this.notifqueue.setSynchronous('playerexploring', 1000);
 			dojo.subscribe('stcleanpockets', this, "notif_stcleanpockets");
@@ -451,10 +466,10 @@ function (dojo, declare) {
 			var card = notif.args.card_played;
             this.tablecards.addToStockWithId( card.type , "tablecard_"+card.id ,  'templecard'+this.gamedatas.iterations  );
 			if ( card.type >=12 && card.type <=16 ) 
-				   {
-						dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
-						dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
-					}
+			   {
+					dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
+					dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
+				}
 			for ( var g=card.location_arg ; g>0 ; g-- )
 				{
 					this.placeGem( card.id+"_"+g, "tablecards_item_tablecard_"+card.id   ) ;					
@@ -485,8 +500,25 @@ function (dojo, declare) {
 					animspeed += 300;
 				}
 			}
+			if ( notif.args.gems >=1 )
+			{
+				gemarray=dojo.query('[id^=tablecards_] > *');
+				for ( var g=1 ; g<=notif.args.gems  ; g++ )
+				{
+					pickedgem=gemarray.push();
+					dojo.addClass( pickedgem ,"spining");
+					if (this.gamedatas.current_player_id == notif.args.thisid) 
+						{
+						this.slideToObjectAndDestroyAndIncCounter( pickedgem , "tent_"+notif.args.thisid , 500 , animspeed );
+						}
+					else 
+						{
+						this.slideToObjectAndDestroy( pickedgem , "tent_"+notif.args.thisid, 500 , animspeed );
+						}
+					animspeed += 300;
+				}
+			}
 			dojo.byId("gem_field_"+notif.args.thisid).innerHTML = 0 ;
-				
         },
 		
 		notif_playerexploring: function( notif )
@@ -508,18 +540,7 @@ function (dojo, declare) {
 			for ( card_id in notif.args.cards )				
 			{    
 				
-		        /*dojo.animateProperty({
-				  node:dojo.byId("tablecards_item_tablecard_"+notif.args.cards[card_id].id),
-				  duration: 1000,
-				  properties: {
-					  //WebkitTransform: {start: 'scale(1)', end: 'scale(0.2)'},
-                      //MozTransform: {start: 'scale(1)', end: 'scale(0.2)'}, 
-                      //OTransform: {start: 'scale(1)', end: 'scale(0.2)'}, 
-					  transform: {start: 'scale(1)', end: 'scale(0.2)'}
-				  }
-				}).play();*/
-            this.moveCard ( notif.args.cards[card_id].id ,'field_'+notif.args.thisid , 1 );	
-				
+            this.moveCard ( notif.args.cards[card_id].id ,'field_'+notif.args.thisid , 1 );
 			}
         },
 		
@@ -541,10 +562,7 @@ function (dojo, declare) {
 					}
 				catch(err){};
 					dojo.place( "<div class='artifacticon'></div>" , 'templePanel' , "last");
-					
-				}
-			;
-			
+				};
         },
 		
         notif_ObtainGems: function( notif )

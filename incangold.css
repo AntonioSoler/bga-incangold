@@ -252,8 +252,8 @@
 
 
 .spining{	
-	animation: spin 0.4s infinite;
-	-webkit-animation: spin 0.4s infinite;
+	animation: spin 0.5s infinite;
+	-webkit-animation: spin 0.5s infinite;
 	transform: rotate(1deg);
 }
 

@@ -512,6 +512,20 @@ class incangold extends Table
 			self::notifyAllPlayers ( "votingend", clienttranslate( 'Voting has ended and ${leavingPlayersNum} players decided to return to camp' ) , 
 				    array( 	'leavingPlayersNum' => $leavingPlayersNum 
 					) );
+			$sql = "SELECT sum( card_location_arg ) gemsonthetable FROM 'cards' WHERE card_location = 'table'";
+			$gemsonthetable = self::getUniqueValueFromDB( $sql );
+			
+			$gemsSplit=0 ;
+			if ( $leavingPlayersNum >= 1 )
+			{
+					$remaininggemsoncard = $gemsonthetable % $leavingPlayers;
+					$gemsSplit = floor( $gemsonthetable /  $leavingPlayers ); //and gems to split on the players
+					
+					$sql = "UPDATE cards SET card_location_arg = 0 WHERE card_location = 'table'";
+					self::DbQuery( $sql );
+					$sql = "UPDATE cards SET card_location_arg = $remaininggemsoncard WHERE card_location = 'table' AND card_type < 12 LIMIT 1";
+					self::DbQuery( $sql ); 		
+			}
 			
 			foreach($leavingPlayers as $playerId => $player )
 			{
@@ -520,16 +534,16 @@ class incangold extends Table
 				
 				$this->setExploringPlayer( $thisid  , 0);
 				$gems = $this->getGemsPlayer ( $thisid , 'field');
-				
-				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent');
+				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent') + $gemsSplit;
 				
 				$this->setGemsPlayer ( $thisid , 'tent', $gems );
 				$this->setGemsPlayer ( $thisid , 'field', 0 );
 				
-				self::notifyAllPlayers ( "playerleaving", clienttranslate( '${thisPlayerName} returned to camp and grabs the gems left on the floor' ) , 
+				self::notifyAllPlayers ( "playerleaving", clienttranslate( '${thisPlayerName} returned to camp may grab some gems left on the floor' ) , 
 				    array( 'thisid' => $thisid ,
-					      'thisPlayerName' => $thisPlayerName 
-					) );	
+					      'thisPlayerName' => $thisPlayerName,
+						  'gems' => $gemsSplit 
+					) );
 				
 				if ( $leavingPlayersNum < 2  )    // pick artifacts
 					{
