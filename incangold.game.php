@@ -372,7 +372,20 @@ class incangold extends Table
     function streshuffle()
 	{
 	$iterations = 1 + $this->getGameStateValue('iterations');	
-	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled, this is the expedition number ${iterations} </b>' ), array( 'iterations' => $iterations ) );	
+	if  ( $iterations <= 4 ) 
+	{
+	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the expedition number ${iterations} </b>'), array( 'iterations' => $iterations ) ) ;
+	}
+	if  ( $iterations == 5 ) 
+	{ 
+    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the FINAL expedition </b>' ), array( 'iterations' => $iterations  ) ) ;
+	}
+	if  ( $iterations > 5 ) 
+	{ 
+    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. END OF THE GAME'), array( 'iterations' => $iterations  ) ) ;
+	}
+
+	
 	$this->cards->moveAllCardsInLocation( 'table', 'deck' );  //collect all cards to the deck and reshuffle
 	$this->cards->shuffle( 'deck' );
 	

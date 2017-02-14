@@ -154,10 +154,11 @@
 .gem {
     width: 30px;
     height: 30px;
-	display: inline-block;
+	display: absolute;
     background-image: url('img/gem.png');
 	background-repeat: no-repeat;
 	margin: 6px;
+	padding:1px;
 	float: right;
 	font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
     color: rgba(1,1,1,1);

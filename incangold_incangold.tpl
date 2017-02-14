@@ -58,7 +58,7 @@
 							<td id="tent_{PLAYER_ID}" class="tent" ></td>
 						</tr>
 						<tr>
-							<td id="field_{PLAYER_ID}"> <div id="gem_counter_{PLAYER_ID}" class="gem"></div></td>
+							<td id="field_{PLAYER_ID}"><div id="gem_field_{PLAYER_ID}" class="gem">0</div></td>							
 						</tr> 
 					</tbody>
 				</table> 
@@ -90,7 +90,7 @@ var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${id}" styl
 
 */
 
-var jstpl_gem='<div class="gem gem_counter" id="gem_${id}" ></div>';
+var jstpl_gem='<div  id="gem_${id}" class="gem gem_counter"></div>';
 
 var jstpl_votecard= '<div id="votecard_${player_id}" class="votecard${action}" ></div>';
 

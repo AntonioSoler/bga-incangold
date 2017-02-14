@@ -51,11 +51,11 @@ function (dojo, declare) {
         setup: function( gamedatas )
         {
             console.log( "Starting game setup" );
-            
+            this.param=new Array();
             // Setting up player boards
             for( var player in this.gamedatas.players )
             {
-                dojo.byId("gem_counter_"+this.gamedatas.players[player].id).innerHTML=this.gamedatas.players[player].field;
+                dojo.byId("gem_field_"+this.gamedatas.players[player].id).innerHTML=this.gamedatas.players[player].field;
 				for ( var i=0 ; i < this.gamedatas.players[player].artifacts ;i++)
 					{
 						dojo.place( "<div class='artifacticon'></div>" , "field_" + this.gamedatas.players[player].id, "last" );
@@ -258,26 +258,14 @@ function (dojo, declare) {
 			var animspeed=300;
 			for (var i = 1 ; i<= amount ; i++)
 			{
-				this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source, destination, 1000 , animspeed );
+				this.slideTemporaryObjectAndIncCounter( '<div class="gem spining"></div>', 'page-content', source, destination, 500 , animspeed );
 				animspeed += 300;
 			}
-			for (var i = 1 ; i<= amount ; i++)
-			{
-				this.incCounterDelayed( $(destination).innerHTML++ , 4000);
-				
-			}
+			//for (var i = 1 ; i<= amount ; i++)
+			//{
+			//	$(destination).innerHTML++ ;
+			//}
         },
-		
-		sleep:function (ms) 
-		{
-        return new Promise(resolve => setTimeout(resolve, ms));
-		},
-		
-		incCounterDelayed: async function (id , time )
-		{
-		await this.sleep(time);
-		id++
-		},
 		
 		moveCard: function ( id , destination , isartifact ) 
 		{
@@ -288,6 +276,31 @@ function (dojo, declare) {
 					dojo.place( "<div class='artifacticon'></div>" , destination  , "last");
 				}
 		},
+		
+		slideTemporaryObjectAndIncCounter: function( mobile_obj_html , mobile_obj_parent, from, to, duration, delay ) 
+		{
+			var obj = dojo.place(mobile_obj_html, mobile_obj_parent );
+			dojo.style(obj, "position", "absolute");
+			dojo.style(obj, "left", "0px");
+			dojo.style(obj, "top", "0px");
+			this.placeOnObject(obj, from);
+			
+			var anim = this.slideToObject(obj, to, duration, delay );
+			
+			this.param.push(to);
+            
+			dojo.connect(anim, "onEnd", this, 'incAndDestroy' );
+			anim.play();
+			return anim;
+			},
+		 
+		incAndDestroy : function(node) 
+		{				
+				dojo.destroy(node);
+				target=this.param.shift();
+				dojo.byId(target).innerHTML=eval(dojo.byId(target).innerHTML) + 1;
+		}, 
+		
 		
         ///////////////////////////////////////////////////
         //// Player's action
@@ -311,11 +324,9 @@ function (dojo, declare) {
             
             // Preventing default browser reaction
             dojo.stopEvent( evt );
-
             // Check that this action is possible (see "possibleactions" in states.inc.php)
             if( ! this.checkAction( 'myAction' ) )
             {   return; }
-
             this.ajaxcall( "/incangold/incangold/myAction.html", { 
                                                                     lock: true, 
                                                                     myArgument1: arg1, 
@@ -328,10 +339,8 @@ function (dojo, declare) {
                             // (most of the time: nothing)
                             
                          }, function( is_error) {
-
                             // What to do after the server call in anyway (success or failure)
                             // (most of the time: nothing)
-
                          } );        
         },        
         
@@ -460,21 +469,23 @@ function (dojo, declare) {
 			this.placeVotecard ( notif.args.thisid , "Leave" );
 			this.addTooltipToClass( "votecardLeave", _( "This player has voted to return to camp and has stored his gems in the tent" ), "" );
             var animspeed=300;
-			gems = dojo.byId("gem_counter_"+notif.args.thisid).innerHTML
+			gems = dojo.byId("gem_field_"+notif.args.thisid).innerHTML
 			if ( gems >=1 )
 			{
 				for ( var g=1 ; g<=gems  ; g++ )
-					{
-					
-					this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_counter_"+notif.args.thisid , "tent_"+notif.args.thisid, 500 , animspeed );
+				{
+					if (this.gamedatas.current_player_id == notif.args.thisid) 
+						{
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid , 500 , animspeed );
+						}
+					else 
+						{
+						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid, 500 , animspeed );
+						}
 					animspeed += 300;
-					}
-				if (this.gamedatas.current_player_id == notif.args.thisid) 
-					{
-					dojo.byId("tent_"+notif.args.thisid).innerHTML= eval( gems +"+"+ dojo.byId("tent_"+notif.args.thisid).innerHTML);
-					}
+				}
 			}
-			dojo.byId("gem_counter_"+notif.args.thisid).innerHTML = 0 ;
+			dojo.byId("gem_field_"+notif.args.thisid).innerHTML = 0 ;
 				
         },
 		
@@ -543,7 +554,7 @@ function (dojo, declare) {
 			var card = notif.args.card_played;
 			for (i in notif.args.players)
 			{			
-				 this.moveGem ( "tablecards_item_tablecard_"+card.id , "gem_counter_"+this.gamedatas.players[i].id , notif.args.gems )
+				 this.moveGem ( "tablecards_item_tablecard_"+card.id , "gem_field_"+this.gamedatas.players[i].id , notif.args.gems )
 			}
 		    
         },
@@ -551,16 +562,18 @@ function (dojo, declare) {
         {
             console.log( 'notif_reshuffle' );
             console.log( notif );
-			
-			for (i in this.gamedatas.players )
-			{			
-				dojo.byId( "gem_counter_"+this.gamedatas.players[i].id ).innerHTML=0;
-				this.placeVotecard ( this.gamedatas.players[i].id , "Back" )  
+			if (notif.args.iterations <=5 )
+			{
+				for (i in this.gamedatas.players )
+				{			
+					dojo.byId( "gem_field_"+this.gamedatas.players[i].id ).innerHTML=0;
+					this.placeVotecard ( this.gamedatas.players[i].id , "Back" )  
+				}
+				this.tablecards.removeAll();
+				
+				this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 400, 0);  
+				dojo.addClass( "templecard"+notif.args.iterations ,"on")
 			}
-		    this.tablecards.removeAll();
-			
-			this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 400, 0);  
-			dojo.addClass( "templecard"+notif.args.iterations ,"on")
 			
         },
 		
