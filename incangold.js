@@ -503,9 +503,9 @@ function (dojo, declare) {
 			if ( notif.args.gems >=1 )
 			{
 				gemarray=dojo.query('[id^=tablecards_] > *');
-				for ( var g=1 ; g<=notif.args.gems  ; g++ )
+				for ( var g=0 ; g<notif.args.gems  ; g++ )
 				{
-					pickedgem=gemarray.push();
+					pickedgem=gemarray[g].id;
 					dojo.addClass( pickedgem ,"spining");
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{

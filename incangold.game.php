@@ -512,14 +512,14 @@ class incangold extends Table
 			self::notifyAllPlayers ( "votingend", clienttranslate( 'Voting has ended and ${leavingPlayersNum} players decided to return to camp' ) , 
 				    array( 	'leavingPlayersNum' => $leavingPlayersNum 
 					) );
-			$sql = "SELECT sum( card_location_arg ) gemsonthetable FROM 'cards' WHERE card_location = 'table'";
+			$sql = "SELECT sum( card_location_arg ) gemsonthetable FROM cards WHERE card_location = 'table'";
 			$gemsonthetable = self::getUniqueValueFromDB( $sql );
 			
 			$gemsSplit=0 ;
 			if ( $leavingPlayersNum >= 1 )
 			{
-					$remaininggemsoncard = $gemsonthetable % $leavingPlayers;
-					$gemsSplit = floor( $gemsonthetable /  $leavingPlayers ); //and gems to split on the players
+					$remaininggemsoncard = $gemsonthetable % $leavingPlayersNum;
+					$gemsSplit = floor( $gemsonthetable /  $leavingPlayersNum ); //and gems to split on the players
 					
 					$sql = "UPDATE cards SET card_location_arg = 0 WHERE card_location = 'table'";
 					self::DbQuery( $sql );
