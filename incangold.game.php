@@ -531,9 +531,45 @@ class incangold extends Table
 			{
 				$thisid = $player['id'] ;
 				$thisPlayerName = $player['playerName'];
+				$extra=0;
+				if ( $leavingPlayersNum < 2  )    // pick artifacts
+					{
+					$sql = "SELECT card_id AS id FROM cards WHERE card_location ='table' AND card_type in ( 12,13,14,15,16)";
+					$cards = self::getCollectionFromDB($sql);
+					$artifactsOnTable = sizeof($cards);
+					
+					
+					if ( $artifactsOnTable >0)
+						{
+							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
+							self::getGameStateValue( 'artifactspicked' );
+							if ( $artifactspicked = 4  )  
+							{
+							$extra=5;	
+							}
+							if ( $artifactspicked = 5 ) 
+							{
+								if ( $artifactsOnTable = 1 )
+								{
+									$extra=5;	
+								}
+								if ( $artifactsOnTable > 1 ) 
+								{
+									$extra=10;	
+								}
+							}
+							$sql = "UPDATE cards SET card_location ='".$thisid."' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
+							self::DbQuery( $sql );
+							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${thisPlayerName} is the only player returning to camp this turn and has picked some artifacts (4th and 5th artifact appearing give 5 extra gems)' ) , 
+								array( 'thisid' => $thisid ,
+									  'thisPlayerName' => $thisPlayerName ,
+									  'cards' => $cards,
+								) );	
+						}	
+					} ;
 				
 				$this->setExploringPlayer( $thisid  , 0);
-				$gems = $this->getGemsPlayer ( $thisid , 'field');
+				$gems = $this->getGemsPlayer ( $thisid , 'field') + $extra;  // extra gems for the 4th and 5th 
 				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent') + $gemsSplit;
 				
 				$this->setGemsPlayer ( $thisid , 'tent', $gems );
@@ -552,19 +588,34 @@ class incangold extends Table
 					$artifactsOnTable = sizeof($cards);
 					if ( $artifactsOnTable >0)
 						{
-							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );			
+							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
+							self::getGameStateValue( 'artifactspicked' );
+							if ( $artifactspicked = 4  )  
+							{
+							$extra=5;	
+							}
+							if ( $artifactspicked = 5 ) 
+							{
+								if ( $artifactsOnTable = 1 )
+								{
+									$extra=5;	
+								}
+								if ( $artifactsOnTable > 1 ) 
+								{
+									$extra=10;	
+								}
+							}
 							$sql = "UPDATE cards SET card_location ='".$thisid."' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
 							self::DbQuery( $sql );
-							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${thisPlayerName} is the only player returning to camp this turn and has picked some artifacts' ) , 
+							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${thisPlayerName} is the only player returning to camp this turn and has picked some artifacts (4th and 5th Artifact give 5 extra gems)' ) , 
 								array( 'thisid' => $thisid ,
 									  'thisPlayerName' => $thisPlayerName ,
-									  'cards' => $cards 
+									  'cards' => $cards,
+									  
 								) );	
-						}
-					
+						}	
 					} ;
 				
-				// TODO - split and move Gems in cards
 				$this->setLeavingPlayer( $thisid  , 0);
 		 	}
 			
