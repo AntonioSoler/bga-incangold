@@ -374,15 +374,15 @@ class incangold extends Table
 	$iterations = 1 + $this->getGameStateValue('iterations');	
 	if  ( $iterations <= 4 ) 
 	{
-	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the expedition number ${iterations} </b>'), array( 'iterations' => $iterations ) ) ;
+	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers are in the camp. The deck is shuffled. This is the expedition number ${iterations}</b>'), array( 'iterations' => $iterations ) ) ;
 	}
 	if  ( $iterations == 5 ) 
 	{ 
-    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the FINAL expedition </b>' ), array( 'iterations' => $iterations  ) ) ;
+    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the FINAL expedition.</b>' ), array( 'iterations' => $iterations  ) ) ;
 	}
 	if  ( $iterations > 5 ) 
 	{ 
-    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. END OF THE GAME'), array( 'iterations' => $iterations  ) ) ;
+    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. END OF THE GAME</b>'), array( 'iterations' => $iterations  ) ) ;
 	}
 
 	
@@ -452,7 +452,7 @@ class incangold extends Table
 	$HazardsDrawn = self::getCollectionFromDB("SELECT COUNT(*) c FROM cards WHERE card_location ='table' AND card_type > 12 GROUP BY card_type HAVING c > 1 ");
 	if (sizeof( $HazardsDrawn )>=1)
 		{
-			self::notifyAllPlayers( "stcleanpockets", clienttranslate( 'This is the second ${card_played_name} drawn. Players in the temple lost their gems. One card of this kind is removed from the deck and any artifact left too' ), array(
+			self::notifyAllPlayers( "stcleanpockets", clienttranslate( 'This is the second ${card_played_name} drawn. Players in the temple lost their gems. One card of this kind is removed from the deck and any remaining artifacts are removed as well' ), array(
                 'card_played' => $PlayedCard,
 				'card_played_name' => $cardPlayedName
             ) ); 
@@ -464,7 +464,7 @@ class incangold extends Table
 		{ 
 		if ( $gemsSplit > 0 ) 
 			{ 
-				self::notifyAllPlayers( "ObtainGems", clienttranslate( 'The loot is divided. All explorers in the temple obtain ${gems}' ), array(
+				self::notifyAllPlayers( "ObtainGems", clienttranslate( 'The loot is divided. All explorers in the temple obtain ${gems} gems.' ), array(
 					'gems' => $gemsSplit,
 					'card_played' => $PlayedCard,
 					'players' => $exploringPlayers
@@ -561,9 +561,9 @@ class incangold extends Table
 							}
 							$sql = "UPDATE cards SET card_location ='".$thisid."' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
 							self::DbQuery( $sql );
-							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${thisPlayerName} is the only player returning to camp this turn and has picked some artifacts (4th and 5th artifact appearing give 5 extra gems)' ) , 
+							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${player_name} is the only player returning to camp this turn and has picked some artifacts (4th and 5th artifact appearing give 5 extra gems)' ) , 
 								array( 'thisid' => $thisid ,
-									  'thisPlayerName' => $thisPlayerName ,
+									  'player_name' => $thisPlayerName ,
 									  'cards' => $cards,
 									  'extra' => $extra
 								) );	
@@ -577,9 +577,9 @@ class incangold extends Table
 				$this->setGemsPlayer ( $thisid , 'tent', $gems );
 				$this->setGemsPlayer ( $thisid , 'field', 0 );
 				
-				self::notifyAllPlayers ( "playerleaving", clienttranslate( '${thisPlayerName} returned to camp may grab some gems left on the floor' ) , 
+				self::notifyAllPlayers ( "playerleaving", clienttranslate( '${player_name} returned to camp may grab some gems left on the floor' ) , 
 				    array( 'thisid' => $thisid ,
-					      'thisPlayerName' => $thisPlayerName,
+					      'player_name' => $thisPlayerName,
 						  'gems' => $gemsSplit 
 					) );
 				$this->setLeavingPlayer( $thisid  , 0);
@@ -591,9 +591,9 @@ class incangold extends Table
 				$thisid = $player['id'] ;
 				self::incStat(1, 'cards_seen', $thisid);
 				$thisPlayerName = $player['playerName'];				
-				self::notifyAllPlayers ( "playerexploring", clienttranslate( '${thisPlayerName} decided to continue exploring ' ) , 
+				self::notifyAllPlayers ( "playerexploring", clienttranslate( '${player_name} decided to continue exploring ' ) , 
 				    array( 'thisid' => $thisid ,
-					      'thisPlayerName' => $thisPlayerName 
+					      'player_name' => $thisPlayerName 
 					) );		
 		 	}
 			

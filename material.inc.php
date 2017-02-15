@@ -22,17 +22,17 @@
  //trasnslatable text will go here for convenience
  
  $this->resources = array(
-    "gems"     => clienttranslate('gems'),
-    "tablet"   => clienttranslate('tablet'),
-    "idol"     => clienttranslate('idol'),
-    "statue"   => clienttranslate('statue'),
-    "vase"     => clienttranslate('vase'),
-    "necklace" => clienttranslate('necklace'),
-    "mummy"    => clienttranslate('mummy'),
-	"snake"    => clienttranslate('snake'),
-	"spiders"  => clienttranslate('spiders'),
-	"rocks"    => clienttranslate('rocks'),
-	"fire"     => clienttranslate('fire'),
+    "gems"     => clienttranslate('Gems'),
+    "tablet"   => clienttranslate('Tablet'),
+    "idol"     => clienttranslate('Idol'),
+    "statue"   => clienttranslate('Statue'),
+    "vase"     => clienttranslate('Vase'),
+    "necklace" => clienttranslate('Necklace'),
+    "mummy"    => clienttranslate('Mummy'),
+	"snake"    => clienttranslate('Snake'),
+	"spiders"  => clienttranslate('Spiders'),
+	"rocks"    => clienttranslate('Rocks'),
+	"fire"     => clienttranslate('Fire'),
 	"artifacts"    => clienttranslate('artifacts'),
 	"score_window_title" => clienttranslate('FINAL SCORE'),
 	"win_condition" => clienttranslate('The player with the most gems in their tent wins - Artifacts are worth 5 gems')
