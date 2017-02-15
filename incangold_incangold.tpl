@@ -41,7 +41,10 @@
 							<td id="templecard1" class="templecard t1"> </td>
 							<td id="templecard2" class="templecard t2"> </td>
 						</tr> </tbody>
-				</table>		
+				</table>
+				<div>
+				{DECKSIZE}<span id="decksize">0</span>
+				</div>
 			</div>
 		</td>
 		<td>
@@ -61,7 +64,7 @@
 							<td id="field_{PLAYER_ID}"><div id="gem_field_{PLAYER_ID}" class="gem">0</div></td>							
 						</tr> 
 					</tbody>
-				</table> 
+				</table>
 			</div>
 		<!-- END camp -->
 			</div>

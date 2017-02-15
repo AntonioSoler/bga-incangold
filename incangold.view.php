@@ -77,6 +77,8 @@
         */
 		
 		$this->tpl['TABLE'] = self::_("Table");
+		$this->tpl['DECKSIZE'] = self::_("Deck Size: ");
+		
 		$this->page->begin_block( "incangold_incangold", "camp" );
      	foreach( $players as $player )	{
            

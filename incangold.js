@@ -65,12 +65,14 @@ function (dojo, declare) {
 			
 			for ( var i=0 ; i < this.gamedatas.templeartifacts ;i++)
 					{
-						dojo.place( "<div class='artifacticon'></div>" , "templePanel", "last" );
-						this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 3rd and 4th add 5 extra gems" ), "" );
+						dojo.place( "<div class='artifacticon removed'></div>" , "templecard5", "last" );
+						this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 					} 
 			
 			
             dojo.byId("tent_"+this.gamedatas.current_player_id).innerHTML=this.gamedatas.tent;
+			
+			dojo.byId("decksize").innerHTML=this.gamedatas.cardsRemaining;
 			
             for (i in this.gamedatas.exploringPlayers)
 			{			
@@ -274,6 +276,7 @@ function (dojo, declare) {
 			if ( isartifact == 1 ) 
 				{
 					dojo.place( "<div class='artifacticon'></div>" , destination  , "last");
+					this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 4th and 5th drawn give 5 extra gems" ), "" );
 				}
 		},
 		
@@ -475,6 +478,7 @@ function (dojo, declare) {
 					this.placeGem( card.id+"_"+g, "tablecards_item_tablecard_"+card.id   ) ;					
 				}
 			this.addTooltipToClass( "stockitem", _( "This represents the events ocurred during exploration" ), "" );
+			dojo.byId("decksize").innerHTML=eval(dojo.byId("decksize").innerHTML)-1;
         },
 		
 		notif_playerleaving: function( notif )
@@ -484,7 +488,7 @@ function (dojo, declare) {
             console.log( notif );
 			this.placeVotecard ( notif.args.thisid , "Leave" );
 			this.addTooltipToClass( "votecardLeave", _( "This player has voted to return to camp and has stored his gems in the tent" ), "" );
-            var animspeed=300;
+            var animspeed=0;
 			gems = dojo.byId("gem_field_"+notif.args.thisid).innerHTML
 			if ( gems >=1 )
 			{
@@ -568,7 +572,8 @@ function (dojo, declare) {
 			for (i=0 ; i< artifacts.length ; i++ )
 			    {
 					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 300 ,0);
-					dojo.place( "<div class='artifacticon'></div>" , 'templePanel' , "last");
+					dojo.place( "<div class='artifacticon removed'></div>" , 'templecard5' , "last");
+					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 				}	
         },
 		
@@ -598,6 +603,7 @@ function (dojo, declare) {
 				
 				this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 400, 0);  
 				dojo.addClass( "templecard"+notif.args.iterations ,"on")
+				dojo.byId("decksize").innerHTML=notif.args.cardsRemaining;
 			}
 			
         },
