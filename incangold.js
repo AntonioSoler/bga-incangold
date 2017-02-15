@@ -77,7 +77,6 @@ function (dojo, declare) {
 				 dojo.addClass( "votecard_"+i , "votecardExplore" );
 			}
 			
-            // TODO: Set up your game interface here, according to "gamedatas"
             this.tablecards = new ebg.stock();
             this.tablecards.create( this, $('tablecards'), this.cardwidth, this.cardheight );
             this.tablecards.image_items_per_row = 7;
@@ -97,7 +96,7 @@ function (dojo, declare) {
 				if ( card.type >=12 && card.type <=16 ) 
 				    {
 						dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
-						dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
+						//dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
 					}
 				 for ( var g=card.location_arg ; g>0 ; g-- )
 				{
@@ -121,6 +120,7 @@ function (dojo, declare) {
 			
 			this.addTooltipToClass( "votecardExplore", _( "This player has voted to continue exploring" ), "" );
 			
+			this.addTooltipToClass( "stockitem", _( "This represents the events ocurred during exploration" ), "" );
 			
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -473,7 +473,8 @@ function (dojo, declare) {
 			for ( var g=card.location_arg ; g>0 ; g-- )
 				{
 					this.placeGem( card.id+"_"+g, "tablecards_item_tablecard_"+card.id   ) ;					
-				}		
+				}
+			this.addTooltipToClass( "stockitem", _( "This represents the events ocurred during exploration" ), "" );
         },
 		
 		notif_playerleaving: function( notif )
@@ -503,17 +504,17 @@ function (dojo, declare) {
 			if ( notif.args.gems >=1 )
 			{
 				gemarray=dojo.query('[id^=tablecards_] > *');
-				for ( var g=0 ; g<notif.args.gems  ; g++ )
+				for ( var g=0 ; g<= notif.args.gems-1  ; g++ )
 				{
-					pickedgem=gemarray[g].id;
-					dojo.addClass( pickedgem ,"spining");
+					pickedgem=gemarray[g];
+					dojo.addClass( pickedgem.id ,"spining");
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{
-						this.slideToObjectAndDestroyAndIncCounter( pickedgem , "tent_"+notif.args.thisid , 500 , animspeed );
+						this.slideToObjectAndDestroyAndIncCounter( pickedgem.id , "tent_"+notif.args.thisid , 500 , animspeed );
 						}
 					else 
 						{
-						this.slideToObjectAndDestroy( pickedgem , "tent_"+notif.args.thisid, 500 , animspeed );
+						this.slideToObjectAndDestroy( pickedgem.id , "tent_"+notif.args.thisid, 500 , animspeed );
 						}
 					animspeed += 300;
 				}
@@ -536,11 +537,22 @@ function (dojo, declare) {
             console.log( 'notif_artifactspicked' );
 			notif.args=this.notifqueue.playerNameFilterGame(notif.args);
             console.log( notif );
-			
+			if ( notif.args.extra >0 )
+			{
+				animspeed = 0;
+				if (this.gamedatas.current_player_id == notif.args.thisid) 
+						{
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 400 , animspeed );
+						}
+					else 
+						{
+						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 400 , animspeed );
+						}
+				animspeed += 300;
+			}	
 			for ( card_id in notif.args.cards )				
 			{    
-				
-            this.moveCard ( notif.args.cards[card_id].id ,'field_'+notif.args.thisid , 1 );
+				this.moveCard ( notif.args.cards[card_id].id ,'field_'+notif.args.thisid , 1 );
 			}
         },
 		
@@ -551,18 +563,13 @@ function (dojo, declare) {
 			var card = notif.args.card_played;
             
 			this.moveCard ( card.id ,'templePanel', 0);
-			artifacts=dojo.query(".isartifact");
-			
-			for (i=0 ; i<=artifacts.length ; i++)
-			
-				{  	try	{
-					thiscard=artifacts[i].id;
-					dojo.addClass( thiscard ,"animatedcard") ; 
-					this.slideToObjectAndDestroy( thiscard , 'templePanel',1000 ) ;
-					}
-				catch(err){};
+			dojo.query(".isartifact").addClass("animatedcard");
+			artifacts=document.getElementsByClassName("isartifact");
+			for (i=0 ; i< artifacts.length ; i++ )
+			    {
+					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 300 ,0);
 					dojo.place( "<div class='artifacticon'></div>" , 'templePanel' , "last");
-				};
+				}	
         },
 		
         notif_ObtainGems: function( notif )

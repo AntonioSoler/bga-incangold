@@ -88,7 +88,7 @@ $machinestates = array(
 
     5 => array(
         "name" => "vote",
-        "description" => clienttranslate('Players must vote to stay exploring or to return to camp'),
+        "description" => clienttranslate('Players in the temple must vote to stay exploring or to return to camp'),
         "descriptionmyturn" => clienttranslate('${you} must vote to stay exploring or to return to camp'),
         "type" => "multipleactiveplayer",
 		"action" => "stvote",
@@ -99,7 +99,7 @@ $machinestates = array(
 	
 	6 => array(
 	    "name" => "processLeavers", 
-        "description" => clienttranslate('processing player actions acording to their votes'),
+        "description" => clienttranslate('...processing player actions acording to their votes'),
         "type" => "game",
         "action" => "stprocessLeavers",
         "updateGameProgression" => true,
@@ -107,6 +107,7 @@ $machinestates = array(
     ),
     
     90 => array(
+	   "description" => clienttranslate('Final Score'),
         "name" => "gameEndScoring",
         "type" => "game",
         "action" => "stGameEndScoring",

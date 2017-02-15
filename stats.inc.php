@@ -55,6 +55,9 @@ $stats_type = array(
         "cards_drawn" => array("id"=> 10,
                     "name" => totranslate("Number of cards drawn"),
                     "type" => "int" ),
+		"artifacts_drawn" => array("id"=> 11,
+                    "name" => totranslate("Number of artifacts drawn"),
+                    "type" => "int" ),			
 
 /*
         Examples:
@@ -73,15 +76,15 @@ $stats_type = array(
     // Statistics existing for each player
     "player" => array(
 
-        "cards_seen" => array("id"=> 11,
+        "cards_seen" => array("id"=> 12,
                     "name" => totranslate("Number of cards seen (while exploring) "),
                     "type" => "int" ),
         
-        "artifacts_number" => array("id"=> 12,
+        "artifacts_number" => array("id"=> 13,
                     "name" => totranslate("Artifacts in storage"),
                     "type" => "int" ),
         
-        "gems_number" => array("id"=> 13,
+        "gems_number" => array("id"=> 14,
                     "name" => totranslate("Gems in storage"),
                     "type" => "int" ),
 

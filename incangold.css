@@ -72,7 +72,7 @@
 .templediv{
 	width:400px;
 	height:388px;	
-
+	margin:10px
 	}
 
 .templeclass{width:400px;
@@ -229,7 +229,7 @@
     }
 
 .stockitem {
-    
+    margin:10px;
     display: inline-block;
 }
 

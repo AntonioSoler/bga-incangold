@@ -93,8 +93,8 @@ class incangold extends Table
         // Init game statistics
         // (note: statistics used in this file must be defined in your stats.inc.php file)
         
-		self::initStat( 'table', 'cards_drawn', 0 );    // Init a table statistics
-        
+		self::initStat( 'table', 'cards_drawn', 1 );    // Init a table statistics
+        self::initStat( 'table', 'artifacts_drawn', 0 );
 		self::initStat( 'player', 'cards_seen' , 0 );  // Init a player statistics (for all players)
 		self::initStat( 'player', 'artifacts_number' , 0 );  // Init a player statistics (for all players)
 		self::initStat( 'player', 'gems_number' , 0 );  // Init a player statistics (for all players)
@@ -412,7 +412,8 @@ class incangold extends Table
 	}
 ////////////////////////////////////////////////////////////////////////////
 	function stexplore()
-	{		
+	{
+	self::incStat(1, 'cards_drawn' );
 	$exploringPlayers = $this->getExploringPlayers();
 	for ($i = 1; $i <= 1; $i++) 
 		{
@@ -531,16 +532,16 @@ class incangold extends Table
 			{
 				$thisid = $player['id'] ;
 				$thisPlayerName = $player['playerName'];
-				$extra=0;
+								
 				if ( $leavingPlayersNum < 2  )    // pick artifacts
 					{
 					$sql = "SELECT card_id AS id FROM cards WHERE card_location ='table' AND card_type in ( 12,13,14,15,16)";
 					$cards = self::getCollectionFromDB($sql);
 					$artifactsOnTable = sizeof($cards);
 					
-					
 					if ( $artifactsOnTable >0)
 						{
+							$extra=0;
 							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
 							self::getGameStateValue( 'artifactspicked' );
 							if ( $artifactspicked = 4  )  
@@ -564,12 +565,13 @@ class incangold extends Table
 								array( 'thisid' => $thisid ,
 									  'thisPlayerName' => $thisPlayerName ,
 									  'cards' => $cards,
+									  'extra' => $extra
 								) );	
 						}	
 					} ;
-				
 				$this->setExploringPlayer( $thisid  , 0);
-				$gems = $this->getGemsPlayer ( $thisid , 'field') + $extra;  // extra gems for the 4th and 5th 
+				
+				$gems = $this->getGemsPlayer ( $thisid , 'field') ;  
 				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent') + $gemsSplit;
 				
 				$this->setGemsPlayer ( $thisid , 'tent', $gems );
@@ -580,60 +582,20 @@ class incangold extends Table
 					      'thisPlayerName' => $thisPlayerName,
 						  'gems' => $gemsSplit 
 					) );
-				
-				if ( $leavingPlayersNum < 2  )    // pick artifacts
-					{
-					$sql = "SELECT card_id AS id FROM cards WHERE card_location ='table' AND card_type in ( 12,13,14,15,16)";
-					$cards = self::getCollectionFromDB($sql);
-					$artifactsOnTable = sizeof($cards);
-					if ( $artifactsOnTable >0)
-						{
-							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
-							self::getGameStateValue( 'artifactspicked' );
-							if ( $artifactspicked = 4  )  
-							{
-							$extra=5;	
-							}
-							if ( $artifactspicked = 5 ) 
-							{
-								if ( $artifactsOnTable = 1 )
-								{
-									$extra=5;	
-								}
-								if ( $artifactsOnTable > 1 ) 
-								{
-									$extra=10;	
-								}
-							}
-							$sql = "UPDATE cards SET card_location ='".$thisid."' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
-							self::DbQuery( $sql );
-							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${thisPlayerName} is the only player returning to camp this turn and has picked some artifacts (4th and 5th Artifact give 5 extra gems)' ) , 
-								array( 'thisid' => $thisid ,
-									  'thisPlayerName' => $thisPlayerName ,
-									  'cards' => $cards,
-									  
-								) );	
-						}	
-					} ;
-				
 				$this->setLeavingPlayer( $thisid  , 0);
 		 	}
-			
-			   
-			
-			
 			
 			$exploringPlayers = $this->getExploringPlayers();
 			foreach($exploringPlayers as $playerId => $player )
 			{
 				$thisid = $player['id'] ;
+				self::incStat(1, 'cards_seen', $thisid);
 				$thisPlayerName = $player['playerName'];				
 				self::notifyAllPlayers ( "playerexploring", clienttranslate( '${thisPlayerName} decided to continue exploring ' ) , 
 				    array( 'thisid' => $thisid ,
 					      'thisPlayerName' => $thisPlayerName 
 					) );		
 		 	}
-			
 			
 			if ( sizeof( $exploringPlayers ) == 0 )
 				{
@@ -644,7 +606,6 @@ class incangold extends Table
 			{
 				$this->gamestate->nextState( 'explore' );
 			}
-			
 	}
 
 ////////////////////////////////////////////////////////////////////////////
@@ -671,9 +632,13 @@ class incangold extends Table
             $table[1][] = $this->getGemsPlayer( $player_id, 'tent' );
             $table[2][] = $this->cards->countCardsInLocation( $player['player_id']);
 
-            $score = $this->getGemsPlayer( $player_id, 'tent' ) ;
-			$score = $score + 5 * ($this->cards->countCardsInLocation( $player_id ));
+            $gems = $this->getGemsPlayer( $player_id, 'tent' ) ;
+			$artifacts = $this->cards->countCardsInLocation( $player_id );
 			
+			$score = $gems + 5 * $artifacts ;
+			
+			self::setStat( $gems , "gems_number", $player_id );
+			self::setStat( $artifacts , "artifacts_number", $player_id );
 			
 			$sql = "UPDATE player SET player_score = ".$score." WHERE player_id=".$player['player_id'];
             self::DbQuery( $sql );
@@ -687,6 +652,7 @@ class incangold extends Table
                                  'type' => ''
                                );
         }
+		self::setStat( self::getGameStateValue( 'artifactspicked') , "artifacts_drawn" );
 
         $this->notifyAllPlayers( "tableWindow", '', array(
             "id" => 'finalScoring',
