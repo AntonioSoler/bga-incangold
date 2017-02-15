@@ -371,23 +371,23 @@ class incangold extends Table
 
     function streshuffle()
 	{
+	$this->cards->moveAllCardsInLocation( 'table', 'deck' );  //collect all cards to the deck and reshuffle
+	$this->cards->shuffle( 'deck' );
+	$cardsRemaining = $this->cards->countCardsInLocation('deck');
 	$iterations = 1 + $this->getGameStateValue('iterations');	
+	
 	if  ( $iterations <= 4 ) 
 	{
-	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers are in the camp. The deck is shuffled. This is the expedition number ${iterations}</b>'), array( 'iterations' => $iterations ) ) ;
+	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers are in the camp. The deck is shuffled. This is the expedition number ${iterations}</b>'), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
 	}
 	if  ( $iterations == 5 ) 
 	{ 
-    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the FINAL expedition.</b>' ), array( 'iterations' => $iterations  ) ) ;
+    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the FINAL expedition.</b>' ), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
 	}
 	if  ( $iterations > 5 ) 
 	{ 
-    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. END OF THE GAME</b>'), array( 'iterations' => $iterations  ) ) ;
+    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. END OF THE GAME</b>'), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
 	}
-
-	
-	$this->cards->moveAllCardsInLocation( 'table', 'deck' );  //collect all cards to the deck and reshuffle
-	$this->cards->shuffle( 'deck' );
 	
 	$players = self::loadPlayersBasicInfos();
 	foreach( $players as $player_id => $player )
@@ -531,7 +531,7 @@ class incangold extends Table
 			foreach($leavingPlayers as $playerId => $player )
 			{
 				$thisid = $player['id'] ;
-				$thisPlayerName = $player['playerName'];
+				$thisPlayerName = $players[$thisid]['player_name'];
 								
 				if ( $leavingPlayersNum < 2  )    // pick artifacts
 					{
@@ -590,7 +590,7 @@ class incangold extends Table
 			{
 				$thisid = $player['id'] ;
 				self::incStat(1, 'cards_seen', $thisid);
-				$thisPlayerName = $player['playerName'];				
+				$thisPlayerName = $players[$thisid]['player_name'];
 				self::notifyAllPlayers ( "playerexploring", clienttranslate( '${player_name} decided to continue exploring ' ) , 
 				    array( 'thisid' => $thisid ,
 					      'player_name' => $thisPlayerName 
