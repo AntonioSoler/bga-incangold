@@ -154,6 +154,15 @@
 .gem {
     width: 30px;
     height: 30px;
+	position: absolute;
+    background-image: url('img/gem.png');
+	background-repeat: no-repeat
+	z-index:-1 ;
+}
+
+.gemfield {
+    width: 30px;
+    height: 30px;
 	display: absolute;
     background-image: url('img/gem.png');
 	background-repeat: no-repeat;

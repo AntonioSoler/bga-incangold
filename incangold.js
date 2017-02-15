@@ -237,10 +237,16 @@ function (dojo, declare) {
 
         placeGem: function ( gem_id, destination) 
 		{
+			
+		x = Math.floor(Math.random() * 110) + 20;  	
+		y = Math.floor(Math.random() * 200) + 30;
 		dojo.place(
                 this.format_block('jstpl_gem', {
                     id: gem_id ,
+					x : x,
+					y : y
                 }), destination);
+		this.addTooltipToClass( "cardgem", _( "Some gems were left on the floor because they could not be didvidied evenly among the explorers. The players could pick this when returning on the way back to camp" ), "" );
         },
 		
 		placeVotecard: function ( player_id, action) 
@@ -471,7 +477,7 @@ function (dojo, declare) {
 			if ( card.type >=12 && card.type <=16 ) 
 			   {
 					dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
-					dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
+					//dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
 				}
 			for ( var g=card.location_arg ; g>0 ; g-- )
 				{
@@ -506,21 +512,28 @@ function (dojo, declare) {
 				}
 			}
 			if ( notif.args.gems >=1 )
-			{
+			{	
+				animspeed=0;
 				gemarray=dojo.query('[id^=tablecards_] > *');
 				for ( var g=0 ; g<= notif.args.gems-1  ; g++ )
-				{
-					pickedgem=gemarray[g];
-					dojo.addClass( pickedgem.id ,"spining");
-					if (this.gamedatas.current_player_id == notif.args.thisid) 
-						{
-						this.slideToObjectAndDestroyAndIncCounter( pickedgem.id , "tent_"+notif.args.thisid , 500 , animspeed );
-						}
-					else 
-						{
-						this.slideToObjectAndDestroy( pickedgem.id , "tent_"+notif.args.thisid, 500 , animspeed );
-						}
-					animspeed += 300;
+				{   
+			        try {    //Surrounding this with a TRY-CATCH because there is a race condition, if the user presses F5 during this process the gamedatas would give us 0 gems on the cards to pick.
+					    pickedgem=gemarray[g];
+						source=pickedgem.parentElement.id
+					    dojo.destroy( pickedgem.id );
+						
+						if (this.gamedatas.current_player_id == notif.args.thisid) 
+							{
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 500 , animspeed );
+							}
+						else 
+							{
+							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 500 , animspeed );
+							}
+						animspeed += 300;
+					}
+					catch(err) {}
+					
 				}
 			}
 			dojo.byId("gem_field_"+notif.args.thisid).innerHTML = 0 ;
@@ -546,11 +559,11 @@ function (dojo, declare) {
 				animspeed = 0;
 				if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{
-						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 400 , animspeed );
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 500 , animspeed );
 						}
 					else 
 						{
-						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 400 , animspeed );
+						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 500 , animspeed );
 						}
 				animspeed += 300;
 			}	
@@ -571,7 +584,7 @@ function (dojo, declare) {
 			artifacts=document.getElementsByClassName("isartifact");
 			for (i=0 ; i< artifacts.length ; i++ )
 			    {
-					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 300 ,0);
+					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 400 ,0);
 					dojo.place( "<div class='artifacticon removed'></div>" , 'templecard5' , "last");
 					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 				}	

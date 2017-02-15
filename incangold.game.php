@@ -16,7 +16,6 @@
   *
   */
 
-
 require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
 class incangold extends Table
@@ -24,7 +23,6 @@ class incangold extends Table
 	function incangold( )
 	{
         	
- 
         // Your global variables labels:
         //  Here, you can assign labels to global variables you are using for this game.
         //  You can use any number of global variables with IDs between 10 and 99.
@@ -595,8 +593,7 @@ class incangold extends Table
 				    array( 'thisid' => $thisid ,
 					      'player_name' => $thisPlayerName 
 					) );		
-		 	}
-			
+		 	}		
 			if ( sizeof( $exploringPlayers ) == 0 )
 				{
 					
@@ -645,8 +642,7 @@ class incangold extends Table
 			
 			$sql = "UPDATE player SET player_score_aux = ".$this->cards->countCardsInLocation( $player['player_id'])." WHERE player_id=".$player['player_id'];
             self::DbQuery( $sql );
-			
-			
+				
             $table[3][] = array( 'str' => '<span class=\'score\'>${player_score}</span>',
                                  'args' => array( 'player_score' => $score ),
                                  'type' => ''
