@@ -112,9 +112,9 @@ function (dojo, declare) {
             
 			this.addTooltipToClass( "templeclass", _( "The number of expeditions remaining" ), "" );
 			
-			this.addTooltipToClass( "tent", _( "Gems are stored here after each expedition.<br> Once in your tent, the gems are safe.<br> ONLY YOU KNOW HOW MANY GEMS YOU HAVE HERE" ), "" );
+			this.addTooltipToClass( "tent", _( "Gems are stored here after each expedition. Once in your tent, the gems are safe.<br><b> ONLY the player owner of the tent knows how many gems does it contain</b>" ), "" );
 			
-			this.addTooltipToClass( "gem_counter", _( "Gems are divided among the players exploring the temple " ), "" );
+			this.addTooltipToClass( "gemfield", _( "These are your share of Gems obtained on the current expedition, you need to return to the camp to safely store them" ), "" );
 			
 			this.addTooltipToClass( "cardback", _( "Each round players vote to return to camp or to keep exploring. Players who leave can pick up the gems left on the cards " ), "" );
 			
@@ -238,8 +238,8 @@ function (dojo, declare) {
         placeGem: function ( gem_id, destination) 
 		{
 			
-		x = Math.floor(Math.random() * 110) + 20;  	
-		y = Math.floor(Math.random() * 200) + 30;
+		x = Math.floor(Math.random() * 80) + 40;  	
+		y = Math.floor(Math.random() * 150) + 60;
 		dojo.place(
                 this.format_block('jstpl_gem', {
                     id: gem_id ,
