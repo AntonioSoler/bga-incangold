@@ -376,11 +376,11 @@ class incangold extends Table
 	
 	if  ( $iterations <= 4 ) 
 	{
-	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers are in the camp. The deck is shuffled. This is the expedition number ${iterations}</b>'), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
+	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. Any artifact not picked is now lost forever. The deck is shuffled. This is the expedition number ${iterations}</b>'), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
 	}
 	if  ( $iterations == 5 ) 
 	{ 
-    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp, the deck is reshufled. This is the FINAL expedition.</b>' ), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
+    self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. Any artifact not picked is now lost forever. The deck is reshufled. This is the FINAL expedition.</b>' ), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
 	}
 	if  ( $iterations > 5 ) 
 	{ 
@@ -450,7 +450,7 @@ class incangold extends Table
 	$HazardsDrawn = self::getCollectionFromDB("SELECT COUNT(*) c FROM cards WHERE card_location ='table' AND card_type > 12 GROUP BY card_type HAVING c > 1 ");
 	if (sizeof( $HazardsDrawn )>=1)
 		{
-			self::notifyAllPlayers( "stcleanpockets", clienttranslate( 'This is the second ${card_played_name} drawn. Players in the temple lost their gems. One card of this kind is removed from the deck and any remaining artifacts are removed as well' ), array(
+			self::notifyAllPlayers( "stcleanpockets", clienttranslate( 'This is the second ${card_played_name} drawn. Players in the temple lost their gems. One card of this kind is removed.' ), array(
                 'card_played' => $PlayedCard,
 				'card_played_name' => $cardPlayedName
             ) ); 

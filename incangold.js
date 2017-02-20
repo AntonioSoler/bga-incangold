@@ -605,6 +605,14 @@ function (dojo, declare) {
         {
             console.log( 'notif_reshuffle' );
             console.log( notif );
+			dojo.query(".isartifact").addClass("animatedcard");
+			artifacts=document.getElementsByClassName("isartifact");
+			for (i=0 ; i< artifacts.length ; i++ )
+			    {
+					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 400 ,0);
+					dojo.place( "<div class='artifacticon removed'></div>" , 'templecard5' , "last");
+					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
+				}
 			if (notif.args.iterations <=5 )
 			{
 				for (i in this.gamedatas.players )
