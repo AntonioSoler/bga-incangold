@@ -413,7 +413,7 @@ class incangold extends Table
 	{
 	self::incStat(1, 'cards_drawn' );
 	$exploringPlayers = $this->getExploringPlayers();
-	for ($i = 1; $i <= 1; $i++) 
+	for ($i = 1; $i <= 1; $i++)   // silly loop for test, draw more of one card at the time
 		{
 			
 		$TopCard = $this->cards->getCardOnTop( 'deck' ) ; //look at the top card of the deck
