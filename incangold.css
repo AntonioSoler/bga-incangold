@@ -202,6 +202,7 @@
 	position:absolute;
     background-image: url('img/vote-cards.jpg');
 	background-repeat: no-repeat;
+	border-radius: 4px;
 	background-position: center top !important;
 	}
 
@@ -211,6 +212,7 @@
 	position:absolute;
     background-image: url('img/vote-cards.jpg');
 	background-repeat: no-repeat;
+	border-radius: 4px;
 	background-position: right top !important;
 	}	
 
@@ -220,6 +222,7 @@
 	position:absolute;
     background-image: url('img/vote-cards.jpg');
 	background-repeat: no-repeat;
+	border-radius: 4px;
 	background-position: left top	
 	}
 	
@@ -240,6 +243,7 @@
 .stockitem {
     margin:10px;
     display: inline-block;
+	border-radius: 7px;
 }
 
 .animatedcard{	
