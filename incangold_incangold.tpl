@@ -27,19 +27,25 @@
 <table id="playArea" >
 	<tr id="up">
 		<td id="templecell"> 
-			<div id="templePanel" class="templediv"  >       
-				<table id="templetable" class="templeclass"  >
+
+			<div id="templePanel" class="templediv">       
+				<table id="templetable" class="templeclass">
 					<tbody>
-						<tr>
-							<td id="templecard5" colspan="2" class="templecard t5" > </td>					
+						<tr><th></th><th></th><th></th><th></th>
+
 						</tr>
 						<tr>
-							<td id="templecard3" class="templecard t3"> </td>
-							<td id="templecard4" class="templecard t4"> </td>
+							<td class="tspacer" id="templeleft"></td>
+							<td id="templecard5" colspan="2" class="templecard t5"> </td>
+							<td class="tspacer"></td>
 						</tr>
 						<tr>
-							<td id="templecard1" class="templecard t1"> </td>
-							<td id="templecard2" class="templecard t2"> </td>
+							<td id="templecard3" class="templecard t3" colspan="2"> </td>
+							<td id="templecard4" class="templecard t4" colspan="2"> </td>
+						</tr>
+						<tr>
+							<td id="templecard1" class="templecard t1 on" colspan="2"> </td>
+							<td id="templecard2" class="templecard t2" colspan="2"> </td>
 						</tr> </tbody>
 				</table>
 				<div>
@@ -49,37 +55,37 @@
 		</td>
 		<td>
 			<div id="campswrapper">
-			<!-- BEGIN camp -->
-			<div id="playerCamp_{PLAYER_ID}" class="whiteblock fields">
-			   <table id="tablecamp_{PLAYER_ID}" class="tablecamp" >
-					<tbody>
-						<tr>
-							<td rowspan="3"><div id="cardholder_{PLAYER_ID}" class="cardholder"> <div id="votecard_{PLAYER_ID}" class="cardback"></div></div> </td>
-							<td style="text-align:center;vertical-align:middle;"><h2 class="Header" style="color:#{PLAYER_COLOR};"  >{PLAYER_NAME}</h2></td>
-						</tr>
-						<tr>
-							<td id="tent_{PLAYER_ID}" class="tent" ></td>
-						</tr>
-						<tr>
-							<td id="field_{PLAYER_ID}"><div id="gem_field_{PLAYER_ID}" class="gemfield">0</div></td>							
-						</tr> 
-					</tbody>
-				</table>
-			</div>
-		<!-- END camp -->
+				<!-- BEGIN camp -->
+				<div id="playerCamp_{PLAYER_ID}" class="whiteblock fields">
+					<table id="tablecamp_{PLAYER_ID}" class="tablecamp" >
+						<tbody>
+							<tr>
+								<td rowspan="3"><div id="cardholder_{PLAYER_ID}" class="cardholder"> <div id="votecard_{PLAYER_ID}" class="cardback"></div></div> </td>
+								<td style="text-align:center;vertical-align:middle;"><h2 class="Header" style="color:#{PLAYER_COLOR};"  >{PLAYER_NAME}</h2></td>
+							</tr>
+							<tr>
+								<td id="tent_{PLAYER_ID}" class="tent" ></td>
+							</tr>
+							<tr>
+								<td id="field_{PLAYER_ID}"><div id="gem_field_{PLAYER_ID}" class="gemfield">0</div></td>							
+							</tr> 
+						</tbody>
+					</table>
+				</div>
+				<!-- END camp -->
 			</div>
 		</td>
 	</div>	
 	<tr id="down">
-	    <td colspan="2">
+		<td colspan="2">
 			<div id="table_wrap" >
 				<h2>{TABLE}</h2> 
 				<div id="tablecards" class="whiteblock table"></div>
-				</div>
-				
 			</div>
-		</td>
-	</tr>
+
+		</div>
+	</td>
+</tr>
 </table>
 
 <script type="text/javascript">
