@@ -585,7 +585,7 @@ function (dojo, declare) {
 			for (i=0 ; i< artifacts.length ; i++ )
 			    {
 					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 400 ,0);
-					dojo.place( "<div class='artifacticon removed'></div>" , 'templecard5' , "last");
+					dojo.place( "<div class='artifacticon removed'></div>" , 'templeleft' , "last");
 					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 				}	
         },
