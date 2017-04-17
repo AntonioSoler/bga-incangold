@@ -65,7 +65,7 @@ function (dojo, declare) {
 			
 			for ( var i=0 ; i < this.gamedatas.templeartifacts ;i++)
 					{
-						dojo.place( "<div class='artifacticon removed'></div>" , "templecard5", "last" );
+						dojo.place( "<div class='artifacticon removed'></div>" , "templeleft", "last" );
 						this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 					} 
 			
