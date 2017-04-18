@@ -99,7 +99,7 @@ var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${id}" styl
 
 */
 
-var jstpl_gem='<div  id="gem_${id}" class="gem cardgem" style="left: ${x}px; top: ${y}px;" ></div>';
+var jstpl_gem='<div  id="gem_${id}" class="gem cardgem" style="" ></div>';
 
 var jstpl_votecard= '<div id="votecard_${player_id}" class="votecard${action}" ></div>';
 

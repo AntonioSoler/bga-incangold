@@ -237,15 +237,10 @@ function (dojo, declare) {
 
         placeGem: function ( gem_id, destination) 
 		{
-			
-		x = Math.floor(Math.random() * 80) + 40;  	
-		y = Math.floor(Math.random() * 150) + 60;
 		dojo.place(
-                this.format_block('jstpl_gem', {
-                    id: gem_id ,
-					x : x,
-					y : y
-                }), destination);
+			this.format_block('jstpl_gem', {
+				id: gem_id 
+			}), destination);
 		this.addTooltipToClass( "cardgem", _( "Some gems were left on the floor because they could not be didvidied evenly among the explorers. The players could pick this when returning on the way back to camp" ), "" );
         },
 		
