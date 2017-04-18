@@ -56,7 +56,7 @@
 					<table id="tablecamp_{PLAYER_ID}" class="tablecamp" >
 						<tbody>
 							<tr>
-								<td rowspan="3"><div id="cardholder_{PLAYER_ID}" class="cardholder"> <div id="votecard_{PLAYER_ID}" class="cardback"></div></div> </td>
+								<td rowspan="3"><div id="cardholder_{PLAYER_ID}" class="cardholder"> <div id="votecard_{PLAYER_ID}" class="votecardBack"></div></div> </td>
 								<td style="text-align:center;vertical-align:middle;"><h2 class="Header" style="color:#{PLAYER_COLOR};"  >{PLAYER_NAME}</h2></td>
 							</tr>
 							<tr>

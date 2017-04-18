@@ -547,13 +547,13 @@ class incangold extends Table
 							$extra=0;
 							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
 							$artifactspicked=self::getGameStateValue( 'artifactspicked' );
-							if ( $artifactspicked = 4  )  
+							if ( $artifactspicked == 4  )  
 							{
 							$extra=5;	
 							}
-							if ( $artifactspicked = 5 ) 
+							if ( $artifactspicked == 5 ) 
 							{
-								if ( $artifactsOnTable = 1 )
+								if ( $artifactsOnTable == 1 )
 								{
 									$extra=5;	
 								}

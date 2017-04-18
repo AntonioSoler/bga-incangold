@@ -94,7 +94,7 @@ function (dojo, declare) {
 			for( var i in this.gamedatas.table )
             {
                 var card = this.gamedatas.table[i];
-                this.tablecards.addToStockWithId( card.type , "tablecard_"+card.id , 'templecard'+this.gamedatas.iterations );
+                this.tablecards.addToStockWithId( card.type , "tablecard_"+card.id , 'deck' );
 				if ( card.type >=12 && card.type <=16 ) 
 				    {
 						dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
@@ -246,14 +246,17 @@ function (dojo, declare) {
 		
 		placeVotecard: function ( player_id, action) 
 		{	
-			this.slideToObjectAndDestroy('votecard_'+player_id, 'overall_player_board_'+player_id, 700, 0);
-            dojo.place( this.format_block ( 'jstpl_votecard', {
-                player_id: player_id,
-                action: action
-            } ) , 'cardholder_'+player_id,"only" );
-            
-            this.placeOnObject( 'votecard_'+player_id, 'overall_player_board_'+player_id );
-            this.slideToObject( 'votecard_'+player_id, 'cardholder_'+player_id , 700,700 ).play();
+			a1= this.slideToObject('votecard_'+player_id, 'overall_player_board_'+player_id, 300, 0);
+			a2= dojo.fadeOut( {      node: 'votecard_'+player_id,
+                                    onEnd: function( node ) {
+															dojo.replaceClass(node,'votecard'+action); 
+                                                             } 
+                                  } );
+			a3= dojo.fadeIn( {      node: 'votecard_'+player_id} );
+               
+			a4= this.slideToObject( 'votecard_'+player_id , 'cardholder_'+player_id , 500,0 );	
+            var anim = dojo.fx.chain( [ a1,  a2 , a3 ,a4]);
+		 anim.play();
         },
 		
 		moveGem: function ( source, destination ,amount) 
@@ -489,7 +492,8 @@ function (dojo, declare) {
             console.log( notif );
 			this.placeVotecard ( notif.args.thisid , "Leave" );
 			this.addTooltipToClass( "votecardLeave", _( "This player has voted to return to camp and has stored his gems in the tent" ), "" );
-            var animspeed=0;
+            var animspeed=900;
+			
 			gems = dojo.byId("gem_field_"+notif.args.thisid).innerHTML
 			if ( gems >=1 )
 			{
@@ -549,18 +553,22 @@ function (dojo, declare) {
             console.log( 'notif_artifactspicked' );
 			notif.args=this.notifqueue.playerNameFilterGame(notif.args);
             console.log( notif );
+			debugger;
 			if ( notif.args.extra >0 )
 			{
 				animspeed = 0;
-				if (this.gamedatas.current_player_id == notif.args.thisid) 
-						{
-						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 700 , animspeed );
-						}
-					else 
-						{
-						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 700 , animspeed );
-						}
-				animspeed += 300;
+				for ( var g=1 ; g<=notif.args.extra  ; g++ )
+				{
+					if (this.gamedatas.current_player_id == notif.args.thisid) 
+							{
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 700 , animspeed );
+							}
+						else 
+							{
+							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 700 , animspeed );
+							}
+					animspeed += 300;
+				}
 			}	
 			for ( card_id in notif.args.cards )				
 			{    
@@ -605,7 +613,7 @@ function (dojo, declare) {
 			for (i=0 ; i< artifacts.length ; i++ )
 			    {
 					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 500 ,0);
-					dojo.place( "<div class='artifacticon removed'></div>" , 'templecard5' , "last");
+					dojo.place( "<div class='artifacticon removed'></div>" , 'templeleft' , "last");
 					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 				}
 			if (notif.args.iterations <=5 )
@@ -613,7 +621,7 @@ function (dojo, declare) {
 				for (i in this.gamedatas.players )
 				{			
 					dojo.byId( "gem_field_"+this.gamedatas.players[i].id ).innerHTML=0;
-					this.placeVotecard ( this.gamedatas.players[i].id , "Back" )  
+					dojo.replaceClass('votecard_'+this.gamedatas.players[i].id,'votecardBack');  
 				}
 				this.tablecards.removeAllTo('deck');
 				

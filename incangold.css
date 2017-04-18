@@ -1,7 +1,7 @@
 /**
  *------
- * BGA framework: Â© Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * incangold implementation : Â© Antonio Soler <morgald.es@gmail.com>
+ * BGA framework: Ãƒâ€šÃ‚Â© Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * incangold implementation : Ãƒâ€šÃ‚Â© Antonio Soler <morgald.es@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -22,15 +22,15 @@
     
     Usually, you are using CSS to:
     
-    1Â°) define the overall layout of your game
+    1) define the overall layout of your game
         (ex: place the board on the top left, place player's hand beside, place the deck on the right, ...).
 
-    2Â°) create your CSS-sprites:
+    2) create your CSS-sprites:
         All images of your games should be gathered into a small number of image files. Then, using
         background-image and background-position CSS properties, you create HTML blocks that can 
         display these images correctly (see example below).
     
-    3Â°) ... anything else:
+    3) ... anything else:
         It is really easy to add and remove CSS classes dynamically from your Javascript with
         dojo.addClass and dojo.removeClass. It is also easy to check if an element has a class
         (dojo.hasClass) or to get all elements with a specific class (dojo.query). This is why,
@@ -86,11 +86,11 @@
 	}
 
 .templecard{
-    /* width:200px; */
     height:129px;
     background-image: url('img/temple-off.png');
     background-repeat: no-repeat;
     border-radius: 10px;
+    box-shadow: 2px 3px 3px 2px rgba(59, 59, 59, 0.58);
 }	
 		
 .t1{        
@@ -204,11 +204,11 @@
 	
 .votecardExplore {
 	width: 115px;
-    height: 180px;
+	height: 180px;
 	position:absolute;
-    background-image: url('img/vote-cards.jpg');
+	background-image: url('img/vote-cards.jpg');
 	background-repeat: no-repeat;
-	border-radius: 4px;
+	border-radius: 8px;
 	background-position: center top !important;
 	}
 
@@ -225,12 +225,12 @@
 .votecardBack {
     width: 115px;
     height: 180px;
-	position:absolute;
+    /* position:absolute; */
     background-image: url('img/vote-cards.jpg');
-	background-repeat: no-repeat;
-	border-radius: 4px;
-	background-position: left top	
-	}
+    background-repeat: no-repeat;
+    border-radius: 4px;
+    background-position: left top;
+ }
 
 #deck {
     width: 159px;
@@ -241,7 +241,7 @@
     display: inline;
     margin: 15px;
     flex: 0 1 auto;
-    box-shadow: -1px 1px 0px 1px rgb(59, 59, 59), -4px 8px 0px 1px rgba(0, 0, 0, 1), -6px 12px 0px 1px rgb(59, 59, 59), -9px 18px 0px 1px rgba(0, 0, 0, 1), 8px 20px 6px 4px rgba(0, 0, 0, 0.58);
+    box-shadow: -1px 1px 0px 1px rgb(59, 59, 59), -3px 7px 0px 1px rgba(0, 0, 0, 1), -5px 9px 0px 1px rgb(59, 59, 59), -9px 15px 0px 1px rgba(0, 0, 0, 1), -11px 18px 0px 1px rgb(59, 59, 59), -14px 22px 0px 1px rgba(0, 0, 0, 1), 3px 18px 3px 11px rgba(0, 0, 0, 0.58);
  }
  
 #table_wrap {
@@ -270,8 +270,8 @@
 .stockitem {
     margin:10px;
     display: inline-table;
-    border-radius: 7px;
-    box-shadow: 2px 5px 1px 1px rgba(59, 59, 59, 0.58);
+    border-radius: 10px;
+    box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
 }
 
 .animatedcard{	
