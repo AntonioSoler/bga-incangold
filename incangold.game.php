@@ -137,7 +137,11 @@ class incangold extends Table
         self::setGameStateInitialValue( 'artifactspicked', 0 );
 		
         //shuffle 
-        $this->cards->shuffle( 'deck' );
+        
+		
+		self::DbQuery( "UPDATE cards set card_location = 'removed' WHERE card_type in (12,13,14,15,16)" ); //take artifacts out
+		
+		$this->cards->shuffle( 'deck' );
 
         $players = self::loadPlayersBasicInfos();
 
@@ -370,6 +374,7 @@ class incangold extends Table
     function streshuffle()
 	{
 	$this->cards->moveAllCardsInLocation( 'table', 'deck' );  //collect all cards to the deck and reshuffle
+	self::DbQuery( "UPDATE cards set card_location = 'deck' WHERE card_type in (12,13,14,15,16) AND card_location = 'removed' LIMIT 1 " ); // PUT 1 ARTIFACT MORE
 	$this->cards->shuffle( 'deck' );
 	$cardsRemaining = $this->cards->countCardsInLocation('deck');
 	$iterations = 1 + $this->getGameStateValue('iterations');	

@@ -75,10 +75,10 @@
 	margin:10px
 	}
 
-.templeclass{
-	width:400px;
+.templeclass{width:400px;
 	height:388px;
 	border-collapse: collapse;
+	float:top
 	}
 
 #templecell{
@@ -86,6 +86,7 @@
 	}
 
 .templecard{
+    width:200px;
 	height:129px;
 	background-image: url('img/temple-off.png');
 	background-repeat: no-repeat;
@@ -104,7 +105,7 @@
 .t4{
 	background-position: right center
 	}
-.t5{
+.t5{    
     background-position: center top;
     width: 50%;
  }
@@ -159,10 +160,10 @@
 .gem {
     width: 30px;
     height: 30px;
-	position: absolute;
+    margin: 3px;
+    margin-left: auto;
     background-image: url('img/gem.png');
-	background-repeat: no-repeat
-	z-index:-1 ;
+    background-repeat: no-repeat;
 }
 
 .gemfield {
@@ -203,11 +204,11 @@
 	
 .votecardExplore {
 	width: 115px;
-	height: 180px;
+    height: 180px;
 	position:absolute;
-	background-image: url('img/vote-cards.jpg');
+    background-image: url('img/vote-cards.jpg');
 	background-repeat: no-repeat;
-	border-radius: 9px;
+	border-radius: 4px;
 	background-position: center top !important;
 	}
 
@@ -247,8 +248,8 @@
 
 .stockitem {
     margin:10px;
-    display: inline-block;
-    border-radius: 10px;
+    display: inline-table;
+    border-radius: 7px;
 }
 
 .animatedcard{	
