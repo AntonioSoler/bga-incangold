@@ -446,7 +446,7 @@ class incangold extends Table
 		$cardPlayedName = $cardPlayedName ." ". $PlayedCard['type_arg'] ;
 	}
 	$cardsontable = $this->cards->countCardsInLocation( 'table' );
-	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn and it is ${card_played_name}' ), array(
+	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn: ${card_played_name}' ), array(
                 'card_played' => $PlayedCard,
 				'card_played_name' => $cardPlayedName
             ) );

@@ -76,7 +76,7 @@ function (dojo, declare) {
 			
             for (i in this.gamedatas.exploringPlayers)
 			{			
-				 dojo.addClass( "votecard_"+i , "votecardExplore" );
+				 dojo.addClass( "votecard_"+i , "votecardBack" );
 			}
 			
             this.tablecards = new ebg.stock();
@@ -110,13 +110,13 @@ function (dojo, declare) {
 					dojo.addClass( "templecard"+i ,"on");
 			}
             
-			this.addTooltipToClass( "templeclass", _( "The number of expeditions remaining" ), "" );
+			this.addTooltipToClass( "templeclass", _( "Expeditions remaining" ), "" );
 			
-			this.addTooltipToClass( "tent", _( "Gems are stored here after each expedition. Once in your tent, the gems are safe.<br><b> ONLY the player owner of the tent knows how many gems does it contain</b>" ), "" );
+			this.addTooltipToClass( "tent", _( "Gems are stored here after each expedition. Once in your tent, the gems are safe.<br><b>The content of your tent is hidden from other players</b>" ), "" );
 			
 			this.addTooltipToClass( "gemfield", _( "These are your share of Gems obtained on the current expedition, you need to return to the camp to safely store them" ), "" );
 			
-			this.addTooltipToClass( "cardback", _( "Each round players vote to return to camp or to keep exploring. Players who leave can pick up the gems left on the cards " ), "" );
+			this.addTooltipToClass( "cardback", _( "Each round players vote to return to camp or to keep exploring. " ), "" );
 			
 			this.addTooltipToClass( "votecardLeave", _( "This player has voted to return to camp and has stored his gems in the tent" ), "" );
 			
@@ -241,7 +241,7 @@ function (dojo, declare) {
 			this.format_block('jstpl_gem', {
 				id: gem_id 
 			}), destination);
-		this.addTooltipToClass( "cardgem", _( "Some gems were left on the floor because they could not be didvidied evenly among the explorers. The players could pick this when returning on the way back to camp" ), "" );
+		this.addTooltipToClass( "cardgem", _( "Some gems were left on the floor because they could not be didvidied evenly among the explorers.<p> The players could pick this when returning on the way back to camp" ), "" );
         },
 		
 		placeVotecard: function ( player_id, action) 
