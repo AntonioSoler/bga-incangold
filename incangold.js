@@ -258,11 +258,11 @@ function (dojo, declare) {
 		
 		moveGem: function ( source, destination ,amount) 
 		{
-			var animspeed=300;
+			var animspeed=0;
 			for (var i = 1 ; i<= amount ; i++)
 			{
-				this.slideTemporaryObjectAndIncCounter( '<div class="gem spining"></div>', 'page-content', source, destination, 500 , animspeed );
-				animspeed += 300;
+				this.slideTemporaryObjectAndIncCounter( '<div class="gem spining"></div>', 'page-content', source, destination, 700 , animspeed );
+				animspeed += 400;
 			}
 			//for (var i = 1 ; i<= amount ; i++)
 			//{
@@ -497,13 +497,13 @@ function (dojo, declare) {
 				{
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{
-						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid , 500 , animspeed );
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid , 700 , animspeed );
 						}
 					else 
 						{
-						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid, 500 , animspeed );
+						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid, 700 , animspeed );
 						}
-					animspeed += 300;
+					animspeed += 400;
 				}
 			}
 			if ( notif.args.gems >=1 )
@@ -519,13 +519,13 @@ function (dojo, declare) {
 						
 						if (this.gamedatas.current_player_id == notif.args.thisid) 
 							{
-							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 500 , animspeed );
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 700 , animspeed );
 							}
 						else 
 							{
-							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 500 , animspeed );
+							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 700 , animspeed );
 							}
-						animspeed += 300;
+						animspeed += 400;
 					}
 					catch(err) {}
 					
@@ -554,11 +554,11 @@ function (dojo, declare) {
 				animspeed = 0;
 				if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{
-						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 500 , animspeed );
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 700 , animspeed );
 						}
 					else 
 						{
-						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 500 , animspeed );
+						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 700 , animspeed );
 						}
 				animspeed += 300;
 			}	
@@ -579,7 +579,7 @@ function (dojo, declare) {
 			artifacts=document.getElementsByClassName("isartifact");
 			for (i=0 ; i< artifacts.length ; i++ )
 			    {
-					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 400 ,0);
+					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 500 ,0);
 					dojo.place( "<div class='artifacticon removed'></div>" , 'templeleft' , "last");
 					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 				}	
@@ -604,7 +604,7 @@ function (dojo, declare) {
 			artifacts=document.getElementsByClassName("isartifact");
 			for (i=0 ; i< artifacts.length ; i++ )
 			    {
-					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 400 ,0);
+					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 500 ,0);
 					dojo.place( "<div class='artifacticon removed'></div>" , 'templecard5' , "last");
 					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
 				}
@@ -617,7 +617,7 @@ function (dojo, declare) {
 				}
 				this.tablecards.removeAll();
 				
-				this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 400, 0);  
+				this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 500, 0);  
 				dojo.addClass( "templecard"+notif.args.iterations ,"on")
 				dojo.byId("decksize").innerHTML=notif.args.cardsRemaining;
 			}
