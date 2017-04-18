@@ -86,11 +86,11 @@
 	}
 
 .templecard{
-    width:200px;
-	height:129px;
-	background-image: url('img/temple-off.png');
-	background-repeat: no-repeat;
-	border-radius: 10px;
+    /* width:200px; */
+    height:129px;
+    background-image: url('img/temple-off.png');
+    background-repeat: no-repeat;
+    border-radius: 10px;
 }	
 		
 .t1{        
@@ -141,9 +141,9 @@
 }
 
 .whiteblock {
-    position: relative;
     min-height: 100px;
     border-radius: 10px;
+    position: relative;
 }
 
 .card {
@@ -231,6 +231,27 @@
 	border-radius: 4px;
 	background-position: left top	
 	}
+
+#deck {
+    width: 159px;
+    height: 247px;
+    background-image: url('img/card-back.jpg');
+    border-radius: 7px;
+    background-size: cover;
+    display: inline;
+    margin: 15px;
+    flex: 0 1 auto;
+    box-shadow: -1px 1px 0px 1px rgb(59, 59, 59), -4px 8px 0px 1px rgba(0, 0, 0, 1), -6px 12px 0px 1px rgb(59, 59, 59), -9px 18px 0px 1px rgba(0, 0, 0, 1), 8px 20px 6px 4px rgba(0, 0, 0, 0.58);
+ }
+ 
+#table_wrap {
+	display: inline-flex;
+	width: 95%;
+}
+#tablecards{
+	min-width:50%;
+	flex: 1 1 auto;
+}
 	
 .cardholder {
 	width: 115px;
@@ -250,6 +271,7 @@
     margin:10px;
     display: inline-table;
     border-radius: 7px;
+    box-shadow: 2px 5px 1px 1px rgba(59, 59, 59, 0.58);
 }
 
 .animatedcard{	
@@ -268,7 +290,6 @@
 	from{transform: scale(1)}
 	to {transform: scale(0.2) }
 }
-
 
 .spining{	
 	animation: spin 0.5s infinite;

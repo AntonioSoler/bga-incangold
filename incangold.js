@@ -246,14 +246,14 @@ function (dojo, declare) {
 		
 		placeVotecard: function ( player_id, action) 
 		{	
-			
+			this.slideToObjectAndDestroy('votecard_'+player_id, 'overall_player_board_'+player_id, 700, 0);
             dojo.place( this.format_block ( 'jstpl_votecard', {
                 player_id: player_id,
                 action: action
             } ) , 'cardholder_'+player_id,"only" );
             
             this.placeOnObject( 'votecard_'+player_id, 'overall_player_board_'+player_id );
-            this.slideToObject( 'votecard_'+player_id, 'cardholder_'+player_id ).play();
+            this.slideToObject( 'votecard_'+player_id, 'cardholder_'+player_id , 700,700 ).play();
         },
 		
 		moveGem: function ( source, destination ,amount) 
@@ -468,7 +468,7 @@ function (dojo, declare) {
             console.log( 'notif_cardPlayed' );
             console.log( notif );
 			var card = notif.args.card_played;
-            this.tablecards.addToStockWithId( card.type , "tablecard_"+card.id ,  'templecard'+this.gamedatas.iterations  );
+            this.tablecards.addToStockWithId( card.type , "tablecard_"+card.id , 'deck' );
 			if ( card.type >=12 && card.type <=16 ) 
 			   {
 					dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
@@ -615,7 +615,7 @@ function (dojo, declare) {
 					dojo.byId( "gem_field_"+this.gamedatas.players[i].id ).innerHTML=0;
 					this.placeVotecard ( this.gamedatas.players[i].id , "Back" )  
 				}
-				this.tablecards.removeAll();
+				this.tablecards.removeAllTo('deck');
 				
 				this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 500, 0);  
 				dojo.addClass( "templecard"+notif.args.iterations ,"on")

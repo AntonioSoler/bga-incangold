@@ -27,12 +27,10 @@
 <table id="playArea" >
 	<tr id="up">
 		<td id="templecell"> 
-
 			<div id="templePanel" class="templediv">       
 				<table id="templetable" class="templeclass">
 					<tbody>
 						<tr><th></th><th></th><th></th><th></th>
-
 						</tr>
 						<tr>
 							<td class="tspacer" id="templeleft"></td>
@@ -48,9 +46,7 @@
 							<td id="templecard2" class="templecard t2" colspan="2"> </td>
 						</tr> </tbody>
 				</table>
-				<div>
-				{DECKSIZE}<span id="decksize">0</span>
-				</div>
+				
 			</div>
 		</td>
 		<td>
@@ -79,10 +75,15 @@
 	<tr id="down">
 		<td colspan="2">
 			<div id="table_wrap" >
-				<h2>{TABLE}</h2> 
+				
+				<div id="deck"></div> 
 				<div id="tablecards" class="whiteblock table"></div>
+					
 			</div>
-
+			<div>
+				{DECKSIZE}<span id="decksize">0</span>
+			
+			</div>
 		</div>
 	</td>
 </tr>
@@ -95,7 +96,6 @@
 /*
 // Example:
 var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${id}" style="position:absolute; top: ${x}px; left: ${y}px;" ></div>';
-
 
 */
 
