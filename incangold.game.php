@@ -629,24 +629,9 @@ class incangold extends Table
     {
         $players = self::loadPlayersBasicInfos();
 
-        $table[] = array();
-        
-        //left hand col
-        $table[0][] = array( 'str' => ' ', 'args' => array(), 'type' => 'header');
-        $table[1][] = $this->resources["gems"    ];
-        $table[2][] = $this->resources["artifacts"  ];
-        
-		$table[3][] = array( 'str' => '<span class=\'score\'>Score</span>', 'args' => array(), 'type' => '');
-
         foreach( $players as $player_id => $player )
         {
-            $table[0][] = array( 'str' => '${player_name}',
-                                 'args' => array( 'player_name' => $player['player_name'] ),
-                                 'type' => 'header'
-                               );
-            $table[1][] = $this->getGemsPlayer( $player_id, 'tent' );
-            $table[2][] = $this->cards->countCardsInLocation( $player['player_id']);
-
+            
             $gems = $this->getGemsPlayer( $player_id, 'tent' ) ;
 			$artifacts = $this->cards->countCardsInLocation( $player_id );
 			
@@ -660,22 +645,17 @@ class incangold extends Table
 			
 			$sql = "UPDATE player SET player_score_aux = ".$this->cards->countCardsInLocation( $player['player_id'])." WHERE player_id=".$player['player_id'];
             self::DbQuery( $sql );
-				
-            $table[3][] = array( 'str' => '<span class=\'score\'>${player_score}</span>',
-                                 'args' => array( 'player_score' => $score ),
-                                 'type' => ''
-                               );
+			
         }
 		self::setStat( self::getGameStateValue( 'artifactspicked') , "artifacts_drawn" );
+		
+		$sql = "SELECT player_id id, player_field field, player_tent tent , Count(card_id) artifacts FROM player LEFT OUTER JOIN cards On player_id=card_location GROUP BY player_id";
+		
+        $players = self::getCollectionFromDb( $sql ); //tents of all players are visible now
 
-        $this->notifyAllPlayers( "tableWindow", '', array(
-            "id" => 'finalScoring',
-            "title" => $this->resources["score_window_title"],
-            "table" => $table,
-            "header" => '<div>'.$this->resources["win_condition"].'</div>',
-			"closing" => clienttranslate( "OK" )
-            //"closelabel" => clienttranslate( "Closing button label" )
-        ) ); 
+        self::notifyAllPlayers ( "finalScore", clienttranslate( 'All players reveal the gems on their tents, the score is this plus the Artifacts x 5 ' ) , 
+				    array( 'players' => $players ) );
+        
     }
 
 ////////////////////////////////////////////////////////////////////////////

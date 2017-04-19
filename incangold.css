@@ -1,7 +1,7 @@
 /**
  *------
- * BGA framework: Ãƒâ€šÃ‚Â© Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * incangold implementation : Ãƒâ€šÃ‚Â© Antonio Soler <morgald.es@gmail.com>
+ * BGA framework: Â© Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * incangold implementation : Â© Antonio Soler <morgald.es@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -183,14 +183,37 @@
 .tent {
     width: 150px;
     height: 121px;
+    display: table-cell;
     vertical-align: middle;
     background-image: url('img/tent.png');
-	background-repeat: no-repeat;
-	text-align:center; 
-    vertical-align:middle;
-	font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
-    color: rgba(1,1,1,1)
-	}	
+    background-repeat: no-repeat;
+    text-align:center;
+    /* position: absolute; */
+    z-index: 10;
+    font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+ }	
+ 
+.tentholder{
+ width: 156px;
+ height: 121px;
+}
+ 
+.gemtent {
+    width: 150px;
+    height: 30px;
+    display: table-cell;
+    vertical-align: middle;
+    background-image: url('img/gem.png');
+    background-repeat: no-repeat;
+    background-position: top center;
+    text-align:center;
+    position: absolute;
+    top: 90px;
+    z-index: 9;
+    font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+ }
 	
 .cardback {
     width: 115px;
@@ -210,6 +233,8 @@
 	background-repeat: no-repeat;
 	border-radius: 8px;
 	background-position: center top !important;
+	box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
+
 	}
 
 .votecardLeave {
@@ -220,6 +245,8 @@
 	background-repeat: no-repeat;
 	border-radius: 4px;
 	background-position: right top !important;
+	box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
+
 	}	
 
 .votecardBack {
@@ -230,6 +257,7 @@
     background-repeat: no-repeat;
     border-radius: 4px;
     background-position: left top;
+    box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
  }
 
 #deck {
@@ -254,9 +282,11 @@
 }
 	
 .cardholder {
+	/* position: absolute; */
 	width: 115px;
 	height: 180px;
-    }
+	display: table-cell;
+	}
 	
 .artifacticon {
 	padding:1px;

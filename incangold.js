@@ -59,7 +59,7 @@ function (dojo, declare) {
 				for ( var i=0 ; i < this.gamedatas.players[player].artifacts ;i++)
 					{
 						dojo.place( "<div class='artifacticon'></div>" , "field_" + this.gamedatas.players[player].id, "last" );
-						this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 3rd and 4th add 5 extra gems" ), "" );
+						this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 4th and 5th drawn give 5 extra gems at the moment of collection" ), "" );
 					} 
             }
 			
@@ -280,7 +280,7 @@ function (dojo, declare) {
 			if ( isartifact == 1 ) 
 				{
 					dojo.place( "<div class='artifacticon'></div>" , destination  , "last");
-					this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 4th and 5th drawn give 5 extra gems" ), "" );
+					this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 4th and 5th drawn give 5 extra gems at the moment of collection" ), "" );
 				}
 		},
 		
@@ -441,12 +441,12 @@ function (dojo, declare) {
             // Example 2: standard notification handling + tell the user interface to wait
             //            during 3 seconds after calling the method in order to let the players
             //            see what is happening in the game.
-            dojo.subscribe( 'playCard', this, "notif_cardPlayed" );
+            dojo.subscribe('playCard', this, "notif_cardPlayed" );
 			this.notifqueue.setSynchronous( 'playCard', 2000 );
-			dojo.subscribe( 'ObtainGems', this, "notif_ObtainGems" );
+			dojo.subscribe('ObtainGems', this, "notif_ObtainGems" );
             this.notifqueue.setSynchronous( 'ObtainGems', 2000 );
-			dojo.subscribe('tableWindow', this, "notif_finalScore");
-            this.notifqueue.setSynchronous('tableWindow', 8000);
+			dojo.subscribe('finalScore', this, "notif_finalScore");
+            this.notifqueue.setSynchronous('notif_finalScore', 8000);
 			dojo.subscribe('reshuffle', this, "notif_reshuffle");
             this.notifqueue.setSynchronous('reshuffle', 4000);
 			dojo.subscribe('playerleaving', this, "notif_playerleaving");
@@ -553,7 +553,6 @@ function (dojo, declare) {
             console.log( 'notif_artifactspicked' );
 			notif.args=this.notifqueue.playerNameFilterGame(notif.args);
             console.log( notif );
-			debugger;
 			if ( notif.args.extra >0 )
 			{
 				animspeed = 0;
@@ -634,8 +633,37 @@ function (dojo, declare) {
 		
 		notif_finalScore: function (notif) 
 		{
-            console.log('**** Notification : finalScore');
-            console.log(notif);
+            console.log( 'notif_finalScore' );
+            console.log( notif );
+			dojo.query(".isartifact").addClass("animatedcard");
+			for (i in this.gamedatas.players )
+				{			
+					dojo.byId( "gem_field_"+this.gamedatas.players[i].id ).innerHTML=0;
+					dojo.byId("decksize").innerHTML=notif.args.cardsRemaining;
+					dojo.replaceClass('votecard_'+this.gamedatas.players[i].id,'votecardBack');  
+				}
+				
+				
+			
+			
+        
+
+            // Update score
+            //this.scoreCtrl[notif.args.player_id].incValue(notif.args.score_delta);
+        },
+		
+		notif_finalScore: function (notif) 
+		{
+            console.log( 'notif_finalScore' );
+            console.log( notif );
+			
+			for (i in this.gamedatas.players )
+				{			
+					dojo.byId( "gem_field_"+this.gamedatas.players[i].id ).innerHTML=0;
+					dojo.place( "<div class='gemtent'>"+ notif.args.players[i].tent +"</div>" , "tentholder_"+this.gamedatas.players[i].id , "last" );
+					this.slideToObjectAndDestroy ( "tent_"+this.gamedatas.players[i].id ,'templePanel', 1000 , 1000);
+					
+				}
 
             // Update score
             //this.scoreCtrl[notif.args.player_id].incValue(notif.args.score_delta);

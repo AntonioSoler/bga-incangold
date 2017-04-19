@@ -56,11 +56,11 @@
 					<table id="tablecamp_{PLAYER_ID}" class="tablecamp" >
 						<tbody>
 							<tr>
-								<td rowspan="3"><div id="cardholder_{PLAYER_ID}" class="cardholder"> <div id="votecard_{PLAYER_ID}" class="votecardBack"></div></div> </td>
+								<td rowspan="3" class="cardholder" ><div id="cardholder_{PLAYER_ID}" class="cardholder"> <div id="votecard_{PLAYER_ID}" class="votecardBack"></div></div> </td>
 								<td style="text-align:center;vertical-align:middle;"><h2 class="Header" style="color:#{PLAYER_COLOR};"  >{PLAYER_NAME}</h2></td>
 							</tr>
 							<tr>
-								<td id="tent_{PLAYER_ID}" class="tent" ></td>
+								<td> <div id="tentholder_{PLAYER_ID}" class="tentholder"><div id="tent_{PLAYER_ID}" class="tent" ></div></div></td>
 							</tr>
 							<tr>
 								<td id="field_{PLAYER_ID}"><div id="gem_field_{PLAYER_ID}" class="gemfield">0</div></td>							
