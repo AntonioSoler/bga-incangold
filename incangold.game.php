@@ -564,12 +564,25 @@ class incangold extends Table
 							}
 							$sql = "UPDATE cards SET card_location ='".$thisid."' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
 							self::DbQuery( $sql );
-							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${player_name} is the only player returning to camp this turn and has picked some artifacts (4th and 5th artifact drawn give 5 extra gems)' ) , 
+							
+							if ($extra > 0) 
+							{
+							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${player_name} is the only player returning to camp this turn and has picked some artifacts, this is the 4th or 5th artifact drawn and obtains ${extra} gems)' ) , 
 								array( 'thisid' => $thisid ,
 									  'player_name' => $thisPlayerName ,
 									  'cards' => $cards,
 									  'extra' => $extra
-								) );	
+								) );
+							}
+							else 
+							{
+								self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${player_name} is the only player returning to camp this turn and has picked some artifacts' ) , 
+								array( 'thisid' => $thisid ,
+									  'player_name' => $thisPlayerName ,
+									  'cards' => $cards,
+									  'extra' => $extra
+								) );
+							}
 						}	
 					} ;
 				$this->setExploringPlayer( $thisid  , 0);
