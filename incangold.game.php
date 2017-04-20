@@ -379,7 +379,11 @@ class incangold extends Table
 	$cardsRemaining = $this->cards->countCardsInLocation('deck');
 	$iterations = 1 + $this->getGameStateValue('iterations');	
 	
-	if  ( $iterations <= 4 ) 
+	if  ( $iterations == 1 ) 
+	{
+	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>The adventure starts. The deck is shuffled. This is the expedition number ${iterations}</b>'), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
+	}
+	else if  ( $iterations <= 4 ) 
 	{
 	self::notifyAllPlayers( "reshuffle", clienttranslate( '<b>All explorers returned to camp. Any artifact not picked is now lost forever. The deck is shuffled. This is the expedition number ${iterations}</b>'), array( 'iterations' => $iterations , 'cardsRemaining' => $cardsRemaining )) ;
 	}
@@ -593,7 +597,7 @@ class incangold extends Table
 				$this->setGemsPlayer ( $thisid , 'tent', $gems );
 				$this->setGemsPlayer ( $thisid , 'field', 0 );
 				
-				self::notifyAllPlayers ( "playerleaving", clienttranslate( '${player_name} returned to camp may grab some gems left on the floor' ) , 
+				self::notifyAllPlayers ( "playerleaving", clienttranslate( '${player_name} manages to grab some extra gems left on the floor while returning to camp' ) , 
 				    array( 'thisid' => $thisid ,
 					      'player_name' => $thisPlayerName,
 						  'gems' => $gemsSplit 
@@ -607,7 +611,7 @@ class incangold extends Table
 				$thisid = $player['id'] ;
 				self::incStat(1, 'cards_seen', $thisid);
 				$thisPlayerName = $players[$thisid]['player_name'];
-				self::notifyAllPlayers ( "playerexploring", clienttranslate( '${player_name} decided to continue exploring ' ) , 
+				self::notifyAllPlayers ( "playerexploring", clienttranslate( '${player_name} continues exploring' ) , 
 				    array( 'thisid' => $thisid ,
 					      'player_name' => $thisPlayerName 
 					) );		
@@ -649,7 +653,7 @@ class incangold extends Table
         }
 		self::setStat( self::getGameStateValue( 'artifactspicked') , "artifacts_drawn" );
 		
-		$sql = "SELECT player_id id, player_field field, player_tent tent , Count(card_id) artifacts FROM player LEFT OUTER JOIN cards On player_id=card_location GROUP BY player_id";
+		$sql = "SELECT player_id id, player_field field, player_tent tent , Count(card_id) artifacts, player_score score FROM player LEFT OUTER JOIN cards On player_id=card_location GROUP BY player_id";
 		
         $players = self::getCollectionFromDb( $sql ); //tents of all players are visible now
 

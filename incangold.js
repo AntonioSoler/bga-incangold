@@ -59,7 +59,7 @@ function (dojo, declare) {
 				for ( var i=0 ; i < this.gamedatas.players[player].artifacts ;i++)
 					{
 						dojo.place( "<div class='artifacticon'></div>" , "field_" + this.gamedatas.players[player].id, "last" );
-						this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 4th and 5th drawn give 5 extra gems at the moment of collection" ), "" );
+						this.addTooltipToClass( "artifacticon", _( "Each artifact is worth 5 gems, the 4th and 5th drawn give 5 extra gems at the moment of collection" ), "" );
 					} 
             }
 			
@@ -280,7 +280,7 @@ function (dojo, declare) {
 			if ( isartifact == 1 ) 
 				{
 					dojo.place( "<div class='artifacticon'></div>" , destination  , "last");
-					this.addTooltipToClass( "artifacticon", _( "Each artifact worths 5 gems, the 4th and 5th drawn give 5 extra gems at the moment of collection" ), "" );
+					this.addTooltipToClass( "artifacticon", _( "Each artifact is worth 5 gems, the 4th and 5th drawn give 5 extra gems at the moment of collection" ), "" );
 				}
 		},
 		
@@ -454,7 +454,7 @@ function (dojo, declare) {
 			dojo.subscribe('artifactspicked', this, "notif_artifactspicked");
             this.notifqueue.setSynchronous('artifactspicked', 2000);
 			dojo.subscribe('playerexploring', this, "notif_playerexploring");
-            this.notifqueue.setSynchronous('playerexploring', 1000);
+            this.notifqueue.setSynchronous('playerexploring', 3000);
 			dojo.subscribe('stcleanpockets', this, "notif_stcleanpockets");
             this.notifqueue.setSynchronous('stcleanpockets', 4000);
 			
@@ -635,34 +635,13 @@ function (dojo, declare) {
 		{
             console.log( 'notif_finalScore' );
             console.log( notif );
-			dojo.query(".isartifact").addClass("animatedcard");
-			for (i in this.gamedatas.players )
-				{			
-					dojo.byId( "gem_field_"+this.gamedatas.players[i].id ).innerHTML=0;
-					dojo.byId("decksize").innerHTML=notif.args.cardsRemaining;
-					dojo.replaceClass('votecard_'+this.gamedatas.players[i].id,'votecardBack');  
-				}
-				
-				
-			
-			
-        
-
-            // Update score
-            //this.scoreCtrl[notif.args.player_id].incValue(notif.args.score_delta);
-        },
-		
-		notif_finalScore: function (notif) 
-		{
-            console.log( 'notif_finalScore' );
-            console.log( notif );
 			
 			for (i in this.gamedatas.players )
 				{			
 					dojo.byId( "gem_field_"+this.gamedatas.players[i].id ).innerHTML=0;
 					dojo.place( "<div class='gemtent'>"+ notif.args.players[i].tent +"</div>" , "tentholder_"+this.gamedatas.players[i].id , "last" );
-					this.slideToObjectAndDestroy ( "tent_"+this.gamedatas.players[i].id ,'templePanel', 1000 , 1000);
-					
+					this.slideToObjectAndDestroy ( "tent_"+this.gamedatas.players[i].id ,'templePanel', 1000 ,0 );
+					this.scoreCtrl[ i ].setValue( notif.args.players[i].score );
 				}
 
             // Update score

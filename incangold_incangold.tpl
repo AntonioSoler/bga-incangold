@@ -75,15 +75,10 @@
 	<tr id="down">
 		<td colspan="2">
 			<div id="table_wrap" >
-				
 				<div id="deck"></div> 
 				<div id="tablecards" class="whiteblock table"></div>
-					
 			</div>
-			<div>
-				{DECKSIZE}<span id="decksize">0</span>
-			
-			</div>
+			<div id="decksizetext" style="margin-left: 40px;">{DECKSIZE}<span id="decksize">0</span></div>
 		</div>
 	</td>
 </tr>
