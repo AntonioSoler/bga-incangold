@@ -64,13 +64,15 @@ function (dojo, declare) {
             }
 			
 			for ( var i=0 ; i < this.gamedatas.templeartifacts ;i++)
-					{
-						dojo.place( "<div class='artifacticon removed'></div>" , "templeleft", "last" );
-						this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
-					} 
-			
-			
-            dojo.byId("tent_"+this.gamedatas.current_player_id).innerHTML=this.gamedatas.tent;
+			{
+				dojo.place( "<div class='artifacticon removed'></div>" , "templeleft", "last" );
+				this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
+			} 
+		
+			if( ! this.isSpectator )
+			{
+				dojo.byId("tent_"+this.gamedatas.current_player_id).innerHTML="<span id='tentcount'>"+this.gamedatas.tent+"</span>";
+			}
 			
 			dojo.byId("decksize").innerHTML=this.gamedatas.cardsRemaining;
 			
@@ -320,7 +322,10 @@ function (dojo, declare) {
 		{				
 				dojo.destroy(node);
 				target=this.param.shift();
-				dojo.byId(target).innerHTML=eval(dojo.byId(target).innerHTML) + 1;
+				if ( dojo.byId(target) != null )
+				{
+					dojo.byId(target).innerHTML=eval(dojo.byId(target).innerHTML) + 1;
+				}
 		}, 
 		
 		
@@ -501,7 +506,7 @@ function (dojo, declare) {
 				{
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{
-						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid , 700 , animspeed );
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tentcount" , 700 , animspeed );
 						}
 					else 
 						{
@@ -523,7 +528,7 @@ function (dojo, declare) {
 						
 						if (this.gamedatas.current_player_id == notif.args.thisid) 
 							{
-							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 700 , animspeed );
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tentcount" , 700 , animspeed );
 							}
 						else 
 							{

@@ -1,7 +1,7 @@
 /**
  *------
- * BGA framework: Ãƒâ€šÃ‚Â© Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * incangold implementation : Ãƒâ€šÃ‚Â© Antonio Soler <morgald.es@gmail.com>
+ * BGA framework: ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+ * incangold implementation : ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© Antonio Soler <morgald.es@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -67,6 +67,10 @@
 
 #playArea{
 	width:100%	
+	}
+
+#playArea td{
+	border: 0px solid black !important;
 	}
 	
 .templediv{
@@ -186,21 +190,28 @@
     display: table-cell;
     background-image: url('img/tent.png');
     background-repeat: no-repeat;
+    background-position: center center;
     text-align:center;
     vertical-align: middle;
+    position: absolute;
     z-index: 10;
     font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
     color: rgba(1,1,1,1);
  }	
+
+#tentcount { 
+ position: absolute;
+  top: 40%;
+}
  
 .tentholder{
  padding: 5px;
  width: 160px;
  height: 121px;
- display: table-cell;
  vertical-align: middle;
  position: relative;
  text-align: center;
+ display: table;
 }
  
 .gemtent {
@@ -235,6 +246,7 @@
 	border-radius: 8px;
 	background-position: center top !important;
 	box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
+	z-index: 19;
 	}
 
 .votecardLeave {
@@ -246,6 +258,7 @@
 	border-radius: 4px;
 	background-position: right top !important;
 	box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
+	z-index: 19;
 	}	
 
 .votecardBack {
@@ -257,6 +270,7 @@
     border-radius: 4px;
     background-position: left top;
     box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
+	z-index: 19;
  }
 
 #deck {
@@ -285,6 +299,7 @@
 	width: 115px;
 	height: 180px;
 	display: table-cell;
+	position: relative;
 	}
 	
 .artifacticon {
