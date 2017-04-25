@@ -100,12 +100,12 @@ function (dojo, declare) {
 				if ( card.type >=12 && card.type <=16 ) 
 				    {
 						dojo.addClass( "tablecards_item_tablecard_"+card.id , "isartifact" )
-						//dojo.attr("tablecards_item_tablecard_"+card.id, "title", card.id)
 					}
 				 for ( var g=card.location_arg ; g>0 ; g-- )
 				{
 					this.placeGem( card.id+"_"+g, "tablecards_item_tablecard_"+card.id   ) ;					
 				}
+				this.cardTooltip (card.id , card.type);
             }
 			for ( var i=1;i<=gamedatas.iterations;i++ )
 			{
@@ -124,7 +124,7 @@ function (dojo, declare) {
 			
 			this.addTooltipToClass( "votecardExplore", _( "This player has voted to continue exploring" ), "" );
 			
-			this.addTooltipToClass( "stockitem", _( "This represents the events ocurred during exploration" ), "" );
+			
 			
             // Setup game notifications to handle (see "setupNotifications" method below)
             this.setupNotifications();
@@ -269,10 +269,22 @@ function (dojo, declare) {
 				this.slideTemporaryObjectAndIncCounter( '<div class="gem spining"></div>', 'page-content', source, destination, 700 , animspeed );
 				animspeed += 400;
 			}
-			//for (var i = 1 ; i<= amount ; i++)
-			//{
-			//	$(destination).innerHTML++ ;
-			//}
+        },
+		
+		cardTooltip: function ( card_id, card_type) 
+		{
+			if ( card_type <=11 )
+			{
+				 this.addTooltip( "tablecards_item_tablecard_"+card_id, _( "This is a gems card, the loot is divided and any remaining gems are left on the floor, these could be picked by the adventurers returning to camp" ), "" );
+			}
+			if ( card_type >=12 && card_type <=16 )
+			{
+				 this.addTooltip( "tablecards_item_tablecard_"+card_id, _( "This is an artifact card, it can be picked if only ONE adventurer returns that turn to camp" ), "" );
+			}
+			if ( card_type >=17 )
+			{
+				 this.addTooltip( "tablecards_item_tablecard_"+card_id, _( "This is a hazzard card, if two of the same kind are drawn the explorers are exppelled from the temple and they loose the gems not stored" ), "" );
+			}	 
         },
 		
 		moveCard: function ( id , destination , isartifact ) 
@@ -457,9 +469,9 @@ function (dojo, declare) {
 			dojo.subscribe('playerleaving', this, "notif_playerleaving");
             this.notifqueue.setSynchronous('playerleaving', 3000);
 			dojo.subscribe('artifactspicked', this, "notif_artifactspicked");
-            this.notifqueue.setSynchronous('artifactspicked', 2000);
+            this.notifqueue.setSynchronous('artifactspicked', 500);
 			dojo.subscribe('playerexploring', this, "notif_playerexploring");
-            this.notifqueue.setSynchronous('playerexploring', 3000);
+            this.notifqueue.setSynchronous('playerexploring', 1000);
 			dojo.subscribe('stcleanpockets', this, "notif_stcleanpockets");
             this.notifqueue.setSynchronous('stcleanpockets', 4000);
 			
@@ -486,7 +498,7 @@ function (dojo, declare) {
 				{
 					this.placeGem( card.id+"_"+g, "tablecards_item_tablecard_"+card.id   ) ;					
 				}
-			this.addTooltipToClass( "stockitem", _( "This represents the events ocurred during exploration" ), "" );
+			this.cardTooltip (card.id , card.type);	
 			dojo.byId("decksize").innerHTML=eval(dojo.byId("decksize").innerHTML)-1;
         },
 		

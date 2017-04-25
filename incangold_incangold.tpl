@@ -30,8 +30,6 @@
 			<div id="templePanel" class="templediv">       
 				<table id="templetable" class="templeclass">
 					<tbody>
-						<tr><th></th><th></th><th></th><th></th>
-						</tr>
 						<tr>
 							<td class="tspacer" id="templeleft"></td>
 							<td id="templecard5" colspan="2" class="templecard t5"> </td>

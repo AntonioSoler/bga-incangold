@@ -65,7 +65,7 @@ class incangold extends Table
         // Set the colors of the players with HTML color code
         // The default below is red/green/blue/orange/brown   and now white
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
-        $default_colors = array( "ff0000", "008000", "0000ff", "ffa500", "773300" , "ffffff" );
+        $default_colors = array( "ff0000", "008000", "0000ff", "ffa500", "773300" , "ffffff", "4c1b5b", "000000" );
 
  
         // Create players
