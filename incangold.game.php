@@ -63,7 +63,7 @@ class incangold extends Table
         self::DbQuery( $sql ); 
 
         // Set the colors of the players with HTML color code
-        // The default below is red/green/blue/orange/brown   and now white
+        // The default below is red/green/blue/orange/brown   and now white/purple/black
         // The number of colors defined here must correspond to the maximum number of players allowed for the gams
         $default_colors = array( "ff0000", "008000", "0000ff", "ffa500", "773300" , "ffffff", "4c1b5b", "000000" );
 
@@ -80,7 +80,7 @@ class incangold extends Table
 	
     	$sql .= implode( $values, ',' );
 		self::DbQuery( $sql );
-		self::reattributeColorsBasedOnPreferences( $players, array(  /* LIST HERE THE AVAILABLE COLORS OF YOUR GAME INSTEAD OF THESE ONES */"ff0000", "008000", "0000ff", "ffa500", "773300" , "ffffff" ) );
+		self::reattributeColorsBasedOnPreferences( $players, array(  /* LIST HERE THE AVAILABLE COLORS OF YOUR GAME INSTEAD OF THESE ONES */"ff0000", "008000", "0000ff", "ffa500", "773300" , "ffffff", "4c1b5b", "000000" ) );
 		self::reloadPlayersBasicInfos();
 
         /************ Start the game initialization *****/
@@ -452,10 +452,10 @@ class incangold extends Table
 		} 
 	$thisTypeid = $PlayedCard['type']; 	
 	$cardPlayedName	= $this->card_types[$thisTypeid]['name'];
-	if  ( $PlayedCard['type_arg'] > 0) 
+	/*if  ( $PlayedCard['type_arg'] > 0) 
 	{
-		$cardPlayedName = $cardPlayedName ." ". $PlayedCard['type_arg'] ;
-	}
+		$cardPlayedName = $PlayedCard['type_arg'] ;
+	}      REMOVED TO LEAVE LESS CLUES ON THE LOG ABOUT THE NUMBER OF GEMS */
 	$cardsontable = $this->cards->countCardsInLocation( 'table' );
 	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn: ${card_played_name}' ), 
 		array( 'i18n' => array('card_played_name'), 
@@ -466,8 +466,9 @@ class incangold extends Table
 	$HazardsDrawn = self::getCollectionFromDB("SELECT COUNT(*) c FROM cards WHERE card_location ='table' AND card_type > 12 GROUP BY card_type HAVING c > 1 ");
 	if (sizeof( $HazardsDrawn )>=1)
 		{
-			self::notifyAllPlayers( "stcleanpockets", clienttranslate( 'This is the second ${card_played_name} drawn. Players in the temple lost their gems. One card of this kind is removed.' ), array(
-                'card_played' => $PlayedCard,
+			self::notifyAllPlayers( "stcleanpockets", clienttranslate( 'This is the second ${card_played_name} drawn. Players in the temple lost their gems. One card of this kind is removed.' ), 
+                array( 'i18n' => array('card_played_name'), 
+				'card_played' => $PlayedCard,
 				'card_played_name' => $cardPlayedName
             ) ); 
 		$this->cards->moveCard( $PlayedCard['id'], 'temple'  );   // Remove 1 hazard to the temple
@@ -495,7 +496,7 @@ class incangold extends Table
 		$sql = "SELECT card_id AS id FROM cards WHERE card_location ='table' AND card_type in ( 12,13,14,15,16)";  
 		$cards = self::getCollectionFromDB($sql);
 		$artifactsOnTable = sizeof($cards);
-		self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );		// the 4th and 5th artifacts have bonus	
+		self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
 		$sql = "UPDATE cards SET card_location ='temple' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
 		self::DbQuery( $sql );	            //Remove the artifacts left behind
 		
@@ -628,7 +629,7 @@ class incangold extends Table
 			if ( sizeof( $exploringPlayers ) == 0 )
 				{
 					
-				$this->gamestate->nextState( 'reshuffle' );	
+				$this->gamestate->nextState( 'cleanpockets' );	
 				}
 			else
 			{

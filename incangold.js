@@ -248,7 +248,7 @@ function (dojo, declare) {
 		
 		placeVotecard: function ( player_id, action) 
 		{	
-			a1= this.slideToObject('votecard_'+player_id, 'overall_player_board_'+player_id, 100, 0);
+			a1= this.slideToObject('votecard_'+player_id, 'overall_player_board_'+player_id, 300, 0);
 			a2= dojo.fadeOut( {      node: 'votecard_'+player_id,
                                     onEnd: function( node ) {
 															dojo.replaceClass(node,'votecard'+action); 
@@ -256,7 +256,7 @@ function (dojo, declare) {
                                   } );
 			a3= dojo.fadeIn( {      node: 'votecard_'+player_id} );
                
-			a4= this.slideToObject( 'votecard_'+player_id , 'cardholder_'+player_id , 500,0 );	
+			a4= this.slideToObject( 'votecard_'+player_id , 'cardholder_'+player_id , 600,0 );	
             var anim = dojo.fx.chain( [ a1,  a2 , a3 ,a4]);
 		 anim.play();
         },

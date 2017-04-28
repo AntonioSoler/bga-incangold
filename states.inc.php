@@ -103,7 +103,7 @@ $machinestates = array(
         "type" => "game",
         "action" => "stprocessLeavers",
         "updateGameProgression" => true,
-        "transitions" => array( "explore" => 3,"reshuffle" => 2) 
+        "transitions" => array( "explore" => 3,"cleanpockets" => 4) 
     ),
     
     90 => array(

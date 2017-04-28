@@ -58,7 +58,7 @@
 								<td style="text-align:center;vertical-align:middle;"><h2 class="Header" style="color:#{PLAYER_COLOR};"  >{PLAYER_NAME}</h2></td>
 							</tr>
 							<tr>
-								<td> <div id="tentholder_{PLAYER_ID}" class="tentholder"><div id="tent_{PLAYER_ID}" class="tent" ><span> </div></div></td>
+								<td> <div id="tentholder_{PLAYER_ID}" class="tentholder"><div id="tent_{PLAYER_ID}" class="tent" ><span id="You cheater!.. wtf are you looking for here?"></span></div></div></td>
 							</tr>
 							<tr>
 								<td id="field_{PLAYER_ID}"><div id="gem_field_{PLAYER_ID}" class="gemfield">0</div></td>							
