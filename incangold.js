@@ -248,7 +248,7 @@ function (dojo, declare) {
 		
 		placeVotecard: function ( player_id, action) 
 		{	
-			a1= this.slideToObject('votecard_'+player_id, 'overall_player_board_'+player_id, 300, 0);
+			a1= this.slideToObject('votecard_'+player_id, 'overall_player_board_'+player_id, 100, 0);
 			a2= dojo.fadeOut( {      node: 'votecard_'+player_id,
                                     onEnd: function( node ) {
 															dojo.replaceClass(node,'votecard'+action); 
@@ -461,17 +461,17 @@ function (dojo, declare) {
             dojo.subscribe('playCard', this, "notif_cardPlayed" );
 			this.notifqueue.setSynchronous( 'playCard', 2000 );
 			dojo.subscribe('ObtainGems', this, "notif_ObtainGems" );
-            this.notifqueue.setSynchronous( 'ObtainGems', 2000 );
+            this.notifqueue.setSynchronous( 'ObtainGems', 3000 );
 			dojo.subscribe('finalScore', this, "notif_finalScore");
-            this.notifqueue.setSynchronous('notif_finalScore', 8000);
+            this.notifqueue.setSynchronous('notif_finalScore',10000);
 			dojo.subscribe('reshuffle', this, "notif_reshuffle");
             this.notifqueue.setSynchronous('reshuffle', 4000);
 			dojo.subscribe('playerleaving', this, "notif_playerleaving");
             this.notifqueue.setSynchronous('playerleaving', 3000);
 			dojo.subscribe('artifactspicked', this, "notif_artifactspicked");
-            this.notifqueue.setSynchronous('artifactspicked', 500);
+            this.notifqueue.setSynchronous('artifactspicked', 800);
 			dojo.subscribe('playerexploring', this, "notif_playerexploring");
-            this.notifqueue.setSynchronous('playerexploring', 1000);
+            this.notifqueue.setSynchronous('playerexploring', 400);
 			dojo.subscribe('stcleanpockets', this, "notif_stcleanpockets");
             this.notifqueue.setSynchronous('stcleanpockets', 4000);
 			
@@ -509,7 +509,7 @@ function (dojo, declare) {
             console.log( notif );
 			this.placeVotecard ( notif.args.thisid , "Leave" );
 			this.addTooltipToClass( "votecardLeave", _( "This player has voted to return to camp and has stored his gems in the tent" ), "" );
-            var animspeed=900;
+            var animspeed=0;
 			
 			gems = dojo.byId("gem_field_"+notif.args.thisid).innerHTML
 			if ( gems >=1 )
@@ -518,13 +518,13 @@ function (dojo, declare) {
 				{
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{
-						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tentcount" , 700 , animspeed );
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tentcount" , 600 , animspeed );
 						}
 					else 
 						{
-						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid, 700 , animspeed );
+						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid, 600 , animspeed );
 						}
-					animspeed += 400;
+					animspeed += 300;
 				}
 			}
 			if ( notif.args.gems >=1 )
@@ -540,13 +540,13 @@ function (dojo, declare) {
 						
 						if (this.gamedatas.current_player_id == notif.args.thisid) 
 							{
-							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tentcount" , 700 , animspeed );
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tentcount" , 600 , animspeed );
 							}
 						else 
 							{
-							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 700 , animspeed );
+							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 600 , animspeed );
 							}
-						animspeed += 400;
+						animspeed += 300;
 					}
 					catch(err) {}
 					
@@ -577,11 +577,11 @@ function (dojo, declare) {
 				{
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 							{
-							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid , 700 , animspeed );
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', 'templePanel' , "tentcount" , 600 , animspeed );
 							}
 						else 
 							{
-							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "field_"+notif.args.thisid , "tent_"+notif.args.thisid, 700 , animspeed );
+							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', 'templePanel'  , "tent_"+notif.args.thisid, 600 , animspeed );
 							}
 					animspeed += 300;
 				}

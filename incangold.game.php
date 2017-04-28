@@ -315,8 +315,15 @@ class incangold extends Table
 
     function voteLeave()
     {
-	$current_player_id = self::getCurrentPlayerId(); 
-	$this->setLeavingPlayer ( $current_player_id  , 1 );
+	$current_player_id = self::getCurrentPlayerId();
+	$sql = $sql = "SELECT count(*) FROM player WHERE player_id=$current_player_id AND player_leaving=0" ;
+	$value=self::getUniqueValueFromDB( $sql );
+	$sql = $sql = "SELECT count(*) FROM player WHERE player_id=$current_player_id AND player_exploring=1" ;
+	$value=$value + self::getUniqueValueFromDB( $sql );
+	if ($value == 2 ) 
+	{
+		$this->setLeavingPlayer ( $current_player_id  , 1 );
+	}
 	$this->gamestate->setPlayerNonMultiactive( $current_player_id, '' );	
     }
 
@@ -450,11 +457,11 @@ class incangold extends Table
 		$cardPlayedName = $cardPlayedName ." ". $PlayedCard['type_arg'] ;
 	}
 	$cardsontable = $this->cards->countCardsInLocation( 'table' );
-	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn: ${card_played_name}' ), array(
-                'card_played' => $PlayedCard,
-				'card_played_name' => $cardPlayedName
-            ) );
-	
+	self::notifyAllPlayers( "playCard", clienttranslate( 'A new card is drawn: ${card_played_name}' ), 
+		array( 'i18n' => array('card_played_name'), 
+		'card_played' => $PlayedCard, 
+		'card_played_name' => $cardPlayedName 
+		) );	
 	
 	$HazardsDrawn = self::getCollectionFromDB("SELECT COUNT(*) c FROM cards WHERE card_location ='table' AND card_type > 12 GROUP BY card_type HAVING c > 1 ");
 	if (sizeof( $HazardsDrawn )>=1)
@@ -545,10 +552,10 @@ class incangold extends Table
 					$sql = "SELECT card_id AS id FROM cards WHERE card_location ='table' AND card_type in ( 12,13,14,15,16)";
 					$cards = self::getCollectionFromDB($sql);
 					$artifactsOnTable = sizeof($cards);
+					$extra=0;
 					
 					if ( $artifactsOnTable >0)
 						{
-							$extra=0;
 							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
 							$artifactspicked=self::getGameStateValue( 'artifactspicked' );
 							if ( $artifactspicked == 4  )  
@@ -571,6 +578,8 @@ class incangold extends Table
 							
 							if ($extra > 0) 
 							{
+							$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent') ;
+				            $this->setGemsPlayer ( $thisid , 'tent', $gems + $extra );	
 							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${player_name} is the only player returning to camp this turn and has picked some artifacts, this is the 4th or 5th artifact drawn and obtains ${extra} gems)' ) , 
 								array( 'thisid' => $thisid ,
 									  'player_name' => $thisPlayerName ,
@@ -584,7 +593,7 @@ class incangold extends Table
 								array( 'thisid' => $thisid ,
 									  'player_name' => $thisPlayerName ,
 									  'cards' => $cards,
-									  'extra' => $extra
+									  'extra' => 0
 								) );
 							}
 						}	
@@ -592,7 +601,7 @@ class incangold extends Table
 				$this->setExploringPlayer( $thisid  , 0);
 				
 				$gems = $this->getGemsPlayer ( $thisid , 'field') ;  
-				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent') + $gemsSplit;
+				$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent') + $gemsSplit ;
 				
 				$this->setGemsPlayer ( $thisid , 'tent', $gems );
 				$this->setGemsPlayer ( $thisid , 'field', 0 );
