@@ -181,6 +181,7 @@ class incangold extends Table
         $result['cardsRemaining'] = $this->cards->countCardsInLocation('deck');
         $result['iterations'] = $this->getGameStateValue('iterations');
         $result['exploringPlayers'] = $this->getExploringPlayers();
+		$result['campPlayers'] = $this->getCampPlayers();
 		$sql = "SELECT COUNT(*) FROM cards WHERE card_location ='temple' AND card_type in (12,13,14,15,16)"; 
 		$result['templeartifacts'] = self::getUniqueValueFromDB( $sql );
 		$result['table'] = $this->cards->getCardsInLocation( 'table' );
@@ -221,6 +222,15 @@ class incangold extends Table
     {
         $playersIds = array();
 		$sql = "SELECT player_id id, player_name playerName , player_color playerColor FROM player WHERE player_exploring=1";
+        //$playersIds = self::getObjectListFromDB( $sql );
+		$playersIds = self::getCollectionFromDB( $sql );	
+		self::debug ("******* getExploringPlayers   ".$playersIds);
+        return $playersIds;
+    }
+	function getCampPlayers()
+    {
+        $playersIds = array();
+		$sql = "SELECT player_id id, player_name playerName , player_color playerColor FROM player WHERE player_exploring=0";
         //$playersIds = self::getObjectListFromDB( $sql );
 		$playersIds = self::getCollectionFromDB( $sql );	
 		self::debug ("******* getExploringPlayers   ".$playersIds);

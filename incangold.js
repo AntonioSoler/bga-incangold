@@ -81,6 +81,11 @@ function (dojo, declare) {
 				 dojo.addClass( "votecard_"+i , "votecardBack" );
 			}
 			
+			for (i in this.gamedatas.campPlayers)
+			{			
+				 dojo.addClass( "votecard_"+i , "votecardLeave" );
+			}
+			
             this.tablecards = new ebg.stock();
             this.tablecards.create( this, $('tablecards'), this.cardwidth, this.cardheight );
             this.tablecards.image_items_per_row = 7;
