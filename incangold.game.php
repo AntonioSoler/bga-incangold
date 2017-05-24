@@ -713,6 +713,20 @@ class incangold extends Table
     	$statename = $state['name'];
     	
         $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
+		
+		if ($state['type'] == "multipleactiveplayer") {
+            // Make sure player is in a non blocking status for role turn
+            $sql = "
+                UPDATE  player
+                SET     player_is_multiactive = 0 ,
+						player_exploring = 0
+                WHERE   player_id = $active_player
+            ";
+            self::DbQuery( $sql );
+            $this->gamestate->updateMultiactiveOrNextState( '' );
+            return;
+        }
+		
 
         throw new feException( "Zombie mode not supported at this game state: ".$statename );
     }
