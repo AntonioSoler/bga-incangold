@@ -1,8 +1,8 @@
 <?php
  /**
   *------
-  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
-  * incangold implementation : © Antonio Soler <morgald.es@gmail.com>
+  * BGA framework: (c) Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
+  * incangold implementation : (c) Antonio Soler <morgald.es@gmail.com>
   * 
   * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
   * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -722,7 +722,9 @@ class incangold extends Table
 						player_exploring = 0
                 WHERE   player_id = $active_player
             ";
+			
             self::DbQuery( $sql );
+			$this->setLeavingPlayer ( $active_player  , 1 );
             $this->gamestate->updateMultiactiveOrNextState( '' );
             return;
         }
