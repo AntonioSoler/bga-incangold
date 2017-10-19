@@ -74,7 +74,6 @@ $gameinfos = array(
 // Diplomacy of the game, from 0 (no interaction in this game) to 5 (totally based on interaction and discussion between players)
 'diplomacy' => 0,    
 
-
 // Games categories
 //  You can attribute any number of "tags" to your game.
 //  Each tag has a specific ID (ex: 22 for the category "Prototype", 101 for the tag "Science-fiction theme game")

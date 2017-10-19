@@ -25,6 +25,25 @@
     Please REMOVE this comment before publishing your game on BGA
 -->
 <table id="playArea" >
+    <tr id="down">
+		<td colspan="2">
+		<div id="table_wrap" >
+				<div id="deck">
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				<div class="backdeck"></div> 
+				</div> 
+				<div id="tablecards" class="whiteblock table"></div>
+			</div>
+			<div id="decksizetext" style="margin-left: 40px;">{DECKSIZE}<span id="decksize">0</span></div>
+		</div>	
+	</td>
 	<tr id="up">
 		<td id="templecell"> 
 			<div id="templePanel" class="templediv">       
@@ -47,7 +66,7 @@
 				
 			</div>
 		</td>
-		<td>
+		<td id="campscell">
 			<div id="campswrapper">
 				<!-- BEGIN camp -->
 				<div id="playerCamp_{PLAYER_ID}" class="whiteblock fields">
@@ -58,7 +77,15 @@
 								<td style="text-align:center;vertical-align:middle;"><h2 class="Header" style="color:#{PLAYER_COLOR};"  >{PLAYER_NAME}</h2></td>
 							</tr>
 							<tr>
-								<td> <div id="tentholder_{PLAYER_ID}" class="tentholder"><div id="tent_{PLAYER_ID}" class="tent" ><span id="You cheater!.. wtf are you looking for here?"></span></div></div></td>
+								<td> <div id="tentholder_{PLAYER_ID}" class="tentholder">
+								     <div id="tent_{PLAYER_ID}" class="tent" >
+									 <span id="You cheater!.. wtf are you looking for here?"></span>
+									   <div class="tent_side1" ></div>
+									   <div class="tent_side2" ></div>
+									   <div class="tent_side3" ></div>
+									   <div class="tent_side4" ></div>
+									 </div>
+									 </div></td>
 							</tr>
 							<tr>
 								<td id="field_{PLAYER_ID}"><div id="gem_field_{PLAYER_ID}" class="gemfield">0</div></td>							
@@ -70,15 +97,7 @@
 			</div>
 		</td>
 	</div>	
-	<tr id="down">
-		<td colspan="2">
-			<div id="table_wrap" >
-				<div id="deck"></div> 
-				<div id="tablecards" class="whiteblock table"></div>
-			</div>
-			<div id="decksizetext" style="margin-left: 40px;">{DECKSIZE}<span id="decksize">0</span></div>
-		</div>
-	</td>
+	
 </tr>
 </table>
 

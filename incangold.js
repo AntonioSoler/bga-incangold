@@ -26,12 +26,23 @@ function (dojo, declare) {
     return declare("bgagame.incangold", ebg.core.gamegui, {
         constructor: function(){
             console.log('incangold constructor');
-              
-            // Here, you can init the global variables of your user interface
-            // Example:
-            // this.myGlobalValue = 0;
+             // transform: rotateX(20deg) translate(-100px, -130px) rotateZ(0deg) scale3d(0.8, 0.8, 0.8); min-width: 0px;
+            
 			this.cardwidth = 159;
             this.cardheight = 247;
+			if (!dojo.hasClass("ebd-body", "mode_3d")) {
+            //dojo.addClass("ebd-body", "mode_3d");
+            //dojo.addClass("ebd-body", "enableTransitions");
+				
+				this.control3dxaxis = 25;  // rotation in degrees of x axis (it has a limit of 0 to 80 degrees in the frameword so users cannot turn it upsidedown)
+				this.control3dzaxis = 0;   // rotation in degrees of z axis
+				this.control3dxpos = -130;   // center of screen in pixels
+				this.control3dypos = -100;   // center of screen in pixels
+				this.control3dscale = 0.8;   // zoom level, 1 is default 2 is double normal size, 
+				this.control3dmode3d = false ;  			// is the 3d enabled	
+				// $("globalaction_3d").innerHTML = "2D";   // controls the upper right button 
+				// $("game_play_area").style.transform = "rotatex(" + this.control3dxaxis + "deg) translate(" + this.control3dypos + "px," + this.control3dxpos + "px) rotateZ(" + this.control3dzaxis + "deg) scale3d(" + this.control3dscale + "," + this.control3dscale + "," + this.control3dscale + ")";
+			}
 
         },
         
@@ -71,7 +82,7 @@ function (dojo, declare) {
 		
 			if( ! this.isSpectator )
 			{
-				dojo.byId("tent_"+this.gamedatas.current_player_id).innerHTML="<span id='tentcount'>"+this.gamedatas.tent+"</span>";
+				dojo.place("<span id='tentcount'>"+this.gamedatas.tent+"</span>" , "tent_"+this.gamedatas.current_player_id , "last");
 			}
 			
 			dojo.byId("decksize").innerHTML=this.gamedatas.cardsRemaining;
@@ -253,7 +264,7 @@ function (dojo, declare) {
 		
 		placeVotecard: function ( player_id, action) 
 		{	
-			a1= this.slideToObject('votecard_'+player_id, 'overall_player_board_'+player_id, 300, 0);
+			a1= this.MySlideToObject('votecard_'+player_id, 'overall_player_board_'+player_id, 400, 0);
 			a2= dojo.fadeOut( {      node: 'votecard_'+player_id,
                                     onEnd: function( node ) {
 															dojo.replaceClass(node,'votecard'+action); 
@@ -261,7 +272,7 @@ function (dojo, declare) {
                                   } );
 			a3= dojo.fadeIn( {      node: 'votecard_'+player_id} );
                
-			a4= this.slideToObject( 'votecard_'+player_id , 'cardholder_'+player_id , 600,0 );	
+			a4= this.MySlideToObject( 'votecard_'+player_id , 'cardholder_'+player_id , 800,0 );	
             var anim = dojo.fx.chain( [ a1,  a2 , a3 ,a4]);
 		 anim.play();
         },
@@ -271,8 +282,8 @@ function (dojo, declare) {
 			var animspeed=0;
 			for (var i = 1 ; i<= amount ; i++)
 			{
-				this.slideTemporaryObjectAndIncCounter( '<div class="gem spining"></div>', 'page-content', source, destination, 700 , animspeed );
-				animspeed += 400;
+				this.slideTemporaryObjectAndIncCounter( '<div class="gem spining"></div>', 'playArea', source, destination, 800 , animspeed );
+				animspeed += 500;
 			}
         },
 		
@@ -309,7 +320,7 @@ function (dojo, declare) {
 			dojo.style(obj, "position", "absolute");
 			dojo.style(obj, "left", "0px");
 			dojo.style(obj, "top", "0px");
-			var anim = this.slideToObject(obj, to, duration, delay );
+			var anim = this.MySlideToObject(obj, to, duration, delay );
 			
 			this.param.push(to);
             
@@ -326,7 +337,7 @@ function (dojo, declare) {
 			dojo.style(obj, "top", "0px");
 			this.placeOnObject(obj, from);
 			
-			var anim = this.slideToObject(obj, to, duration, delay );
+			var anim = this.MySlideToObject(obj, to, duration, delay );
 			
 			this.param.push(to);
             
@@ -334,7 +345,73 @@ function (dojo, declare) {
 			anim.play();
 			return anim;
 			},
-		 
+		
+		MySlideToObject: function (mobile, target, duration, delay)
+		{
+			if (mobile === null)
+			{
+				console.error("slideToObject: mobile obj is null");
+			}
+			if (target === null)
+			{
+				console.error("slideToObject: target obj is null");
+			}
+			var tgt = dojo.position(target);
+			var src = dojo.position(mobile);
+			if (typeof duration == "undefined")
+			{
+				duration = 500;
+			}
+			if (typeof delay == "undefined")
+			{
+				delay = 0;
+			}
+			if (this.instantaneousMode)
+			{
+				delay = Math.min(1, delay);
+				duration = Math.min(1, duration);
+			}
+			var left = dojo.style(mobile, "left");
+			var top = dojo.style(mobile, "top");
+			
+			left = left + tgt.x - src.x + (tgt.w - src.w) / 2;
+			top = top + tgt.y - src.y + (tgt.h - src.h) / 2;
+			travelanim= function(node){
+						
+						dojo.removeClass(node,"traveller");
+						dojo.addClass(node,"traveller");
+						}
+			slideanim = dojo.fx.slideTo(
+			{
+				node: mobile,
+				top: top,
+				left: left,
+				delay: delay,
+				duration: duration,
+				unit: "px" 
+			});
+			dojo.connect(slideanim, "onPlay", dojo.hitch(this, travelanim, mobile )) ;
+			return slideanim;
+			
+		},
+		MySlideTemporaryObject: function (_a47, _a48, from, to, _a49, _a4a)
+					{
+						var obj = dojo.place(_a47, _a48);
+						dojo.style(obj, "position", "absolute");
+						dojo.style(obj, "left", "0px");
+						dojo.style(obj, "top", "0px");
+						
+						this.placeOnObject(obj, from);
+						var anim = this.MySlideToObject(obj, to, _a49, _a4a);
+						var _a4b = function (node)
+						{
+							dojo.destroy(node);
+						};
+						dojo.connect(anim, "onEnd", _a4b);
+						anim.play();
+						return anim;
+					},
+		
 		incAndDestroy : function(node) 
 		{				
 				dojo.destroy(node);
@@ -523,11 +600,11 @@ function (dojo, declare) {
 				{
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 						{
-						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tentcount" , 600 , animspeed );
+						this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'playArea', "gem_field_"+notif.args.thisid , "tentcount" , 600 , animspeed );
 						}
 					else 
 						{
-						this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid, 600 , animspeed );
+						this.MySlideTemporaryObject( '<div class="gem spining"></div>', 'playArea', "gem_field_"+notif.args.thisid , "tent_"+notif.args.thisid, 600 , animspeed );
 						}
 					animspeed += 300;
 				}
@@ -545,13 +622,13 @@ function (dojo, declare) {
 						
 						if (this.gamedatas.current_player_id == notif.args.thisid) 
 							{
-							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', source , "tentcount" , 600 , animspeed );
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'playArea', source , "tentcount" , 1000 , animspeed );
 							}
 						else 
 							{
-							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', source , "tent_"+notif.args.thisid , 600 , animspeed );
+							this.MySlideTemporaryObject( '<div class="gem spining"></div>', 'playArea', source , "tent_"+notif.args.thisid , 1000 , animspeed );
 							}
-						animspeed += 300;
+						animspeed += 500;
 					}
 					catch(err) {}
 					
@@ -582,13 +659,13 @@ function (dojo, declare) {
 				{
 					if (this.gamedatas.current_player_id == notif.args.thisid) 
 							{
-							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'page-content', 'templePanel' , "tentcount" , 600 , animspeed );
+							this.slideTemporaryObjectAndIncCounter ( '<div class="gem spining"></div>', 'playArea', 'templePanel' , "tentcount" , 1000 , animspeed );
 							}
 						else 
 							{
-							this.slideTemporaryObject( '<div class="gem spining"></div>', 'page-content', 'templePanel'  , "tent_"+notif.args.thisid, 600 , animspeed );
+							this.MySlideTemporaryObject( '<div class="gem spining"></div>', 'playArea', 'templePanel'  , "tent_"+notif.args.thisid, 1000 , animspeed );
 							}
-					animspeed += 300;
+					animspeed += 500;
 				}
 			}	
 			for ( card_id in notif.args.cards )				
@@ -646,7 +723,7 @@ function (dojo, declare) {
 				}
 				this.tablecards.removeAllTo('deck');
 				
-				this.slideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 500, 0);  
+				this.MySlideTemporaryObject( "<div  class='templecard t"+ notif.args.iterations +" on spining'></div>" , 'templePanel', 'templePanel', "templecard"+notif.args.iterations, 500, 0);  
 				dojo.addClass( "templecard"+notif.args.iterations ,"on")
 				dojo.byId("decksize").innerHTML=notif.args.cardsRemaining;
 			}

@@ -123,7 +123,6 @@
     background-image: url('img/temple-on.png')!important;
 	}
 
-	
 .fields {
     min-height: 200px !important;
     width: 280px;
@@ -143,6 +142,10 @@
 #info {
     width: 260px;
     height: 190px;
+}
+
+#campscell{
+min-width: 620px;
 }
 
 .whiteblock {
@@ -169,6 +172,31 @@
     margin-left: auto;
     background-image: url('img/gem.png');
     background-repeat: no-repeat;
+    transform: translateZ(6px);
+}
+
+.gem::after {
+	content:"";
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top:0px;
+	left:0px;
+	background-image: url('img/gem.png');
+	background-repeat: no-repeat;
+	transform: translateZ(-3px);
+}
+
+.gem::before {
+	content:"";
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top:0px;
+	left:0px;
+	background-image: url('img/gem.png');
+	background-repeat: no-repeat;
+	transform: translateZ(-6px);
 }
 
 .gemfield {
@@ -176,32 +204,115 @@
     height: 30px;
     background-image: url('img/gem.png');
     background-repeat: no-repeat;
-    margin: 6px;
-    padding: 0px;
-    float: right;
-    font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    right:10px;
+    font: normal normal bold 20px/1 Arial, Helvetica, sans-serif;
     color: rgba(1,1,1,1);
     text-align: center;
+    position: relative;
+    float: right;
+    transform: translateZ(6px);
+    z-index: 500;
+    display: table-cell;
  }
 
+.gemfield::after {
+	content:"";
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top:0px;
+	left:0px;
+	background-image: url('img/gem.png');
+	background-repeat: no-repeat;
+	transform: translateZ(-3px);
+	z-index:-1
+}
+
+.gemfield::before {
+	content:"";
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top:0px;
+	left:0px;
+	background-image: url('img/gem.png');
+	background-repeat: no-repeat;
+	transform: translateZ(-6px);
+	z-index:-1
+
+}
 .tent {
     width: 150px;
     height: 121px;
     display: table-cell;
-    background-image: url('img/tent.png');
+    /* background-image: url('img/tent.png'); */
     background-repeat: no-repeat;
     background-position: center center;
     text-align:center;
     vertical-align: middle;
     position: absolute;
+    font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+    transform: scale3d(0.8,0.8,0.8);
+    transform-origin: top center;
+ }	
+
+.tent_side1 {
+    width: 150px;
+    height: 114px;
+    background-image: url('img/tenta.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
     z-index: 10;
     font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
     color: rgba(1,1,1,1);
+    transform: translate3d(46px,40px,50px) rotateZ(-30deg) rotateX(-60deg);
  }	
 
-#tentcount { 
+.tent_side2 {
+    width: 150px;
+    height: 114px;
+    background-image: url('img/tenta.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+    z-index: 10;
+    font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+    transform: translate3d(20px,-10px,50px)  rotateZ(-210deg) rotateX(-60deg);
+ }
+ .tent_side3 {
+    width: 150px;
+    height: 114px;
+    background-image: url('img/tentb.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+    z-index: 10;
+    font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+    transform: translate3d(-31px,51px,50px)  rotateZ(-120deg) rotateX(-90deg);
+ }		
+
+ .tent_side4 {
+    width: 150px;
+    height: 114px;
+    background-image: url('img/tentb.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    position: absolute;
+    z-index: 10;
+    font: normal normal bold 19px/1 Arial, Helvetica, sans-serif;
+    color: rgba(1,1,1,1);
+    transform: translate3d(97px,-20px,50px)  rotateZ(-120deg) rotateX(-90deg);
+ }		
+#tentcount {
  position: absolute;
-  top: 40%;
+ top: 40%;
+ font-size: 30px;
+ transform: translate3d(40px,40px,60px) rotateZ(-30deg) rotateX(-20deg);
+ z-index: 100;
 }
  
 .tentholder{
@@ -212,6 +323,7 @@
  position: relative;
  text-align: center;
  display: table;
+ transform: translateZ(5px);
 }
  
 .gemtent {
@@ -246,7 +358,7 @@
 	border-radius: 6px;
 	background-position: center top !important;
 	box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
-	z-index: 19;
+	z-index: 190;
 	}
 
 .votecardLeave {
@@ -258,7 +370,7 @@
 	border-radius: 6px;
 	background-position: right top !important;
 	box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
-	z-index: 19;
+	z-index: 190;
 	}	
 
 .votecardBack {
@@ -270,26 +382,55 @@
     border-radius: 6px;
     background-position: left top;
     box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
-	z-index: 19;
  }
 
-#deck {
+ #deck {
+    width: 159px;
+    height: 247px;
+     	transform:translate3d(1px,1px,30px);
+    display: inline;
+    margin: 15px;
+    flex: 0 1 auto;
+ }
+ 
+.backdeck {
     width: 159px;
     height: 247px;
     background-image: url('img/card-back.jpg');
     border-radius: 7px;
     background-size: cover;
-    display: inline;
-    margin: 15px;
-    flex: 0 1 auto;
-    box-shadow: -1px 1px 0px 1px rgb(59, 59, 59),
-	-3px 7px 0px 1px rgba(0, 0, 0, 1),
-	-5px 9px 0px 1px rgb(59, 59, 59),
-	-9px 15px 0px 1px rgba(0, 0, 0, 1),
-	-11px 18px 0px 1px rgb(59, 59, 59),
-	-14px 22px 0px 1px rgba(0, 0, 0, 1),
-	3px 18px 3px 11px rgba(0, 0, 0, 0.58);
+    position: absolute;
+    box-shadow: inset 0px 0px 1px 1px #4e4d4d;
  }
+
+#deck div:nth-child(1) {
+ 	transform:translate3d(1px,1px,-3px);
+ }                             
+#deck div:nth-child(2) {        
+ 	transform:translate3d(2px,2px,-6px);
+ }                             
+#deck div:nth-child(3) {        
+ 	transform:translate3d(3px,3px,-9px);
+ }                             
+#deck div:nth-child(4) {        
+ 	transform:translate3d(4px,4px,-12px);
+ }                             
+#deck div:nth-child(5) {        
+ 	transform:translate3d(5px,5px,-15px);
+ }                             
+#deck div:nth-child(6) {        
+ 	transform:translate3d(6px,6px,-18px);
+ }                             
+#deck div:nth-child(7) {        
+ 	transform:translate3d(7px,7px,-21px);
+ }                             
+#deck div:nth-child(8) {        
+ 	transform:translate3d(8px,8px,-24px);
+}                              
+#deck div:nth-child(9) {        
+ 	transform:translate3d(9px,9px,-27px);
+ 	box-shadow: 10px 20px 3px 11px rgba(0, 0, 0, 0.26);
+} 
  
 #table_wrap {
 	display: inline-flex;
@@ -306,6 +447,7 @@
 	height: 180px;
 	display: table-cell;
 	position: relative;
+	transform: translateZ(10px);
 	}
 	
 .artifacticon {
@@ -315,6 +457,8 @@
 	background-repeat: no-repeat;
 	width: 22px;
 	height: 35px;
+	transform: translateZ(5px);
+	box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
 	}
 
 .stockitem {
@@ -322,6 +466,7 @@
     display: inline-table;
     border-radius: 10px;
     box-shadow: 3px 5px 3px 2px rgba(59, 59, 59, 0.58);
+    transform: translateZ(5px);
 }
 
 .animatedcard{	
@@ -358,4 +503,35 @@
 	from{transform: rotate(1deg)}	
 	to {transform: rotate(359deg) }
 	}
+	
+.traveller {
+    -webkit-animation: travelanim 1s ease 1;
+    -moz-animation: travelanim 1s ease 1;
+    -o-animation: travelanim 1s ease 1;
+    animation: travelanim 1s ease 1
+}
+
+@keyframes "travelanim" {
+    50% {
+        transform: translateZ(250px);
+    }
+}
+
+@-webkit-keyframes "travelanim" {
+    50% {
+        transform: translateZ(250px);
+    }
+}
+
+@-moz-keyframes "travelanim" {
+    50% {
+        transform: translateZ(250px);
+    }
+}
+
+@-o-keyframes travelanim {
+    50% {
+        transform: translateZ(250px)
+    }
+}
 

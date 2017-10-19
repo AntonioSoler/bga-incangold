@@ -20,7 +20,7 @@ require_once( APP_GAMEMODULE_PATH.'module/table/table.game.php' );
 
 class incangold extends Table
 {
-	function incangold( )
+	function __construct()
 	{
         	
         // Your global variables labels:
@@ -224,8 +224,7 @@ class incangold extends Table
 		$sql = "SELECT player_id id, player_name playerName , player_color playerColor FROM player WHERE player_exploring=1";
         //$playersIds = self::getObjectListFromDB( $sql );
 		$playersIds = self::getCollectionFromDB( $sql );	
-		self::debug ("******* getExploringPlayers   ".$playersIds);
-        return $playersIds;
+		return $playersIds;
     }
 	function getCampPlayers()
     {
@@ -233,8 +232,7 @@ class incangold extends Table
 		$sql = "SELECT player_id id, player_name playerName , player_color playerColor FROM player WHERE player_exploring=0";
         //$playersIds = self::getObjectListFromDB( $sql );
 		$playersIds = self::getCollectionFromDB( $sql );	
-		self::debug ("******* getExploringPlayers   ".$playersIds);
-        return $playersIds;
+		return $playersIds;
     }
 	function getExploringPlayersList()
     {
@@ -242,8 +240,7 @@ class incangold extends Table
 		$sql = "SELECT player_id id FROM player WHERE player_exploring=1";
         $playersIds = self::getObjectListFromDB( $sql );
 		//$playersIds = self::getCollectionFromDB( $sql );	
-		self::debug ("******* getExploringPlayers   ".$playersIds);
-        return $playersIds;
+		return $playersIds;
     }
 	
 	function setExploringPlayer ( $playerId , $exploringValue )
@@ -258,8 +255,7 @@ class incangold extends Table
 		$sql = "SELECT player_id id, player_name playerName , player_color playerColor FROM player WHERE player_leaving=1";
         //$playersIds = self::getObjectListFromDB( $sql );
 		$playersIds = self::getCollectionFromDB( $sql );	
-		self::debug ("******* getExploringPlayers   ".$playersIds);
-        return $playersIds;
+		return $playersIds;
     }
 	
 	function setLeavingPlayer ( $playerId , $leavingValue )
@@ -589,7 +585,7 @@ class incangold extends Table
 							
 							if ($extra > 0) 
 							{
-							$gems = $gems + $this->getGemsPlayer ( $thisid , 'tent') ;
+							$gems +=  $this->getGemsPlayer ( $thisid , 'tent') ;
 				            $this->setGemsPlayer ( $thisid , 'tent', $gems + $extra );	
 							self::notifyAllPlayers ( "artifactspicked", clienttranslate( '${player_name} is the only player returning to camp this turn and has picked some artifacts, this is the 4th or 5th artifact drawn and obtains ${extra} gems)' ) , 
 								array( 'thisid' => $thisid ,
