@@ -35,7 +35,7 @@ $game_options = [
                 'description' => totranslate('The artifacts are worth the value printed on them (5, 7, 8, 10, 12)')
             ],
             2 => [
-                'name' => totranslate('option 2'),
+                'name' => totranslate('Classic'),
                 'description' => totranslate('The first three artifacts picked are worth 5, the last two are worth 10')
             ],
         ]
