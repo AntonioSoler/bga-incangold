@@ -578,13 +578,13 @@ class incangold extends Table
                         {
                             $extra=5;
                         }
-                        if ( $artifactspicked == 5 )
+                        else if ( $artifactspicked == 5 )
                         {
                             if ( $artifactsOnTable == 1 )
                             {
                                 $extra=5;
                             }
-                            if ( $artifactsOnTable > 1 )
+                            else if ( $artifactsOnTable > 1 )
                             {
                                 $extra=10;
                             }
