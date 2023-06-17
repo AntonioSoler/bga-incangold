@@ -34,6 +34,7 @@ class incangold extends Table
                 "gameOverTrigger" => 11,
                 "deckSize" => 12,
 				"artifactspicked" => 13,
+				"artifactScoringMode" => 100,
 				
             //    "my_second_global_variable" => 11,
             //      ...
@@ -387,7 +388,13 @@ class incangold extends Table
     function streshuffle()
 	{
 	$this->cards->moveAllCardsInLocation( 'table', 'deck' );  //collect all cards to the deck and reshuffle
-	self::DbQuery( "UPDATE cards set card_location = 'deck' WHERE card_type in (12,13,14,15,16) AND card_location = 'removed' LIMIT 1 " ); // PUT 1 ARTIFACT MORE
+
+	// Add the next artifact to the deck
+	self::DbQuery("UPDATE cards set card_location = 'deck' " .
+	              "WHERE card_type = (SELECT card_type from cards " .
+	                                 "WHERE card_type in (12,13,14,15,16) AND card_location = 'removed' " .
+	                                 "ORDER BY card_type " .
+	                                 "LIMIT 1)");
 	$this->cards->shuffle( 'deck' );
 	$cardsRemaining = $this->cards->countCardsInLocation('deck');
 	$iterations = 1 + $this->getGameStateValue('iterations');	
@@ -564,20 +571,25 @@ class incangold extends Table
 					if ( $artifactsOnTable >0)
 						{
 							self::incGameStateValue( 'artifactspicked', $artifactsOnTable  );
-							$artifactspicked=self::getGameStateValue( 'artifactspicked' );
-							if ( $artifactspicked == 4  )  
+
+							if (self::getGameStateValue('artifactScoringMode') == 2)
 							{
-							$extra=5;	
-							}
-							if ( $artifactspicked == 5 ) 
-							{
-								if ( $artifactsOnTable == 1 )
+								// Classic artifact scoring. The 4th and 5th artifacts picked are worth 10 instead of 5.
+								$artifactspicked=self::getGameStateValue( 'artifactspicked' );
+								if ( $artifactspicked == 4  )
 								{
-									$extra=5;	
+								$extra=5;
 								}
-								if ( $artifactsOnTable > 1 ) 
+								if ( $artifactspicked == 5 )
 								{
-									$extra=10;	
+									if ( $artifactsOnTable == 1 )
+									{
+										$extra=5;
+									}
+									if ( $artifactsOnTable > 1 )
+									{
+										$extra=10;
+									}
 								}
 							}
 							$sql = "UPDATE cards SET card_location ='".$thisid."' WHERE card_location = 'table' AND card_type in ( 12,13,14,15,16)";
@@ -653,12 +665,28 @@ class incangold extends Table
         {
             
             $gems = $this->getGemsPlayer( $player_id, 'tent' ) ;
-			$artifacts = $this->cards->countCardsInLocation( $player_id );
-			
-			$score = $gems + 5 * $artifacts ;
+
+			if (self::getGameStateValue('artifactScoringMode') == 1)
+			{
+				// Modern scoring
+				$sql = "SELECT card_type FROM cards WHERE card_location ='$player_id' AND card_type in (12,13,14,15,16)";
+				$artifacts = self::getObjectListFromDB($sql, true);
+				$artifacts_number = count($artifacts);
+				$score = $gems;
+				foreach ($artifacts as $card_type)
+				{
+					$score += $this->card_types[$card_type]['artifactValue'];
+				}
+			}
+			else
+			{
+				// Classic scoring
+				$artifacts_number = $this->cards->countCardsInLocation( $player_id );
+				$score = $gems + 5 * $artifacts_number ;
+			}
 			
 			self::setStat( $gems , "gems_number", $player_id );
-			self::setStat( $artifacts , "artifacts_number", $player_id );
+			self::setStat( $artifacts_number , "artifacts_number", $player_id );
 			
 			$sql = "UPDATE player SET player_score = ".$score." WHERE player_id=".$player['player_id'];
             self::DbQuery( $sql );
@@ -708,23 +736,21 @@ class incangold extends Table
     {
     	$statename = $state['name'];
     	
-        $this->gamestate->setPlayerNonMultiactive( $active_player, '' );
-		
 		if ($state['type'] == "multipleactiveplayer") {
             // Make sure player is in a non blocking status for role turn
             $sql = "
                 UPDATE  player
-                SET     player_is_multiactive = 0 ,
-						player_exploring = 0
+                SET     player_is_multiactive = 0,
+						player_exploring = 0,
+                        player_leaving = 1
                 WHERE   player_id = $active_player
             ";
 			
             self::DbQuery( $sql );
-			$this->setLeavingPlayer ( $active_player  , 1 );
+            
             $this->gamestate->updateMultiactiveOrNextState( '' );
             return;
         }
-		
 
         throw new feException( "Zombie mode not supported at this game state: ".$statename );
     }
