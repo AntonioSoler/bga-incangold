@@ -72,8 +72,15 @@ $gameinfos = array(
 'strategy' => 2,    
 
 // Diplomacy of the game, from 0 (no interaction in this game) to 5 (totally based on interaction and discussion between players)
-'diplomacy' => 0,    
+'diplomacy' => 0,
 
+// Game presentation
+'presentation' => array(
+    totranslate("In Incan Gold, players push their luck as they head into a ruined temple, attempting to find the most jewels."),
+    totranslate("Each turn, a card is turned over that increases the gold found in a temple or shows a hazard. Players can choose to escape, keeping the loot that they've acquired, or to stay in the temple and run the risk of a fatal hazard in the hope of increased profits."),
+),
+
+'game_interface_width' => 1040,
 // Games categories
 //  You can attribute any number of "tags" to your game.
 //  Each tag has a specific ID (ex: 22 for the category "Prototype", 101 for the tag "Science-fiction theme game")

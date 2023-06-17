@@ -421,8 +421,28 @@ function (dojo, declare) {
 					dojo.byId(target).innerHTML=eval(dojo.byId(target).innerHTML) + 1;
 				}
 		}, 
-		
-		
+				
+		// Remove artifacts visually by sliding them next to the temples
+		// and logically by removing them from the tablecards deck
+		removeArtifacts : function() 
+		{
+			dojo.query(".isartifact").addClass("animatedcard");
+			artifacts=document.getElementsByClassName("isartifact");
+			for (i=0 ; i< artifacts.length ; i++ )
+			{ // if this is an artifact slide it as an icon next to the temples
+				this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 500 ,0);
+				dojo.place( "<div class='artifacticon removed'></div>" , 'templeleft' , "last");
+				this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
+			}
+			// Remove artifacts from tablecards deck
+			for (var i=0; i<this.tablecards.items.length; ++i)
+			{
+				if (this.tablecards.items[i].type >=12 && this.tablecards.items[i].type <=16)
+				{
+					this.tablecards.removeFromStock(this.tablecards.items[i].type);
+				}
+			}
+		},
         ///////////////////////////////////////////////////
         //// Player's action
         
@@ -681,14 +701,7 @@ function (dojo, declare) {
 			var card = notif.args.card_played;
             
 			this.moveCard ( card.id ,'templePanel', 0);
-			dojo.query(".isartifact").addClass("animatedcard");
-			artifacts=document.getElementsByClassName("isartifact");
-			for (i=0 ; i< artifacts.length ; i++ )
-			    {
-					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 500 ,0);
-					dojo.place( "<div class='artifacticon removed'></div>" , 'templeleft' , "last");
-					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
-				}	
+			this.removeArtifacts();
         },
 		
         notif_ObtainGems: function( notif )
@@ -706,14 +719,8 @@ function (dojo, declare) {
         {
             console.log( 'notif_reshuffle' );
             console.log( notif );
-			dojo.query(".isartifact").addClass("animatedcard");
-			artifacts=document.getElementsByClassName("isartifact");
-			for (i=0 ; i< artifacts.length ; i++ )
-			    {
-					this.slideToObjectAndDestroy ( artifacts[i].id,'templePanel', 500 ,0);
-					dojo.place( "<div class='artifacticon removed'></div>" , 'templeleft' , "last");
-					this.addTooltipToClass( "removed", _( "This artifact was not picked by the explorers and now is lost forever in the temple" ), "" );
-				}
+			this.removeArtifacts();
+			
 			if (notif.args.iterations <=5 )
 			{
 				for (i in this.gamedatas.players )

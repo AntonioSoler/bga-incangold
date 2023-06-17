@@ -145,7 +145,7 @@
 }
 
 #campscell{
-min-width: 620px;
+  /*min-width: 300px*/;
 }
 
 .whiteblock {
